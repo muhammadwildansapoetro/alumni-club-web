@@ -6,14 +6,14 @@ import Statistic from "./(landing-page)/statistic";
 import TopBar from "./(landing-page)/top-bar";
 
 export default function Home() {
-  return (
-    <div>
-      <TopBar />
-      <HeroSection />
-      <SearchAlumni />
-      <Statistic />
-      <AlumniStory />
-      <Footer />
-    </div>
-  );
+    return (
+        <div>
+            <TopBar />
+            <HeroSection />
+            <SearchAlumni />
+            <Statistic />
+            <AlumniStory />
+            <Footer />
+        </div>
+    );
 }

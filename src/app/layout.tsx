@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Roboto, Roboto_Mono } from "next/font/google";
 import "./globals.css";
+import NextProgressProviders from "@/providers/nprogress";
+import { SheetProvider } from "@/providers/sheet-provider";
+import { ModalProvider } from "@/providers/modal-provider";
 
 const roboto = Roboto({
     variable: "--font-roboto",
@@ -26,7 +29,13 @@ export default function RootLayout({
 }>) {
     return (
         <html lang="en">
-            <body className={`${roboto.variable} ${robotoMono.variable} antialiased`}>{children}</body>
+            <body className={`${roboto.variable} ${robotoMono.variable} antialiased`}>
+                <NextProgressProviders>
+                    {children}
+                    <SheetProvider />
+                    <ModalProvider />
+                </NextProgressProviders>
+            </body>
         </html>
     );
 }
