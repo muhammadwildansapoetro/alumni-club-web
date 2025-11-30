@@ -2,8 +2,9 @@
 
 import { AppleIcon, ArrowRightIcon, TractorIcon, UsersIcon, WarehouseIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
-import { Button } from "../ui/button";
+import { buttonVariants } from "../ui/button";
 import { AlumniDataDummy } from "@/data/dummy/alumni";
+import Link from "next/link";
 
 export default function StatisticCard() {
     const total = AlumniDataDummy?.length;
@@ -35,9 +36,12 @@ export default function StatisticCard() {
                     </CardHeader>
                     <CardContent className="flex items-center justify-between">
                         <p className="text-xl font-bold">{tep}</p>
-                        <Button size={"sm"} variant={"outline"} className="h-7 border-green-500 text-xs">
+                        <Link
+                            href={"/dashboard/alumni/agricultural-engineering"}
+                            className={buttonVariants({ className: "h-6! border-green-500 text-xs", size: "sm", variant: "outline" })}
+                        >
                             Lihat <ArrowRightIcon />
-                        </Button>
+                        </Link>
                     </CardContent>
                 </Card>
 
@@ -49,9 +53,12 @@ export default function StatisticCard() {
                     </CardHeader>
                     <CardContent className="flex items-center justify-between">
                         <p className="text-xl font-bold">{tpn}</p>
-                        <Button size={"sm"} variant={"outline"} className="h-7 border-red-500 text-xs">
+                        <Link
+                            href={"/dashboard/alumni/food-technology"}
+                            className={buttonVariants({ className: "h-6! border-red-500 text-xs", size: "sm", variant: "outline" })}
+                        >
                             Lihat <ArrowRightIcon />
-                        </Button>
+                        </Link>
                     </CardContent>
                 </Card>
 
@@ -63,9 +70,12 @@ export default function StatisticCard() {
                     </CardHeader>
                     <CardContent className="flex items-center justify-between">
                         <p className="text-xl font-bold">{tin}</p>
-                        <Button size={"sm"} variant={"outline"} className="h-7 border-orange-500 text-xs">
+                        <Link
+                            href={"/dashboard/alumni/agricultural-industrial-technology"}
+                            className={buttonVariants({ className: "h-6! border-orange-500 text-xs", size: "sm", variant: "outline" })}
+                        >
                             Lihat <ArrowRightIcon />
-                        </Button>
+                        </Link>
                     </CardContent>
                 </Card>
             </div>

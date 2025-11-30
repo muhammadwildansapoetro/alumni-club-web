@@ -15,7 +15,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
-    email: z.email("Alamat email tidak valid"),
+    username: z.string().min(1, "Username harus diisi"),
     password: z.string().min(1, "Password harus diisi"),
 });
 
@@ -30,7 +30,7 @@ export default function LoginClient() {
         mode: "onTouched",
         reValidateMode: "onChange",
         defaultValues: {
-            email: "",
+            username: "",
             password: "",
         },
     });
@@ -49,27 +49,29 @@ export default function LoginClient() {
     };
 
     return (
-        <div className="min-h-screen w-full bg-linear-to-br from-green-50 via-white to-red-50">
-            <div className="flex min-h-screen w-full items-center justify-center">
-                <Card className="w-md">
+        <div className="relative min-h-screen w-full">
+            <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/image/ftip-unpad.jpg')" }} />
+            <div className="absolute inset-0 bg-black/20 backdrop-blur-xs" />
+            <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4">
+                <Card className="w-md gap-3 rounded-xl border border-white/70 bg-white/70 shadow-xl backdrop-blur-md">
                     <CardHeader>
-                        <div className="flex w-full items-center justify-between gap-3">
+                        <div className="flex w-full items-center justify-center gap-3">
                             <Image src="/logo/logo-ika-ftip-unpad.png" alt="Logo" width={50} height={50} />
                             <h1 className="text-xl font-bold">FTIP Unpad Alumni Club</h1>
-                            <Image src="/logo/logo-ftip-unpad.png" alt="Logo" width={45} height={45} />
                         </div>
                     </CardHeader>
+
                     <CardContent>
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit((values) => handleLogin(values))} className="space-y-3">
                                 <FormField
                                     control={form.control}
-                                    name="email"
+                                    name="username"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Email</FormLabel>
+                                            <FormLabel>Nomor Telepon / Email</FormLabel>
                                             <FormControl>
-                                                <Input {...field} placeholder="Masukkan email" />
+                                                <Input {...field} placeholder="Masukkan Nomor Telepon / Email" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -113,9 +115,10 @@ export default function LoginClient() {
                             </form>
                         </Form>
                     </CardContent>
+
                     <CardFooter className="flex flex-col gap-3">
-                        <p className="text-center text-xs">
-                            Belum memiliki akun?{" "}
+                        <p className="text-center text-xs font-medium">
+                            Belum memiliki akun? Silakan{" "}
                             <Link href="/register" className="text-primary font-bold hover:underline">
                                 Daftar
                             </Link>

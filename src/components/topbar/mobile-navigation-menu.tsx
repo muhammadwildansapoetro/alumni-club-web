@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
-import { ChevronDown, ChevronRight, Menu } from "lucide-react";
+import { ChevronDownIcon, ChevronUpIcon, Menu } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
@@ -49,7 +49,7 @@ const MobileNavItem = ({ item, onLinkClick, level = 0 }: MobileNavItemProps) => 
             >
                 {Icon && <Icon className="h-5 w-5 shrink-0" />}
                 <span className="flex-1 text-left">{item.name}</span>
-                {hasChildren && (isOpen ? <ChevronDown className="h-4 w-4" /> : <ChevronRight className="h-4 w-4" />)}
+                {hasChildren && (isOpen ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />)}
             </Button>
 
             {hasChildren && isOpen && (
