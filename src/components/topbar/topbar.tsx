@@ -11,21 +11,23 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import dynamic from "next/dynamic";
 import MobileNavigationMenu from "./mobile-navigation-menu";
+import { useAuthStore } from "@/stores/auth.store";
 
 const SearchInput = dynamic(() => import("../input/search-input"), { ssr: false });
 const NavigationMenu = dynamic(() => import("./navigation-menu"), { ssr: false });
 
 const Topbar = () => {
-    const session = { user: { name: "Muhammad Wildan", role: "admin" } };
+    const { user, isAuthenticated, logout } = useAuthStore();
     const navigation = useNavigation();
     const isMobile = useIsMobile();
-    const abbr = abbreviation(session?.user?.name || "");
+    const abbr = abbreviation(user?.name || "");
     const [scrollUp, setScrollUp] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
     const handleLogout = async () => {
         try {
-            navigation.push("/logout");
+            logout();
+            navigation.push("/login");
         } catch (error) {
             console.error(error);
         }
@@ -44,6 +46,11 @@ const Topbar = () => {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, [lastScrollY]);
+
+    // Don't render if not authenticated
+    if (!isAuthenticated || !user) {
+        return null;
+    }
 
     return (
         <nav
@@ -81,13 +88,18 @@ const Topbar = () => {
                             </Avatar>
 
                             <div className="flex flex-col items-start gap-0.5 hover:cursor-pointer">
-                                <span className="line-clamp-1 max-w-24 text-left text-sm font-medium sm:max-w-fit">{session?.user?.name}</span>
+                                <span className="line-clamp-1 max-w-24 text-left text-sm font-medium sm:max-w-fit">
+                                    {user.profile?.fullName || user.name}
+                                </span>
                                 <div className="flex items-center gap-2">
-                                    {session?.user?.role && (
+                                    {user.role === "ADMIN" && (
                                         <Badge size="xs" variant={"outline"}>
                                             Pengurus
                                         </Badge>
                                     )}
+                                    <Badge size="xs" variant={"default"}>
+                                        {user?.profile?.department} - {user.profile?.classYear || "Alumni"}
+                                    </Badge>
                                 </div>
                             </div>
                         </DropdownMenuTrigger>

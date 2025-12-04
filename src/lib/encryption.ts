@@ -1,48 +1,88 @@
 import { CONFIG } from "@/config";
 import crypto from "crypto";
-import CryptoJS from "crypto-js";
+
+// Input validation helper
+function validateEncryptionInput(data: Record<string, any>): boolean {
+    if (!data || typeof data !== 'object') return false;
+    try {
+        JSON.stringify(data);
+        return true;
+    } catch {
+        return false;
+    }
+}
+
+function validateHexInput(hex: string): boolean {
+    if (!hex || typeof hex !== 'string') return false;
+    // Check if valid hex string and minimum length
+    return /^[0-9a-fA-F]+$/.test(hex) && hex.length >= 32;
+}
 
 export function EncryptQuery(data: Record<string, any>): string {
     try {
-        const key = CryptoJS.enc.Utf8.parse(CONFIG.query_enc_key!);
-        const iv = CryptoJS.lib.WordArray.create([0, 0, 0, 0, 0, 0, 0, 0]); // 8-byte IV for DES
+        // Input validation
+        if (!validateEncryptionInput(data)) {
+            throw new Error('Invalid encryption input data');
+        }
 
-        const encrypted = CryptoJS.DES.encrypt(JSON.stringify(data), key, {
-            iv,
-            mode: CryptoJS.mode.CBC,
-            padding: CryptoJS.pad.Pkcs7,
-        });
+        const encryptionKey = CONFIG.query_enc_key;
+        if (!encryptionKey || encryptionKey.length < 32) {
+            throw new Error('Invalid encryption key: must be at least 32 characters');
+        }
 
-        // return ciphertext in HEX (not Base64) to be WAF-safe
-        return encrypted.ciphertext.toString(CryptoJS.enc.Hex);
+        // Generate random IV for AES-256-CBC
+        const iv = crypto.randomBytes(16);
+
+        // Create cipher using AES-256-CBC
+        const cipher = crypto.createCipheriv('aes-256-cbc',
+            Buffer.from(encryptionKey.substring(0, 32)), iv);
+
+        let encrypted = cipher.update(JSON.stringify(data), 'utf8', 'hex');
+        encrypted += cipher.final('hex');
+
+        // Combine IV and encrypted data (IV in hex + encrypted data)
+        const result = iv.toString('hex') + encrypted;
+
+        return result;
     } catch (err) {
-        console.error("Encryption error:", err);
-        return "";
+        console.error("AES-256 encryption error:", err);
+        throw new Error('Failed to encrypt data');
     }
 }
 
 export function DecryptQuery(hex: string = ""): Record<string, any> {
     try {
-        if (!hex) return {};
+        // Input validation
+        if (!validateHexInput(hex)) {
+            throw new Error('Invalid encrypted query format');
+        }
 
-        const key = CryptoJS.enc.Utf8.parse(CONFIG.query_enc_key!);
-        const iv = CryptoJS.lib.WordArray.create([0, 0, 0, 0, 0, 0, 0, 0]);
+        const encryptionKey = CONFIG.query_enc_key;
+        if (!encryptionKey || encryptionKey.length < 32) {
+            throw new Error('Invalid encryption key: must be at least 32 characters');
+        }
 
-        const cipherParams = CryptoJS.lib.CipherParams.create({
-            ciphertext: CryptoJS.enc.Hex.parse(hex),
-        });
+        // Extract IV (first 32 hex chars = 16 bytes) and encrypted data
+        const iv = Buffer.from(hex.substring(0, 32), 'hex');
+        const encryptedData = hex.substring(32);
 
-        const decrypted = CryptoJS.DES.decrypt(cipherParams, key, {
-            iv,
-            mode: CryptoJS.mode.CBC,
-            padding: CryptoJS.pad.Pkcs7,
-        });
+        // Create decipher using AES-256-CBC
+        const decipher = crypto.createDecipheriv('aes-256-cbc',
+            Buffer.from(encryptionKey.substring(0, 32)), iv);
 
-        const result = decrypted.toString(CryptoJS.enc.Utf8);
-        return result ? JSON.parse(result) : {};
+        let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+        decrypted += decipher.final('utf8');
+
+        const result = JSON.parse(decrypted);
+
+        if (!result || typeof result !== 'object') {
+            throw new Error('Invalid decrypted data format');
+        }
+
+        return result;
     } catch (err) {
-        console.error("Decryption error:", err);
-        return {};
+        console.error("AES-256 decryption error:", err);
+        throw new Error('Failed to decrypt query data');
     }
 }
 export function encryptHybrid(data: object): { data: string; key: string; nonce: string; auth_tag: string } {

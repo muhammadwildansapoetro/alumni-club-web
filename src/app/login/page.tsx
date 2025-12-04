@@ -1,5 +1,7 @@
 import LoginClient from "./client";
 
-export default async function LoginPage() {
+export const dynamic = 'force-dynamic';
+
+export default function LoginPage() {
   return <LoginClient />;
 }

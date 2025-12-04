@@ -9,14 +9,15 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { useState } from "react";
-import { EyeIcon, EyeOffIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useAuthStore } from "@/stores/auth.store";
 
 const formSchema = z.object({
-    username: z.string().min(1, "Username harus diisi"),
-    password: z.string().min(1, "Password harus diisi"),
+    email: z.string().email("Email tidak valid").min(1, "Email harus diisi"),
+    password: z.string().min(8, "Password minimal 8 karakter"),
 });
 
 type FormType = z.infer<typeof formSchema>;
@@ -24,36 +25,57 @@ type FormType = z.infer<typeof formSchema>;
 export default function LoginClient() {
     const [showPassword, setShowPassword] = useState(false);
     const router = useRouter();
+    const searchParams = useSearchParams();
+    const { login, isLoading, error, isAuthenticated, clearError } = useAuthStore();
 
     const form = useForm<FormType>({
         resolver: zodResolver(formSchema),
         mode: "onTouched",
         reValidateMode: "onChange",
         defaultValues: {
-            username: "",
+            email: "",
             password: "",
         },
     });
 
-    const handleLogin = (values: FormType) => {
-        try {
-            console.log(values);
-            router.push("/dashboard/statistic");
-        } catch (error) {
-            console.error(error);
-            toast.error("Gagal Masuk", {
+    // Redirect if already authenticated
+    useEffect(() => {
+        if (isAuthenticated) {
+            const redirect = searchParams.get("redirect") || "/dashboard";
+            router.push(redirect);
+        }
+    }, [isAuthenticated, router, searchParams]);
+
+    // Show error toast when error occurs
+    useEffect(() => {
+        if (error) {
+            toast.error("Login Gagal", {
+                description: error,
                 duration: 5000,
-                description: "error",
             });
+        }
+    }, [error]);
+
+    const handleLogin = async (values: FormType) => {
+        clearError();
+
+        try {
+            await login(values.email, values.password);
+            toast.success("Login Berhasil!", {
+                description: "Selamat datang kembali",
+                duration: 3000,
+            });
+        } catch {
+            // Error is handled by the store and displayed via toast
         }
     };
 
     return (
         <div className="relative min-h-screen w-full">
             <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/image/ftip-unpad.jpg')" }} />
-            <div className="absolute inset-0 bg-black/20 backdrop-blur-xs" />
+            <div className="absolute inset-0 backdrop-blur-xs" />
             <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4">
-                <Card className="w-md gap-3 rounded-xl border border-white/70 bg-white/70 shadow-xl backdrop-blur-md">
+                <Card className="w-md gap-3 rounded-xl border bg-white shadow-xl">
                     <CardHeader>
                         <div className="flex w-full items-center justify-center gap-3">
                             <Image src="/logo/logo-ika-ftip-unpad.png" alt="Logo" width={50} height={50} />
@@ -66,12 +88,12 @@ export default function LoginClient() {
                             <form onSubmit={form.handleSubmit((values) => handleLogin(values))} className="space-y-3">
                                 <FormField
                                     control={form.control}
-                                    name="username"
+                                    name="email"
                                     render={({ field }) => (
                                         <FormItem>
-                                            <FormLabel>Nomor Telepon / Email</FormLabel>
+                                            <FormLabel>Email</FormLabel>
                                             <FormControl>
-                                                <Input {...field} placeholder="Masukkan Nomor Telepon / Email" />
+                                                <Input {...field} type="email" placeholder="Masukkan email" />
                                             </FormControl>
                                             <FormMessage />
                                         </FormItem>
@@ -109,8 +131,15 @@ export default function LoginClient() {
                                     }}
                                 />
 
-                                <Button type="submit" disabled={form.formState.isSubmitting} className="w-full">
-                                    Masuk
+                                <Button type="submit" disabled={isLoading || form.formState.isSubmitting} className="mt-3 w-full">
+                                    {isLoading ? (
+                                        <>
+                                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            Memproses...
+                                        </>
+                                    ) : (
+                                        "Masuk"
+                                    )}
                                 </Button>
                             </form>
                         </Form>
