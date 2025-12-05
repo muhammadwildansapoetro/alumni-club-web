@@ -3,14 +3,14 @@
 import { Button } from "@/components/ui/button";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import ReactSelect from "@/components/ui/react-select";
 import Image from "next/image";
 import Link from "next/link";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState, useEffect } from "react";
-import { EyeIcon, EyeOffIcon, Loader2 } from "lucide-react";
+import { BarChart2Icon, BriefcaseIcon, EyeIcon, EyeOffIcon, HeartHandshakeIcon, Loader2, StoreIcon, UserCheckIcon, UsersIcon } from "lucide-react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
@@ -23,37 +23,54 @@ const departmentOptions = [
     { value: "TIN", label: "Teknologi Industri Pertanian (TIN)" },
 ];
 
+// Department-specific max year mapping
+const departmentMaxYears = {
+    TEP: 1983,
+    TPN: 1996,
+    TIN: 2013,
+};
+
 const currentYear = new Date().getFullYear();
-const maxYear = currentYear - 3;
-const classYearOptions = Array.from({ length: maxYear - 1957 + 1 }, (_, i) => {
-    const year = 1957 + i;
-    return { value: year, label: year.toString() };
-});
+const overallMaxYear = currentYear - 3;
 
 const formSchema = z.object({
-    email: z.string().email("Email tidak valid").min(1, "Email harus diisi"),
+    email: z.email("Email tidak valid").min(1, "Email harus diisi"),
     password: z.string().min(8, "Password minimal 8 karakter"),
     name: z.string().min(1, "Nama harus diisi"),
     department: z.enum(["TEP", "TPN", "TIN"], {
         message: "Jurusan harus salah satu dari: TEP, TPN, atau TIN",
     }),
     classYear: z
-        .number()
+        .number("Tahun angkatan harus berupa angka")
         .int("Tahun angkatan harus berupa angka bulat")
-        .min(1957, "Tahun angkatan tidak valid")
-        .max(maxYear, `Tahun angkatan tidak boleh melebihi ${maxYear}`),
+        .min(1983, "Tahun angkatan tidak valid")
+        .max(overallMaxYear, `Tahun angkatan tidak boleh melebihi ${overallMaxYear}`),
 });
 
 type FormType = z.infer<typeof formSchema>;
 
+// Function to generate class year options based on department
+const generateClassYearOptions = (department: string | undefined) => {
+    if (!department) return [];
+
+    const minYear = departmentMaxYears[department as keyof typeof departmentMaxYears];
+    const effectiveMaxYear = overallMaxYear;
+
+    return Array.from({ length: effectiveMaxYear - minYear + 1 }, (_, i) => {
+        const year = minYear + i;
+        return { value: year, label: year.toString() };
+    });
+};
+
 export default function RegisterClient() {
     const [showPassword, setShowPassword] = useState(false);
+    const [agreedToPolicy, setAgreedToPolicy] = useState(false);
     const router = useRouter();
     const { isLoading, error, clearError } = useAuthStore();
 
     const form = useForm<FormType>({
         resolver: zodResolver(formSchema),
-        mode: "onTouched",
+        mode: "onChange",
         reValidateMode: "onChange",
         defaultValues: {
             email: "",
@@ -63,6 +80,8 @@ export default function RegisterClient() {
             classYear: undefined,
         },
     });
+
+    const selectedDepartment = useWatch({ control: form.control, name: "department" });
 
     // Show error toast when error occurs
     useEffect(() => {
@@ -116,145 +135,245 @@ export default function RegisterClient() {
     };
 
     return (
-        <>
-            <div className="relative min-h-screen w-full">
-                <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('/image/ftip-unpad.jpg')" }} />
-                <div className="absolute inset-0 backdrop-blur-xs" />
-                <div className="relative z-10 flex min-h-screen w-full items-center justify-center px-4">
-                    <Card className="w-md gap-3 rounded-xl border bg-white shadow-xl">
-                        <CardHeader>
-                            <div className="flex w-full items-center gap-3">
-                                <Image src="/logo/logo-ika-ftip-unpad.png" alt="Logo" width={50} height={50} />
-                                <h1 className="text-xl font-bold">FTIP Unpad Alumni Club</h1>
-                            </div>
-                            <h1 className="text-xl font-bold">Daftar Akun</h1>
-                        </CardHeader>
+        <div className="grid min-h-screen w-full grid-cols-1 md:grid-cols-2">
+            {/* LEFT SIDE — Welcoming Message */}
+            <div
+                className="relative hidden items-center justify-center bg-cover bg-center p-10 text-white md:flex"
+                style={{ backgroundImage: "url('/image/bg-register.jpg')" }}
+            >
+                {/* Overlay */}
+                <div className="absolute inset-0 bg-black/10 backdrop-blur-xs" />
 
-                        <CardContent>
-                            <Form {...form}>
-                                <form onSubmit={form.handleSubmit((values) => handleRegister(values))} className="space-y-3">
-                                    <FormField
-                                        control={form.control}
-                                        name="name"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Nama Lengkap</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} type="text" placeholder="Masukkan nama lengkap" />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                {/* Text Content with Glass Effect */}
+                <div className="relative z-10 max-w-md space-y-5">
+                    <div className="rounded-xl border-black bg-black/30 p-5 font-medium shadow-lg backdrop-blur-md">
+                        <div>
+                            <h1 className="text-3xl leading-snug font-bold">Bergabung dengan</h1>
+                            <h1 className="text-3xl leading-snug font-bold">FTIP Unpad Alumni Club</h1>
+                        </div>
 
-                                    <FormField
-                                        control={form.control}
-                                        name="email"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Email</FormLabel>
-                                                <FormControl>
-                                                    <Input {...field} type="email" placeholder="Masukkan email" />
-                                                </FormControl>
-                                                <FormMessage />
-                                            </FormItem>
-                                        )}
-                                    />
+                        <p className="mt-4 text-sm md:text-base">
+                            Dapatkan berbagai manfaat eksklusif dan jadilah bagian dari komunitas alumni FTIP Unpad yang saling mendukung.
+                        </p>
 
-                                    <FormField
-                                        control={form.control}
-                                        name="password"
-                                        render={({ field }) => {
-                                            return (
-                                                <FormItem>
-                                                    <FormLabel>Password</FormLabel>
-                                                    <FormControl>
-                                                        <div className="relative">
-                                                            <Input
-                                                                {...field}
-                                                                type={showPassword ? "text" : "password"}
-                                                                placeholder="Masukkan password"
-                                                                className="pr-10"
-                                                            />
+                        <ul className="mt-6 space-y-4 text-sm md:text-base">
+                            <li className="flex items-start gap-3">
+                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                                    <UserCheckIcon className="h-5 w-5 stroke-[1.75]" />
+                                </span>
+                                <span>
+                                    Bangun <strong>profil alumni profesional</strong> (jurusan, angkatan, industri, jabatan, hingga LinkedIn).
+                                </span>
+                            </li>
 
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => setShowPassword(!showPassword)}
-                                                                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:cursor-pointer hover:text-gray-700"
-                                                            >
-                                                                {showPassword ? <EyeOffIcon size={17} /> : <EyeIcon size={17} />}
-                                                            </button>
-                                                        </div>
-                                                    </FormControl>
-                                                    <FormMessage />
-                                                </FormItem>
-                                            );
-                                        }}
-                                    />
+                            <li className="flex items-start gap-3">
+                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                                    <BriefcaseIcon className="h-5 w-5 stroke-[1.75]" />
+                                </span>
+                                <span>
+                                    <strong>Akses & bagikan lowongan kerja</strong> yang diposting langsung oleh alumni.
+                                </span>
+                            </li>
 
-                                    <Controller
-                                        name="department"
-                                        control={form.control}
-                                        render={({ field, fieldState }) => (
-                                            <ReactSelect
-                                                {...field}
-                                                name="department"
-                                                label="Jurusan"
-                                                options={departmentOptions}
-                                                placeholder="Pilih jurusan"
-                                                isSearchable={false}
-                                                instanceId="department-select"
-                                                value={departmentOptions.find((option) => option.value === field.value)}
-                                                onChange={(selectedOption: any) => field.onChange(selectedOption?.value)}
-                                                fieldState={fieldState}
-                                            />
-                                        )}
-                                    />
+                            <li className="flex items-start gap-3">
+                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                                    <StoreIcon className="h-5 w-5 stroke-[1.75]" />
+                                </span>
+                                <span>
+                                    <strong>Promosikan bisnis</strong> atau usaha pribadi melalui direktori bisnis alumni.
+                                </span>
+                            </li>
 
-                                    <Controller
-                                        name="classYear"
-                                        control={form.control}
-                                        render={({ field, fieldState }) => (
-                                            <ReactSelect
-                                                {...field}
-                                                name="classYear"
-                                                label="Tahun Angkatan"
-                                                options={classYearOptions}
-                                                placeholder="Pilih tahun angkatan"
-                                                isSearchable={true}
-                                                instanceId="classyear-select"
-                                                value={classYearOptions.find((option) => option.value === field.value)}
-                                                onChange={(selectedOption: any) => field.onChange(selectedOption?.value)}
-                                                fieldState={fieldState}
-                                            />
-                                        )}
-                                    />
+                            <li className="flex items-start gap-3">
+                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                                    <UsersIcon className="h-5 w-5 stroke-[1.75]" />
+                                </span>
+                                <span>
+                                    <strong>Perluas jejaring alumni</strong> lintas jurusan dan lintas industri.
+                                </span>
+                            </li>
 
-                                    <Button type="submit" disabled={isLoading || form.formState.isSubmitting} className="mt-3 w-full">
-                                        {isLoading ? (
-                                            <>
-                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                Memproses...
-                                            </>
-                                        ) : (
-                                            "Daftar"
-                                        )}
-                                    </Button>
-                                </form>
-                            </Form>
-                        </CardContent>
+                            <li className="flex items-start gap-3">
+                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                                    <BarChart2Icon className="h-5 w-5 stroke-[1.75]" />
+                                </span>
+                                <span>
+                                    Lihat <strong>statistik perkembangan karier alumni</strong>: industri, level karir, pendapatan, dan lokasi
+                                    bekerja.
+                                </span>
+                            </li>
 
-                        <CardFooter className="flex flex-col gap-3">
-                            <p className="text-center text-xs font-medium">
-                                Sudah memiliki akun? Silakan{" "}
-                                <Link href="/login" className="text-primary font-bold hover:underline">
-                                    Masuk
-                                </Link>
-                            </p>
-                        </CardFooter>
-                    </Card>
+                            <li className="flex items-start gap-3">
+                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                                    <HeartHandshakeIcon className="h-5 w-5 stroke-[1.75]" />
+                                </span>
+                                <span>
+                                    <strong>Berkontribusi membangun komunitas</strong> alumni yang aktif, profesional, dan saling mendukung.
+                                </span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-        </>
+
+            {/* RIGHT SIDE — Registration Form */}
+            <div className="relative flex items-center justify-center">
+                <div className="w-full max-w-md space-y-5">
+                    {/* Logo + Heading */}
+                    <div className="flex flex-col gap-2">
+                        <Image src="/logo/logo-ika-ftip-unpad.png" alt="Logo" width={70} height={70} />
+                        <h1 className="text-3xl font-bold">Daftar Akun</h1>
+                        <p className="text-muted-foreground w-full text-xs">
+                            Sudah memiliki akun?
+                            <Link href="/login" className="text-primary/90 hover:text-primary ml-1 font-semibold underline hover:underline-offset-2">
+                                Masuk
+                            </Link>
+                        </p>
+                    </div>
+
+                    {/* FORM Without Card */}
+                    <Form {...form}>
+                        <form onSubmit={form.handleSubmit((values) => handleRegister(values))} className="space-y-4">
+                            {/* NAME */}
+                            <FormField
+                                control={form.control}
+                                name="name"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Nama Lengkap</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} placeholder="Masukkan nama lengkap" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* EMAIL */}
+                            <FormField
+                                control={form.control}
+                                name="email"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Email</FormLabel>
+                                        <FormControl>
+                                            <Input {...field} placeholder="Masukkan email" />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* PASSWORD */}
+                            <FormField
+                                control={form.control}
+                                name="password"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Password</FormLabel>
+                                        <div className="relative">
+                                            <FormControl>
+                                                <Input
+                                                    {...field}
+                                                    type={showPassword ? "text" : "password"}
+                                                    placeholder="Masukkan password"
+                                                    className="pr-10"
+                                                />
+                                            </FormControl>
+                                            <button
+                                                type="button"
+                                                onClick={() => setShowPassword(!showPassword)}
+                                                className="absolute top-1/2 right-3 -translate-y-1/2 text-gray-500 hover:text-gray-700"
+                                            >
+                                                {showPassword ? <EyeOffIcon size={17} /> : <EyeIcon size={17} />}
+                                            </button>
+                                        </div>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+
+                            {/* SELECT JURUSAN */}
+                            <Controller
+                                name="department"
+                                control={form.control}
+                                render={({ field, fieldState }) => (
+                                    <ReactSelect
+                                        {...field}
+                                        label="Jurusan"
+                                        options={departmentOptions}
+                                        placeholder="Pilih jurusan"
+                                        instanceId="department-select"
+                                        isSearchable={false}
+                                        value={departmentOptions.find((opt) => opt.value === field.value)}
+                                        onChange={(opt: any) => {
+                                            field.onChange(opt?.value);
+                                            form.setValue("classYear", null as any);
+                                        }}
+                                        fieldState={fieldState}
+                                    />
+                                )}
+                            />
+
+                            {/* SELECT ANGKATAN */}
+                            <Controller
+                                name="classYear"
+                                control={form.control}
+                                render={({ field, fieldState }) => {
+                                    const classYearOptions = generateClassYearOptions(selectedDepartment);
+                                    const disabled = !selectedDepartment;
+
+                                    return (
+                                        <ReactSelect
+                                            {...field}
+                                            label="Tahun Angkatan"
+                                            options={classYearOptions}
+                                            placeholder={disabled ? "Pilih jurusan terlebih dahulu" : "Pilih tahun angkatan"}
+                                            instanceId="classyear-select"
+                                            isDisabled={disabled}
+                                            value={classYearOptions.find((opt) => opt.value === field.value)}
+                                            onChange={(opt: any) => field.onChange(opt?.value)}
+                                            fieldState={fieldState}
+                                        />
+                                    );
+                                }}
+                            />
+
+                            {/* PRIVACY POLICY CHECKBOX */}
+                            <div className="flex items-start space-x-2 pt-3">
+                                <Checkbox id="privacy-policy" checked={agreedToPolicy} onCheckedChange={setAgreedToPolicy} />
+                                <label
+                                    htmlFor="privacy-policy"
+                                    className="text-sm leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                                >
+                                    Saya telah membaca dan menyetujui{" "}
+                                    <Link
+                                        href="/kebijakan-privasi"
+                                        className="text-primary/90 hover:text-primary underline underline-offset-2 hover:underline-offset-4"
+                                        target="_blank"
+                                    >
+                                        Kebijakan Privasi
+                                    </Link>
+                                </label>
+                            </div>
+
+                            {/* SUBMIT BUTTON */}
+                            <Button type="submit" disabled={isLoading || form.formState.isSubmitting || !agreedToPolicy} className="w-full">
+                                {isLoading ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Memproses...
+                                    </>
+                                ) : (
+                                    "Daftar"
+                                )}
+                            </Button>
+                        </form>
+                    </Form>
+                </div>
+
+                <p className="text-muted-foreground absolute bottom-2 text-xs">Dikelola oleh Pengurus IKA FTIP Unpad 2025-2029</p>
+            </div>
+        </div>
     );
 }

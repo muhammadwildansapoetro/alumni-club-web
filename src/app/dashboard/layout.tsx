@@ -15,11 +15,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
                 <main>{children}</main>
             </div>
 
-            <p className="bg-primary py-0.5 text-center text-xs text-white">
-                {isMobile
-                    ? "Dikelola oleh Ikatan Alumni FTIP Unpad"
-                    : " Dikelola oleh Ikatan Alumni Fakultas Teknologi Industri Pertanian Universitas Padjadjaran"}{" "}
-            </p>
+            <p className="bg-primary py-0.5 text-center text-xs text-white">Dikelola oleh Pengurus Ikatan Alumni FTIP Unpad 2025-2029</p>
         </div>
     );
 };

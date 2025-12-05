@@ -56,15 +56,22 @@ export default function LoginClient() {
         }
     }, [error]);
 
+    // Show success toast when authentication is successful
+    useEffect(() => {
+        if (isAuthenticated) {
+            toast.success("Login Berhasil!", {
+                description: "Selamat datang kembali",
+                duration: 3000,
+            });
+        }
+    }, [isAuthenticated]);
+
     const handleLogin = async (values: FormType) => {
         clearError();
 
         try {
             await login(values.email, values.password);
-            toast.success("Login Berhasil!", {
-                description: "Selamat datang kembali",
-                duration: 3000,
-            });
+            // Success toast will be shown by useEffect when isAuthenticated becomes true
         } catch {
             // Error is handled by the store and displayed via toast
         }
@@ -138,7 +145,7 @@ export default function LoginClient() {
                                             Memproses...
                                         </>
                                     ) : (
-                                        "Masuk"
+                                        "Log in"
                                     )}
                                 </Button>
                             </form>
