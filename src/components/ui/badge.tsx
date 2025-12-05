@@ -12,43 +12,9 @@ const badgeVariants = cva(
                 default: "border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80",
                 destructive: "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
                 outline: "text-foreground border-primary text-primary hover:bg-primary/5",
-
-                active: "border-[#3A903B] text-[#3A903B] bg-[#DBFFDC] hover:bg-[#DBFFDC]/70 text-xs",
-                inactive: "border-[#903A3A] text-[#903A3A] bg-[#FFDBDB] hover:bg-[#FFDBDB]/70 text-xs",
-
-                admin: "border-[#DC2626] text-[#DC2626] bg-transparent hover:bg-[#FEE2E2] text-xs",
-                super_admin: "border-[#DC2626] text-[#DC2626] bg-transparent hover:bg-[#FEE2E2] text-xs",
-                customer: "border-[#2563EB] text-[#2563EB] bg-transparent hover:bg-[#EFF6FF] text-xs",
-
-                hospitality: "border-[#9333EA] text-[#9333EA] bg-transparent hover:bg-[#F3E8FF] text-xs",
-                guest_house: "border-[#9333EA] text-[#9333EA] bg-transparent hover:bg-[#F3E8FF] text-xs",
-                apartment: "border-[#9333EA] text-[#9333EA] bg-transparent hover:bg-[#F3E8FF] text-xs",
-                sport_center: "border-[#3A903B] text-[#3A903B] bg-transparent hover:bg-[#DBFFDC]/70 text-xs",
-                vehicle: "border-[#B45309] text-[#B45309] bg-transparent hover:bg-[#FFFBEB] text-xs",
-                hall: "border-[#0891B2] text-[#0891B2] bg-transparent hover:bg-[#ECFEFF] text-xs",
-
-                furniture: "border-[#B45309] text-[#B45309] bg-transparent hover:bg-[#FFFBEB] text-xs",
-                visual: "border-[#2563EB] text-[#2563EB] bg-transparent hover:bg-[#EFF6FF] text-xs",
-                other: "border-[#374151] text-[#374151] bg-transparent hover:bg-[#F3F4F6] text-xs",
-
-                percentage: "border-[#2563EB] text-[#2563EB] bg-transparent hover:bg-[#EFF6FF] text-xs",
-                fixed: "border-[#3A903B] text-[#3A903B] bg-[#DBFFDC] hover:bg-[#DBFFDC]/70 text-xs",
-
-                paid: "border-[#3A903B] text-[#3A903B] bg-[#DBFFDC] hover:bg-[#DBFFDC]/70 text-xs",
-                unpaid: "border-[#B7791F] text-[#B7791F] bg-[#FFF2C6] hover:bg-[#FFF2C6]/70 text-xs",
-
-                waiting_for_payment: "border-[#B7791F] text-[#B7791F] bg-[#FFF2C6] hover:bg-[#FFF2C6]/70 text-xs",
-                booked: "border-[#3A903B] text-[#3A903B] bg-[#DBFFDC] hover:bg-[#DBFFDC]/70 text-xs",
-                cancelled: "border-[#903A3A] text-[#903A3A] bg-[#FFDBDB] hover:bg-[#FFDBDB]/70 text-xs",
-
-                student: "border-[#3B82F6] text-[#3B82F6] bg-transparent hover:bg-[#EFF6FF] text-xs",
-                lecturer: "border-[#7C3AED] text-[#7C3AED] bg-transparent hover:bg-[#F3E8FF] text-xs",
-                staff: "border-[#059669] text-[#059669] bg-transparent hover:bg-[#ECFDF5] text-xs",
-                nu: "border-[#B45309] text-[#B45309] bg-transparent hover:bg-[#FFFBEB] text-xs",
-                public: "border-[#6B7280] text-[#6B7280] bg-transparent hover:bg-[#F9FAFB] text-xs",
-                student_activity: "border-[#2563EB] text-[#2563EB] bg-transparent hover:bg-[#EFF6FF] text-xs",
-                general: "border-[#374151] text-[#374151] bg-transparent hover:bg-[#F3F4F6] text-xs",
-                department_activity: "border-[#047857] text-[#047857] bg-transparent hover:bg-[#ECFDF5] text-xs",
+                tep: "border-green-600 text-green-600 bg-transparent hover:bg-green-50",
+                tpn: "border-red-600 text-red-600 bg-transparent hover:bg-red-50",
+                tin: "border-orange-600 text-orange-600 bg-transparent hover:bg-orange-50",
             },
 
             size: {

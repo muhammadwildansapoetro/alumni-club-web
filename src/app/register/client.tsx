@@ -135,90 +135,83 @@ export default function RegisterClient() {
     };
 
     return (
-        <div className="grid min-h-screen w-full grid-cols-1 md:grid-cols-2">
+        <div className="grid min-h-screen w-full grid-cols-1 lg:grid-cols-2">
             {/* LEFT SIDE — Welcoming Message */}
-            <div
-                className="relative hidden items-center justify-center bg-cover bg-center p-10 text-white md:flex"
-                style={{ backgroundImage: "url('/image/bg-register.jpg')" }}
-            >
-                {/* Overlay */}
-                <div className="absolute inset-0 bg-black/10 backdrop-blur-xs" />
-
+            <div className="bg-primary/10 relative hidden items-center justify-center p-10 lg:flex">
                 {/* Text Content with Glass Effect */}
-                <div className="relative z-10 max-w-md space-y-5">
-                    <div className="rounded-xl border-black bg-black/30 p-5 font-medium shadow-lg backdrop-blur-md">
-                        <div>
-                            <h1 className="text-3xl leading-snug font-bold">Bergabung dengan</h1>
-                            <h1 className="text-3xl leading-snug font-bold">FTIP Unpad Alumni Club</h1>
-                        </div>
-
-                        <p className="mt-4 text-sm md:text-base">
-                            Dapatkan berbagai manfaat eksklusif dan jadilah bagian dari komunitas alumni FTIP Unpad yang saling mendukung.
-                        </p>
-
-                        <ul className="mt-6 space-y-4 text-sm md:text-base">
-                            <li className="flex items-start gap-3">
-                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
-                                    <UserCheckIcon className="h-5 w-5 stroke-[1.75]" />
-                                </span>
-                                <span>
-                                    Bangun <strong>profil alumni profesional</strong> (jurusan, angkatan, industri, jabatan, hingga LinkedIn).
-                                </span>
-                            </li>
-
-                            <li className="flex items-start gap-3">
-                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
-                                    <BriefcaseIcon className="h-5 w-5 stroke-[1.75]" />
-                                </span>
-                                <span>
-                                    <strong>Akses & bagikan lowongan kerja</strong> yang diposting langsung oleh alumni.
-                                </span>
-                            </li>
-
-                            <li className="flex items-start gap-3">
-                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
-                                    <StoreIcon className="h-5 w-5 stroke-[1.75]" />
-                                </span>
-                                <span>
-                                    <strong>Promosikan bisnis</strong> atau usaha pribadi melalui direktori bisnis alumni.
-                                </span>
-                            </li>
-
-                            <li className="flex items-start gap-3">
-                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
-                                    <UsersIcon className="h-5 w-5 stroke-[1.75]" />
-                                </span>
-                                <span>
-                                    <strong>Perluas jejaring alumni</strong> lintas jurusan dan lintas industri.
-                                </span>
-                            </li>
-
-                            <li className="flex items-start gap-3">
-                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
-                                    <BarChart2Icon className="h-5 w-5 stroke-[1.75]" />
-                                </span>
-                                <span>
-                                    Lihat <strong>statistik perkembangan karier alumni</strong>: industri, level karir, pendapatan, dan lokasi
-                                    bekerja.
-                                </span>
-                            </li>
-
-                            <li className="flex items-start gap-3">
-                                <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
-                                    <HeartHandshakeIcon className="h-5 w-5 stroke-[1.75]" />
-                                </span>
-                                <span>
-                                    <strong>Berkontribusi membangun komunitas</strong> alumni yang aktif, profesional, dan saling mendukung.
-                                </span>
-                            </li>
-                        </ul>
+                <div className="max-w-md space-y-5">
+                    <div className="-space-y-1">
+                        <h1 className="text-3xl leading-snug font-bold">Mulai Akses Manfaat Eksklusif</h1>
+                        <h1 className="from-primary bg-linear-to-r to-emerald-500 bg-clip-text text-3xl leading-snug font-bold text-transparent">
+                            <span className="text-black">di</span> FTIP Unpad Alumni Club
+                        </h1>
                     </div>
+
+                    <p className="text-sm md:text-base">
+                        Dapatkan berbagai manfaat eksklusif dan jadilah bagian dari komunitas alumni FTIP Unpad yang saling mendukung.
+                    </p>
+
+                    <ul className="space-y-3 text-sm md:text-base">
+                        <li className="flex items-start gap-3">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                                <UserCheckIcon className="h-5 w-5 stroke-[1.75]" />
+                            </span>
+                            <span>
+                                Buat <strong>profil alumni profesional</strong>.
+                            </span>
+                        </li>
+
+                        <li className="flex items-start gap-3">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                                <BriefcaseIcon className="h-5 w-5 stroke-[1.75]" />
+                            </span>
+                            <span>
+                                <strong>Akses & bagikan lowongan kerja</strong> alumni.
+                            </span>
+                        </li>
+
+                        <li className="flex items-start gap-3">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                                <StoreIcon className="h-5 w-5 stroke-[1.75]" />
+                            </span>
+                            <span>
+                                <strong>Promosikan bisnis</strong> alumni.
+                            </span>
+                        </li>
+
+                        <li className="flex items-start gap-3">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                                <UsersIcon className="h-5 w-5 stroke-[1.75]" />
+                            </span>
+                            <span>
+                                <strong>Perluas jejaring</strong> lintas jurusan & industri.
+                            </span>
+                        </li>
+
+                        <li className="flex items-start gap-3">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                                <BarChart2Icon className="h-5 w-5 stroke-[1.75]" />
+                            </span>
+                            <span>
+                                Lihat <strong>statistik karier alumni</strong>.
+                            </span>
+                        </li>
+
+                        <li className="flex items-start gap-3">
+                            <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center">
+                                <HeartHandshakeIcon className="h-5 w-5 stroke-[1.75]" />
+                            </span>
+                            <span>
+                                <strong>Berkontribusi</strong> membangun komunitas alumni.
+                            </span>
+                        </li>
+                    </ul>
                 </div>
             </div>
 
             {/* RIGHT SIDE — Registration Form */}
             <div className="relative flex items-center justify-center">
-                <div className="w-full max-w-md space-y-5">
+                <div className="w-full max-w-md space-y-5 px-5">
                     {/* Logo + Heading */}
                     <div className="flex flex-col gap-2">
                         <Image src="/logo/logo-ika-ftip-unpad.png" alt="Logo" width={70} height={70} />
@@ -341,15 +334,20 @@ export default function RegisterClient() {
 
                             {/* PRIVACY POLICY CHECKBOX */}
                             <div className="flex items-start space-x-2 pt-3">
-                                <Checkbox id="privacy-policy" checked={agreedToPolicy} onCheckedChange={setAgreedToPolicy} />
+                                <Checkbox
+                                    id="privacy-policy"
+                                    checked={agreedToPolicy}
+                                    onCheckedChange={setAgreedToPolicy}
+                                    className="hover:cursor-pointer"
+                                />
                                 <label
                                     htmlFor="privacy-policy"
                                     className="text-sm leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                 >
                                     Saya telah membaca dan menyetujui{" "}
                                     <Link
-                                        href="/kebijakan-privasi"
-                                        className="text-primary/90 hover:text-primary underline underline-offset-2 hover:underline-offset-4"
+                                        href="/privacy-policy?from=register"
+                                        className="text-primary/80 hover:text-primary underline underline-offset-4"
                                         target="_blank"
                                     >
                                         Kebijakan Privasi

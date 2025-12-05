@@ -19,7 +19,7 @@ export default function PrivacyPolicyPage() {
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
             <div className="border-b bg-white">
-                <div className="mx-auto max-w-4xl px-4 py-6 sm:px-6 lg:px-8">
+                <div className="mx-auto max-w-4xl px-4 py-3 sm:px-6 lg:px-8">
                     <div className="flex items-center space-x-4">
                         <Link href="/" className="flex items-center space-x-2">
                             <Image src="/logo/logo-ika-ftip-unpad.png" alt="Logo IKA FTIP Unpad" width={40} height={40} />
@@ -30,7 +30,7 @@ export default function PrivacyPolicyPage() {
             </div>
 
             {/* Content */}
-            <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+            <div className="mx-auto max-w-4xl px-4 py-5 sm:px-6 lg:px-8">
                 <div className="rounded-lg bg-white p-8 shadow-sm">
                     <h1 className="mb-4 text-3xl font-bold text-gray-900">Kebijakan Privasi — FTIP Unpad Alumni Club</h1>
 
@@ -247,15 +247,8 @@ export default function PrivacyPolicyPage() {
 
                         <section>
                             <h2 className="mb-3 text-xl font-semibold text-gray-900">10. Kontak</h2>
-                            <p className="text-gray-700">Jika memiliki pertanyaan tentang Kebijakan Privasi, hubungi: [email admin alumni club]</p>
+                            <p className="text-gray-700">Jika memiliki pertanyaan tentang Kebijakan Privasi, hubungi: ikaftip@gmail.com</p>
                         </section>
-                    </div>
-
-                    {/* Back to Home */}
-                    <div className="mt-8 border-t pt-6">
-                        <Link href="/register" className="text-primary hover:text-primary/80 inline-flex items-center font-medium">
-                            ← Kembali ke halaman Daftar
-                        </Link>
                     </div>
                 </div>
             </div>
