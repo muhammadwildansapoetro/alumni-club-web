@@ -37,21 +37,25 @@ export interface LoginResponse {
 
 export interface User {
     id: string;
-    username: string;
     email: string;
-    firstName: string;
-    lastName: string;
-    role: UserRole;
-    profilePicture?: string;
-    phone?: string;
-    address?: Address;
+    name: string;
+    role: string; // 'USER', 'ADMIN', 'MODERATOR', etc.
+    authProvider: string; // 'EMAIL', 'GOOGLE', 'OAUTH'
+    profile: {
+        id: string;
+        fullName: string;
+        department: string;
+        classYear: number; // API returns number, not string
+        city: string | null;
+        industry: string | null;
+        employmentLevel: string | null;
+        jobTitle: string | null;
+        companyName: string | null;
+    };
     createdAt: string;
-    updatedAt: string;
-    lastLoginAt?: string;
-    isActive: boolean;
 }
 
-export type UserRole = 'admin' | 'moderator' | 'member' | 'guest';
+export type UserRole = "admin" | "moderator" | "member" | "guest";
 
 export interface Address {
     street: string;
@@ -73,7 +77,7 @@ export interface Alumni {
     phone?: string;
     dateOfBirth: string;
     placeOfBirth: string;
-    gender: 'male' | 'female';
+    gender: "male" | "female";
     address?: Address;
     studyProgram: StudyProgram;
     admissionYear: number;
@@ -90,14 +94,14 @@ export interface Alumni {
     updatedAt: string;
 }
 
-export type AlumniStatus = 'active' | 'inactive' | 'alumni' | 'dropped_out' | 'transferred';
+export type AlumniStatus = "active" | "inactive" | "alumni" | "dropped_out" | "transferred";
 
 export interface StudyProgram {
     id: string;
     name: string;
     code: string;
     faculty: string;
-    degree: 'S1' | 'S2' | 'S3';
+    degree: "S1" | "S2" | "S3";
     department: string;
 }
 
@@ -118,19 +122,11 @@ export interface Achievement {
     description: string;
     date: string;
     category: AchievementCategory;
-    level: 'local' | 'national' | 'international';
+    level: "local" | "national" | "international";
     issuer?: string;
 }
 
-export type AchievementCategory =
-    | 'academic'
-    | 'sports'
-    | 'arts'
-    | 'leadership'
-    | 'research'
-    | 'community_service'
-    | 'entrepreneurship'
-    | 'other';
+export type AchievementCategory = "academic" | "sports" | "arts" | "leadership" | "research" | "community_service" | "entrepreneurship" | "other";
 
 export interface SocialMedia {
     linkedin?: string;
@@ -157,16 +153,10 @@ export interface AlumniSearchParams {
     status?: AlumniStatus;
     isVerified?: boolean;
     sortBy?: SortField;
-    sortOrder?: 'asc' | 'desc';
+    sortOrder?: "asc" | "desc";
 }
 
-export type SortField =
-    | 'fullName'
-    | 'admissionYear'
-    | 'graduationYear'
-    | 'gpa'
-    | 'createdAt'
-    | 'updatedAt';
+export type SortField = "fullName" | "admissionYear" | "graduationYear" | "gpa" | "createdAt" | "updatedAt";
 
 // Form Types
 export interface AlumniRegistrationRequest {
@@ -182,7 +172,7 @@ export interface AlumniRegistrationRequest {
         nim: string;
         dateOfBirth: string;
         placeOfBirth: string;
-        gender: 'male' | 'female';
+        gender: "male" | "female";
         studyProgramId: string;
         admissionYear: number;
         address?: Address;
@@ -195,7 +185,7 @@ export interface AlumniUpdateRequest {
     phone?: string;
     dateOfBirth?: string;
     placeOfBirth?: string;
-    gender?: 'male' | 'female';
+    gender?: "male" | "female";
     address?: Address;
     currentJob?: JobInfo;
     socialMedia?: SocialMedia;
@@ -238,7 +228,7 @@ export interface DashboardStats {
 
 export interface Activity {
     id: string;
-    type: 'registration' | 'profile_update' | 'job_update' | 'achievement_added';
+    type: "registration" | "profile_update" | "job_update" | "achievement_added";
     userId: string;
     userName: string;
     description: string;
@@ -266,22 +256,14 @@ export interface Event {
     updatedAt: string;
 }
 
-export type EventType =
-    | 'reunion'
-    | 'seminar'
-    | 'workshop'
-    | 'networking'
-    | 'fundraising'
-    | 'career_day'
-    | 'webinar'
-    | 'other';
+export type EventType = "reunion" | "seminar" | "workshop" | "networking" | "fundraising" | "career_day" | "webinar" | "other";
 
 export interface EventRegistration {
     id: string;
     eventId: string;
     userId: string;
     registrationDate: string;
-    status: 'confirmed' | 'pending' | 'cancelled';
+    status: "confirmed" | "pending" | "cancelled";
     notes?: string;
 }
 
@@ -321,17 +303,16 @@ export interface ContactMessage {
     email: string;
     subject: string;
     message: string;
-    status: 'new' | 'read' | 'replied' | 'archived';
+    status: "new" | "read" | "replied" | "archived";
     createdAt: string;
     updatedAt: string;
 }
 
 // Error Types
 export interface ApiError {
-    code: string;
     message: string;
-    details?: Record<string, any>;
-    timestamp: string;
+    status?: number;
+    code?: string;
 }
 
 export interface ValidationError extends ApiError {

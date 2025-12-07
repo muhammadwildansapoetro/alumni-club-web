@@ -38,7 +38,7 @@ export default function StatisticCard() {
                         <p className="text-xl font-bold">{tep}</p>
                         <Link
                             href={"/dashboard/alumni/agricultural-engineering"}
-                            className={buttonVariants({ className: "h-6! border-green-500 text-xs", size: "sm", variant: "outline" })}
+                            className={buttonVariants({ className: "h-6! text-xs", size: "sm", variant: "outline" })}
                         >
                             Lihat <ArrowRightIcon />
                         </Link>
@@ -55,7 +55,11 @@ export default function StatisticCard() {
                         <p className="text-xl font-bold">{tpn}</p>
                         <Link
                             href={"/dashboard/alumni/food-technology"}
-                            className={buttonVariants({ className: "h-6! border-red-500 text-xs", size: "sm", variant: "outline" })}
+                            className={buttonVariants({
+                                className: "h-6! border-red-500 text-xs text-red-500 hover:border-red-500 hover:bg-red-50 hover:text-red-500",
+                                size: "sm",
+                                variant: "outline",
+                            })}
                         >
                             Lihat <ArrowRightIcon />
                         </Link>
@@ -72,7 +76,12 @@ export default function StatisticCard() {
                         <p className="text-xl font-bold">{tin}</p>
                         <Link
                             href={"/dashboard/alumni/agricultural-industrial-technology"}
-                            className={buttonVariants({ className: "h-6! border-orange-500 text-xs", size: "sm", variant: "outline" })}
+                            className={buttonVariants({
+                                className:
+                                    "h-6! border-orange-500 text-xs text-orange-500 hover:border-orange-500 hover:bg-orange-50 hover:text-orange-500",
+                                size: "sm",
+                                variant: "outline",
+                            })}
                         >
                             Lihat <ArrowRightIcon />
                         </Link>

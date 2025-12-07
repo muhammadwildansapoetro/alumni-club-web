@@ -7,10 +7,10 @@ export type TypeConfig = {
 export const CONFIG = {
     // API Configuration
     api: {
-        baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+        baseURL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api",
         timeout: 10000,
         headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
         },
     },
 
@@ -19,5 +19,5 @@ export const CONFIG = {
 
     // Application
     version: VERSION_TAG,
-    environment: process.env.NODE_ENV || 'development',
+    environment: process.env.NODE_ENV || "development",
 };

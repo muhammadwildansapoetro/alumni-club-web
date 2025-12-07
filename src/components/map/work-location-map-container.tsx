@@ -1,9 +1,9 @@
 "use client";
 
-import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-import { useEffect, useState } from "react";
+// import { useEffect, useState } from "react";
 import { AlumniDataDummy } from "@/data/dummy/alumni";
 import { MapPin } from "lucide-react";
 import ReactDOMServer from "react-dom/server";
@@ -30,19 +30,19 @@ const createLucideIcon = (color: string) =>
     });
 
 export default function WorkLocationMapContainer() {
-    const [geoData, setGeoData] = useState(null);
+    // const [geoData, setGeoData] = useState(null);
 
-    useEffect(() => {
-        fetch("/geojson/indonesia-province.geojson")
-            .then((r) => r.json())
-            .then((d) => setGeoData(d));
-    }, []);
+    // useEffect(() => {
+    //     fetch("/geojson/indonesia-province.geojson")
+    //         .then((r) => r.json())
+    //         .then((d) => setGeoData(d));
+    // }, []);
 
     return (
         <MapContainer center={[-2.5, 118]} zoom={5} style={{ height: "400px", width: "100%" }} className="rounded-xl">
             <TileLayer url="https://cartodb-basemaps-a.global.ssl.fastly.net/light_nolabels/{z}/{x}/{y}.png" />
 
-            {geoData && (
+            {/* {geoData && (
                 <GeoJSON
                     data={geoData}
                     style={() => ({
@@ -51,7 +51,7 @@ export default function WorkLocationMapContainer() {
                         fillOpacity: 0,
                     })}
                 />
-            )}
+            )} */}
 
             {AlumniDataDummy.map((alumni) => (
                 <Marker key={alumni.id} position={[alumni.lat, alumni.lng]} icon={createLucideIcon(getMajorColor(alumni.major))}>

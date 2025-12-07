@@ -1,17 +1,14 @@
 "use client";
 
 import Topbar from "@/components/topbar/topbar";
-import { useIsMobile } from "@/hooks/use-mobile";
 import React from "react";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-    const isMobile = useIsMobile();
-
     return (
         <div>
             <Topbar />
 
-            <div className={`min-h-screen bg-gray-100 py-20 transition-all duration-300 ${isMobile ? "px-3" : "lg:px-20 xl:px-40"}`}>
+            <div className="min-h-screen bg-gray-100 px-3 py-20 transition-all duration-300 lg:px-20 xl:px-40">
                 <main>{children}</main>
             </div>
 

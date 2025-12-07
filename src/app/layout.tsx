@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Roboto, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
-import NextProgressProviders from "@/providers/nprogress";
-import { SheetProvider } from "@/providers/sheet-provider";
-import { ModalProvider } from "@/providers/modal-provider";
+import { AuthProvider } from "@/providers/auth-provider";
 
 const roboto = Roboto({
     variable: "--font-roboto",
@@ -31,11 +29,10 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${roboto.variable} ${robotoMono.variable} antialiased`}>
-                <NextProgressProviders>
+                <AuthProvider>
                     {children}
-                    <SheetProvider />
-                    <ModalProvider />
-                </NextProgressProviders>
+                </AuthProvider>
+
                 <Toaster
                     position="bottom-right"
                     expand={false}

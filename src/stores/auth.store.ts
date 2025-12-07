@@ -1,121 +1,170 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import Cookies from 'js-cookie';
-import { api, handleApiError } from '@/lib/api-wrapper';
+import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { AuthState } from "@/types/auth";
+import { googleAuthService } from "@/services/google-auth.service";
+import { toast } from "sonner";
 
-export interface User {
-  id: string;
-  email: string;
-  name: string;
-  role: 'USER' | 'ADMIN';
-  authProvider: 'EMAIL' | 'GOOGLE';
-  profile?: {
-    fullName: string;
-    department: string;
-    classYear: number;
-    city: string;
-    industry: string;
-    employmentLevel: string;
-    jobTitle: string;
-    companyName: string;
-  };
-}
+export const useAuthStore = create<AuthState>()(
+    persist(
+        (set, get) => ({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
 
-interface AuthState {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
-}
+            // GOOGLE LOGIN
+            loginWithGoogle: async (token: string) => {
+                set({ isLoading: true, error: null });
 
-interface AuthActions {
-  login: (email: string, password: string) => Promise<void>;
-  logout: () => void;
-  clearError: () => void;
-  setLoading: (loading: boolean) => void;
-  setAuth: (user: User, token: string) => void;
-}
+                try {
+                    const data = await googleAuthService.signInWithGoogle({ token });
+                    console.log("Login data:", data);
 
-// Cookie storage for Zustand persist
-const cookieStorage = {
-  getItem: (name: string): string | null => {
-    return Cookies.get(name) || null;
-  },
-  setItem: (name: string, value: string): void => {
-    Cookies.set(name, value, {
-      expires: 7, // 7 days
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict'
-    });
-  },
-  removeItem: (name: string): void => {
-    Cookies.remove(name);
-  },
-};
+                    set({
+                        user: data.user,
+                        token: data.token,
+                        isAuthenticated: true,
+                        isLoading: false,
+                    });
 
-export const useAuthStore = create<AuthState & AuthActions>()(
-  persist(
-    (set, get) => ({
-      // Initial state
-      user: null,
-      token: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null,
+                    toast.success("Login Berhasil!", {
+                        description: "Selamat datang kembali",
+                        duration: 3000,
+                    });
+                } catch (err: any) {
+                    const errorMessage = err.message || "Google login gagal";
+                    set({
+                        error: errorMessage,
+                        isLoading: false,
+                    });
 
-      // Actions
-      login: async (email: string, password: string) => {
-        set({ isLoading: true, error: null });
+                    // Handle specific error cases based on API documentation
+                    if (errorMessage.includes("belum terdaftar")) {
+                        toast.error("Akun Belum Terdaftar", {
+                            description: "Email Anda belum terdaftar. Silakan daftar terlebih dahulu.",
+                            duration: 5000,
+                        });
+                        // Redirect to register page
+                        window.location.href = "/register";
+                    } else if (errorMessage.includes("metode login biasa")) {
+                        toast.error("Metode Login Tidak Sesuai", {
+                            description: "Email sudah terdaftar dengan metode login biasa. Silakan login dengan password.",
+                            duration: 5000,
+                        });
+                    } else {
+                        toast.error("Login Google Gagal", {
+                            description: errorMessage,
+                            duration: 5000,
+                        });
+                    }
+                    throw err;
+                }
+            },
 
-        try {
-          const response = await api.auth.login(email, password);
+            // GOOGLE REGISTER
+            registerWithGoogle: async (token: string, department: string, classYear: number) => {
+                set({ isLoading: true, error: null });
 
-          if (response.success) {
-            const { user, token } = response.data;
-            get().setAuth(user, token);
-            set({ isLoading: false });
-          } else {
-            throw new Error(response.message || 'Login gagal');
-          }
-        } catch (error) {
-          set({
-            error: handleApiError(error),
-            isLoading: false
-          });
-        }
-      },
+                try {
+                    const data = await googleAuthService.registerWithGoogle({ token, department, classYear });
+                    console.log("Register data:", data);
 
-      logout: () => {
-        set({
-          user: null,
-          token: null,
-          isAuthenticated: false,
-          error: null
-        });
-      },
+                    // For registration, the response structure is different
+                    // The user data is nested in data.data, and token is in data.data.token
+                    set({
+                        user: {
+                            ...data.data.user,
+                            profile: {
+                                id: data.data.alumniProfile.id,
+                                fullName: data.data.alumniProfile.fullName,
+                                department: data.data.alumniProfile.department,
+                                classYear: data.data.alumniProfile.classYear,
+                                city: null,
+                                industry: null,
+                                employmentLevel: null,
+                                jobTitle: null,
+                                companyName: null
+                            }
+                        },
+                        token: data.data.token,
+                        isAuthenticated: true,
+                        isLoading: false,
+                    });
 
-      clearError: () => set({ error: null }),
+                    toast.success("Registrasi Berhasil!", {
+                        description: data.message,
+                        duration: 3000,
+                    });
+                } catch (err: any) {
+                    const errorMessage = err.message || "Registrasi Google gagal";
+                    set({
+                        error: errorMessage,
+                        isLoading: false,
+                    });
 
-      setLoading: (loading: boolean) => set({ isLoading: loading }),
+                    // Handle specific error cases based on API documentation
+                    if (errorMessage.includes("sudah terdaftar dengan metode login biasa")) {
+                        toast.error("Email Sudah Terdaftar", {
+                            description: "Email sudah terdaftar dengan metode login biasa. Silakan login dengan password.",
+                            duration: 5000,
+                        });
+                    } else if (errorMessage.includes("Akun Google sudah terdaftar")) {
+                        toast.error("Akun Google Sudah Terdaftar", {
+                            description: "Akun Google sudah terdaftar. Silakan login.",
+                            duration: 5000,
+                        });
+                        // Redirect to login page
+                        window.location.href = "/login";
+                    } else {
+                        toast.error("Registrasi Google Gagal", {
+                            description: errorMessage,
+                            duration: 5000,
+                        });
+                    }
+                    throw err;
+                }
+            },
 
-      setAuth: (user: User, token: string) => {
-        set({
-          user,
-          token,
-          isAuthenticated: true,
-          error: null
-        });
-      },
-    }),
-    {
-      name: 'auth-storage',
-      storage: createJSONStorage(() => cookieStorage),
-      partialize: (state) => ({
-        user: state.user,
-        token: state.token,
-        isAuthenticated: state.isAuthenticated,
-      }),
-    }
-  )
+            // LOGOUT
+            logout: () => {
+                set({
+                    user: null,
+                    token: null,
+                    isAuthenticated: false,
+                });
+            },
+
+            // CHECK AUTH ON REFRESH
+            checkAuth: async () => {
+                const token = get().token;
+                if (!token) {
+                    set({ isAuthenticated: false, user: null });
+                    return;
+                }
+
+                try {
+                    // Optionally call backend /me endpoint
+                    set({ isAuthenticated: true });
+                } catch {
+                    set({ user: null, token: null, isAuthenticated: false });
+                }
+            },
+
+            // REFRESH TOKEN (optional)
+            refreshToken: async () => {
+                // CALL /auth/refresh IF YOU IMPLEMENT IT
+            },
+
+            clearError: () => set({ error: null }),
+        }),
+        {
+            name: "auth-storage",
+            partialize: (state) => ({
+                user: state.user,
+                token: state.token,
+                isAuthenticated: state.isAuthenticated,
+            }),
+        },
+    ),
 );

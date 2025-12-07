@@ -1,25 +1,26 @@
 "use client";
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { abbreviation, cn } from "@/lib/utils";
 import { LogOut } from "lucide-react";
 import { useRouter as useNavigation } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useMobile } from "@/hooks/use-mobile";
 import LogoTitle from "./logo-title";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import dynamic from "next/dynamic";
 import MobileNavigationMenu from "./mobile-navigation-menu";
 import { useAuthStore } from "@/stores/auth.store";
-
 const SearchInput = dynamic(() => import("../input/search-input"), { ssr: false });
 const NavigationMenu = dynamic(() => import("./navigation-menu"), { ssr: false });
 
 const Topbar = () => {
     const { user, isAuthenticated, logout } = useAuthStore();
+    console.log("user", user);
+    console.log("isAuthenticated", isAuthenticated);
     const navigation = useNavigation();
-    const isMobile = useIsMobile();
+    const isMobile = useMobile();
     const abbr = abbreviation(user?.name || "");
     const [scrollUp, setScrollUp] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);

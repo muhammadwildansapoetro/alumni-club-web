@@ -34,13 +34,17 @@ npm run prepare
 - **Framework**: Next.js 16.0.3 with App Router
 - **React**: 19.2.0 with TypeScript 5 (strict mode)
 - **Styling**: Tailwind CSS v4 with CSS-in-JS approach and OKLCH color space
-- **UI Components**: Shadcn/ui (new-york variant) with Radix UI primitives
+- **UI Components**: Shadcn/ui (new-york variant) with Radix UI primitives, data tables, and skeleton components
+- **State Management**: Zustand with persistence middleware for authentication
 - **Forms**: React Hook Form + Zod validation
 - **Charts**: ApexCharts with React wrapper
 - **Maps**: Leaflet with React integration
-- **Security**: Custom DES/RSA hybrid encryption for query parameters
+- **Data Fetching**: Axios with centralized API client, SWR for server state
+- **Security**: Custom DES/RSA hybrid encryption for query parameters, JWT authentication with Bearer tokens
 - **Notifications**: Sonner for toast notifications
 - **Icons**: Lucide React
+- **Progress**: @bprogress/next for progress indicators
+- **Dates**: Moment.js for date manipulation
 
 ### Directory Structure
 
@@ -50,24 +54,33 @@ src/
 │   ├── (landing-page)/     # Public sections (hero, search, stats)
 │   ├── dashboard/          # Protected dashboard area
 │   ├── login/              # Authentication pages
+│   ├── register/           # Registration pages
 │   └── globals.css         # Global styles
 ├── components/             # Reusable components
-│   ├── ui/                 # Shadcn/ui base components
+│   ├── ui/                 # Shadcn/ui base components (data tables, skeleton, etc.)
 │   ├── topbar/             # Navigation components
 │   ├── card/               # Card layouts
 │   ├── chart/              # Chart components
 │   ├── input/              # Input components
 │   └── map/                # Map components
 ├── providers/              # Context providers
+│   └── auth-provider.tsx   # Authentication state initialization
 ├── lib/                    # Utilities and helpers
+│   ├── api/                # API client and utilities
+│   │   └── api-client.ts   # Centralized API client with auth
 │   ├── utils.ts            # Utility functions (cn, isNumeric, abbreviation)
 │   └── encryption.ts       # Crypto utilities (DES, RSA hybrid encryption)
 ├── hooks/                  # Custom React hooks
-│   ├── use-mobile.ts       # Mobile detection
-│   ├── use-search-params.ts # URL search params
-│   └── use-ecnrypt-query.ts # Query encryption hook
+│   └── use-mobile.ts       # Mobile detection
+├── services/               # API service layer
+│   └── auth.service.ts     # Authentication API calls
+├── stores/                 # State management
+│   └── auth.store.ts       # Zustand auth store with persistence
+├── types/                  # TypeScript type definitions
+│   ├── api.ts              # Comprehensive API types
+│   ├── alumni.ts           # Alumni-specific types
+│   └── auth.ts             # Authentication types
 ├── config/                 # Configuration
-├── type/                   # TypeScript type definitions
 ├── constant/               # Application constants
 └── data/                   # Static data (dummy data)
 ```
@@ -75,15 +88,26 @@ src/
 ## Key Patterns
 
 ### Authentication & Security
+- JWT-based authentication with Bearer token authorization
+- Zustand store with persistence for auth state management
+- Centralized API client with automatic token injection
 - Query parameter encryption using DES (hex-encoded for WAF safety)
 - Hybrid RSA+AES-GCM encryption implementation (currently commented)
 - Protected routes through dashboard structure
+- Auth provider for initialization on app startup
 - Client-side form validation with Zod schemas
 
 ### Form Handling
 - Consistent use of React Hook Form + Zod for type-safe validation
 - Unified error handling patterns
 - Mobile-first responsive forms
+
+### API Architecture
+- Centralized API client (`src/lib/api/api-client.ts`) with automatic token handling
+- Service layer pattern (`src/services/`) separating API calls from components
+- Comprehensive TypeScript types in `src/types/api.ts` for all API responses
+- Zustand for client state, SWR for server state synchronization
+- Error boundary pattern for graceful API error handling
 
 ### Component Architecture
 - Server components for pages, client components for interactivity
@@ -108,8 +132,10 @@ Required for development:
 - Husky pre-commit hooks for code quality
 - ESLint with Next.js configuration (no-explicit-any disabled)
 - Mobile-first responsive design approach
-- No global state management library - uses component state only
-- Progress bar integration via Next.js middleware
+- Zustand for global authentication state management
+- Progress bar integration via @bprogress/next
+- Comprehensive API type definitions in `src/types/api.ts`
+- Authentication flow handled by AuthProvider and Zustand store
 
 ## Code Style
 
@@ -137,18 +163,16 @@ Required for development:
 
 #### **Security (High Priority)**
 - **DES encryption is cryptographically weak** - should migrate to AES-256
-- Missing input validation on encrypted queries
-- Non-null assertions without proper checks in `use-ecnrypt-query.ts:9`
+- Missing input validation on encrypted queries (hook was removed, but encryption still exists)
 
 #### **Code Quality**
-- Hardcoded session data in `Topbar` component (`src/components/topbar/topbar.ts:19`)
 - Missing performance optimizations (`useMemo`, `useCallback`)
-- Typo in hook name: `use-ecnrypt-query.ts` → `use-encrypt-query.ts`
+- Hook `use-ecnrypt-query.ts` has been removed (was typo of use-encrypt-query)
 
 #### **Type Safety**
-- Missing API response type definitions
+- Comprehensive API types now exist in `src/types/api.ts`
 - Some components lack proper return type annotations
-- Returns `Record<string, any>` instead of typed interfaces
+- Some areas still return `Record<string, any>` instead of typed interfaces
 
 ### 🎯 Improvement Tasks:
 
@@ -159,32 +183,24 @@ Required for development:
    - Update environment variables for AES keys
 
 2. **Add input validation for encrypted queries**
-   - File: `src/hooks/use-ecnrypt-query.ts`
+   - File: `src/lib/encryption.ts` (query encryption hook was removed)
    - Validate encrypted data format before decryption
    - Add proper error handling for invalid data
 
-3. **Fix non-null assertions**
-   - File: `src/hooks/use-ecnrypt-query.ts:9`
-   - Replace `!` operator with proper null checks
-
 #### **Priority 2 (Code Quality)**
-1. **Add comprehensive TypeScript definitions**
-   - Create `src/types/api.ts` for API response types
-   - Add proper interface definitions for all components
-   - Replace `Record<string, any>` with typed interfaces
+1. **Enhance TypeScript definitions**
+   - ✅ `src/types/api.ts` already exists with comprehensive types
+   - Add proper interface definitions for remaining components
+   - Replace remaining `Record<string, any>` with typed interfaces
 
 2. **Implement performance optimizations**
    - File: `src/components/chart/industry-chart.ts:33` - Add `useMemo` for expensive calculations
    - File: `src/components/input/search-input.tsx` - Add `useCallback` for event handlers
 
-3. **Fix hardcoded session data**
-   - File: `src/components/topbar/topbar.ts:19`
-   - Move to proper state management (Context or Zustand)
-   - Add proper authentication flow
-
-4. **Fix hook naming typo**
-   - Rename: `src/hooks/use-ecnrypt-query.ts` → `src/hooks/use-encrypt-query.ts`
-   - Update all imports and usage
+3. **Enhance authentication flow**
+   - ✅ Zustand store implemented in `src/stores/auth.store.ts`
+   - ✅ AuthProvider added in `src/providers/auth-provider.tsx`
+   - Review and optimize token refresh mechanism
 
 #### **Priority 3 (User Experience)**
 1. **Add error boundaries for graceful failures**
@@ -203,15 +219,13 @@ Required for development:
 
 **Security Issues:**
 - `src/lib/encryption.ts` - Weak DES encryption implementation
-- `src/hooks/use-ecnrypt-query.ts:9` - Unsafe non-null assertion
 
 **Performance Issues:**
 - `src/components/chart/industry-chart.ts:33` - Missing memoization
 - `src/components/input/search-input.tsx` - Missing useCallback
 
 **Code Quality Issues:**
-- `src/components/topbar/topbar.ts:19` - Hardcoded session data
-- `src/hooks/use-ecnrypt-query.ts` - Typo in filename and return type
+- Query encryption hook removed (typo was `use-ecnrypt-query.ts`)
 
 ### Next Steps for Tomorrow:
 1. Start with Priority 1 security fixes

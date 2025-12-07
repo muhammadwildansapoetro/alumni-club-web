@@ -1,102 +1,44 @@
-import { BaseApiService } from './base-api.service';
-import { User } from '@/stores/auth.store';
+import { LoginRequest, LoginResponse, RegisterRequest } from "@/types/auth";
+import { ApiError } from "@/types/api";
 
-export interface LoginRequest {
-  email: string;
-  password: string;
-}
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api';
 
-export interface LoginResponse {
-  success: boolean;
-  message: string;
-  data: {
-    user: User;
-    token: string;
-    expiresIn: string;
-  };
-}
-
-export interface RegisterRequest {
-  email: string;
-  password: string;
-  name: string;
-  department: string;
-  classYear: number;
-}
-
-export interface RegisterResponse {
-  success: boolean;
-  message?: string;
-  data?: any;
-}
-
-export interface RefreshTokenResponse {
-  token: string;
-}
-
-export class AuthService extends BaseApiService {
-  private static instance: AuthService;
-
-  static getInstance(): AuthService {
-    if (!AuthService.instance) {
-      AuthService.instance = new AuthService();
-    }
-    return AuthService.instance;
-  }
-
-  async login(credentials: LoginRequest): Promise<LoginResponse> {
-    const response = await this.post<LoginResponse['data']>('/auth/login', {
-      email: credentials.email,
-      password: credentials.password,
+async function request<T>(url: string, options: RequestInit): Promise<T> {
+    const res = await fetch(`${API_URL}${url}`, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...(options.headers || {}),
+        },
     });
 
-    return {
-      success: true,
-      message: 'Login successful',
-      data: response.data,
-    };
-  }
+    const data = await res.json();
 
-  async register(userData: RegisterRequest): Promise<RegisterResponse> {
-    const response = await this.post<any>('/auth/register', userData);
-    return response;
-  }
-
-  async refreshToken(): Promise<RefreshTokenResponse> {
-    const response = await this.post<RefreshTokenResponse>('/auth/refresh');
-    return response.data;
-  }
-
-  async logout(): Promise<void> {
-    try {
-      await this.post('/auth/logout');
-    } catch {
-      // Continue with client-side logout even if server logout fails
-      // Error is already handled by base service
+    if (!res.ok) {
+        const err: ApiError = {
+            message: data.error || data.message || "Unknown error",
+            status: res.status,
+        };
+        throw err;
     }
-  }
 
-  validateToken(token: string): boolean {
-    try {
-      // Basic JWT token validation
-      const parts = token.split('.');
-      if (parts.length !== 3) return false;
-
-      // Decode payload to check expiration
-      const payload = JSON.parse(atob(parts[1]));
-      const currentTime = Date.now() / 1000;
-
-      return payload.exp > currentTime;
-    } catch {
-      return false;
-    }
-  }
-
-  async getCurrentUser(): Promise<User> {
-    const response = await this.get<User>('/auth/me');
-    return response.data;
-  }
+    return data;
 }
 
-// Export singleton instance for easy usage
-export const authService = AuthService.getInstance();
+export const authService = {
+    async login(payload: LoginRequest): Promise<LoginResponse["data"]> {
+        const res = await request<LoginResponse>("/auth/login", {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+        console.log("res", res);
+        return res.data; // { user, token, expiresIn }
+    },
+
+    async register(payload: RegisterRequest): Promise<any> {
+        return request("/auth/register", {
+            method: "POST",
+            body: JSON.stringify(payload),
+        });
+    },
+};
