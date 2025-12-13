@@ -10,7 +10,6 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/stores/auth.store";
 import { googleAuthService } from "@/services/google-auth.service";
 import { toast } from "sonner";
-import { FaGoogle } from "react-icons/fa";
 
 export default function LoginClient() {
     const [googleLoading, setGoogleLoading] = useState(false);
@@ -74,7 +73,7 @@ export default function LoginClient() {
                             </>
                         ) : (
                             <>
-                                <FaGoogle className="h-4 w-4" />
+                                <Image src="/logo/google.svg" alt="Google Logo" width={20} height={20} />
                                 Masuk dengan Google
                             </>
                         )}
