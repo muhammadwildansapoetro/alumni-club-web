@@ -8,7 +8,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
         <div>
             <Topbar />
 
-            <div className="min-h-screen bg-gray-100 px-3 py-20 transition-all duration-300 lg:px-20 xl:px-40">
+            <div className="container mx-auto min-h-screen px-5 py-20 transition-all duration-300">
                 <main>{children}</main>
             </div>
 

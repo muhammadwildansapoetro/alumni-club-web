@@ -1,15 +1,4 @@
-import {
-    AppleIcon,
-    BriefcaseBusinessIcon,
-    ChartColumnBigIcon,
-    ClipboardPenLineIcon,
-    StoreIcon,
-    TractorIcon,
-    TrophyIcon,
-    UserCheckIcon,
-    UsersIcon,
-    WarehouseIcon,
-} from "lucide-react";
+import { AppleIcon, BriefcaseBusinessIcon, ChartColumnBigIcon, StoreIcon, TractorIcon, UserCheckIcon, UsersIcon, WarehouseIcon } from "lucide-react";
 
 export interface INavigation {
     name: string;
@@ -67,7 +56,7 @@ export const NAVIGATIONS: INavigation[] = [
                 name: "Pengurus Ikatan Alumni",
                 icon: UserCheckIcon,
                 href: "/dashboard/alumni/administrator",
-                roles: [],
+                roles: ["ADMIN"],
                 active: ["/dashboard/alumni/administrator"],
             },
         ],
@@ -86,31 +75,18 @@ export const NAVIGATIONS: INavigation[] = [
         roles: [],
         active: ["/dashboard/shop"],
     },
-    {
-        name: "Survei",
-        icon: ClipboardPenLineIcon,
-        href: "/dashboard/survey",
-        roles: [],
-        active: ["/dashboard/survey"],
-    },
-    {
-        name: "Penghargaan",
-        icon: TrophyIcon,
-        href: "/dashboard/award",
-        roles: [],
-        active: ["/dashboard/award"],
-    },
 ];
 
-export const filterNavigationByAccess = (userAccess: string, navigation: INavigation[]): INavigation[] => {
+export const filterNavigationByRole = (userRole: string, navigation: INavigation[]): INavigation[] => {
     return navigation
         .map((item) => {
-            if (item.access && !item.access.includes(userAccess)) {
+            // Check if item has roles restriction and user doesn't have access
+            if (item.roles && item.roles.length > 0 && !item.roles.includes(userRole)) {
                 return null;
             }
 
             if (item.children) {
-                const filteredChildren = filterNavigationByAccess(userAccess, item.children);
+                const filteredChildren = filterNavigationByRole(userRole, item.children);
                 if (filteredChildren.length === 0) {
                     return { ...item, children: undefined };
                 }
@@ -121,20 +97,3 @@ export const filterNavigationByAccess = (userAccess: string, navigation: INaviga
         })
         .filter((item): item is INavigation => item !== null);
 };
-
-export function flattenNavigation(navigation: INavigation[]): INavigation[] {
-    const flattened: INavigation[] = [];
-
-    function flatten(items: INavigation[]) {
-        items.forEach((item) => {
-            const { children, ...rest } = item;
-            if (children) {
-                flatten(children);
-            }
-            flattened.push(rest);
-        });
-    }
-
-    flatten(navigation);
-    return flattened;
-}

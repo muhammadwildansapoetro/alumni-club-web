@@ -5,12 +5,17 @@ import Link from "next/link";
 import { useState } from "react";
 import Image from "next/image";
 import { ChevronDown } from "lucide-react";
-import { NAVIGATIONS } from "@/constant/navigations";
+import { NAVIGATIONS, filterNavigationByRole } from "@/constant/navigations";
 import { cn } from "@/lib/utils";
+import { useAuthStore } from "@/stores/auth.store";
 
 export default function NavigationMenu() {
     const pathname = usePathname();
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+    const { user } = useAuthStore();
+
+    // Filter navigation based on user role
+    const filteredNavigations = filterNavigationByRole(user?.role || "USER", NAVIGATIONS);
 
     const toggleDropdown = (name: string) => {
         setOpenDropdown(openDropdown === name ? null : name);
@@ -18,7 +23,7 @@ export default function NavigationMenu() {
 
     return (
         <nav className="flex items-center gap-5">
-            {NAVIGATIONS?.map((nav) => {
+            {filteredNavigations?.map((nav) => {
                 const isActive = nav?.active?.includes(pathname);
                 const hasChildren = (nav?.children?.length ?? 0) > 0;
 

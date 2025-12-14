@@ -2,7 +2,7 @@
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { abbreviation, cn } from "@/lib/utils";
-import { LogOut } from "lucide-react";
+import { LogOut, UserIcon } from "lucide-react";
 import { useRouter as useNavigation } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMobile } from "@/hooks/use-mobile";
@@ -56,7 +56,7 @@ const Topbar = () => {
             className={cn(
                 "fixed top-0 right-0 left-0 z-998 flex h-16 w-full items-center justify-between gap-3 border-b bg-white/90 shadow backdrop-blur-md transition-transform duration-300",
                 scrollUp ? "translate-y-0" : "-translate-y-full",
-                isMobile ? "px-3" : "lg:px-20 xl:px-40",
+                isMobile ? "px-3" : "lg:px-20 xl:px-24",
             )}
         >
             {/* Mobile Menu */}
@@ -75,40 +75,45 @@ const Topbar = () => {
                 </div>
             )}
 
-            {/* Profile, Log Out */}
-            <div className="flex items-center justify-end gap-5">
-                {!isMobile && <NavigationMenu />}
-                <div>
-                    <DropdownMenu>
-                        <DropdownMenuTrigger className="hover:bg-primary/5 flex w-fit items-center gap-2 hover:rounded-xl">
-                            <Avatar className="h-9 w-9 border border-black/30 hover:cursor-pointer">
-                                <AvatarImage />
-                                <AvatarFallback>{abbr}</AvatarFallback>
-                            </Avatar>
+            {!isMobile && <NavigationMenu />}
 
-                            <div className="flex flex-col items-start gap-0.5 hover:cursor-pointer">
-                                <span className="line-clamp-1 max-w-24 text-left text-sm font-medium sm:max-w-fit">
-                                    {user.profile?.fullName || user.name}
-                                </span>
-                                <div className="flex items-center gap-2">
-                                    {user.role === "ADMIN" && (
-                                        <Badge size="xs" variant={"outline"}>
-                                            Pengurus
-                                        </Badge>
-                                    )}
-                                    <Badge size="xs" variant={"default"}>
-                                        {user?.profile?.department} - {user.profile?.classYear || "Alumni"}
+            {/* Profile, Log Out */}
+            <div className="flex items-center">
+                <DropdownMenu>
+                    <DropdownMenuTrigger className="hover:bg-secondary-50 flex w-fit items-center gap-2 px-3 py-2 hover:rounded-xl">
+                        <Avatar className="h-9 w-9 border border-black/30 hover:cursor-pointer">
+                            <AvatarImage />
+                            <AvatarFallback>{abbr}</AvatarFallback>
+                        </Avatar>
+
+                        <div className="flex flex-col items-start gap-0.5 hover:cursor-pointer">
+                            <span className="line-clamp-1 max-w-24 text-left text-sm font-medium sm:max-w-fit">
+                                {user.profile?.fullName || user.name}
+                            </span>
+                            <div className="flex items-center gap-2">
+                                {user.role === "ADMIN" && (
+                                    <Badge size="xs" variant={"outline"}>
+                                        Admin
                                     </Badge>
-                                </div>
+                                )}
+                                <Badge size="xs" variant={user?.profile?.department?.toUpperCase() as "TEP" | "TPN" | "TIN" | "default" | "outline" | "destructive" | null | undefined}>
+                                    {user?.profile?.department} - {user.profile?.classYear || "Alumni"}
+                                </Badge>
                             </div>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent className="mt-2 w-45">
-                            <DropdownMenuItem onClick={handleLogout} className="hover:cursor-pointer focus:bg-red-50 focus:text-red-500">
-                                <LogOut className="focus:text-red-500" /> Log out
-                            </DropdownMenuItem>
-                        </DropdownMenuContent>
-                    </DropdownMenu>
-                </div>
+                        </div>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent className="w-44">
+                        <DropdownMenuItem
+                            onClick={() => navigation.push("/dashboard/alumni/profile")}
+                            className="focus:bg-secondary-50 focus:text-primary hover:cursor-pointer"
+                        >
+                            <UserIcon className="focus:text-primary h-5 w-5" /> Profil
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={handleLogout} className="hover:cursor-pointer focus:bg-red-50 focus:text-red-500">
+                            <LogOut className="focus:text-red-500" /> Log out
+                        </DropdownMenuItem>
+                    </DropdownMenuContent>
+                </DropdownMenu>
             </div>
         </nav>
     );

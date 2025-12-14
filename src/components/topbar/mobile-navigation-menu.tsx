@@ -6,9 +6,10 @@ import { ChevronDownIcon, ChevronUpIcon, Menu } from "lucide-react";
 import { useRouter, usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { INavigation, NAVIGATIONS } from "@/constant/navigations";
+import { INavigation, NAVIGATIONS, filterNavigationByRole } from "@/constant/navigations";
 import LogoTitle from "./logo-title";
 import SearchInput from "../input/search-input";
+import { useAuthStore } from "@/stores/auth.store";
 
 interface MobileNavItemProps {
     item: INavigation;
@@ -65,6 +66,10 @@ const MobileNavItem = ({ item, onLinkClick, level = 0 }: MobileNavItemProps) => 
 
 const MobileNavigationMenu = () => {
     const [isSheetOpen, setIsSheetOpen] = useState(false);
+    const { user } = useAuthStore();
+
+    // Filter navigation based on user role
+    const filteredNavigations = filterNavigationByRole(user?.role || "USER", NAVIGATIONS);
 
     return (
         <Sheet open={isSheetOpen} onOpenChange={setIsSheetOpen}>
@@ -89,7 +94,7 @@ const MobileNavigationMenu = () => {
                 <div className="h-[calc(100vh-80px)] space-y-3 overflow-y-auto p-3">
                     <SearchInput inputClassName="!w-full" />
                     <div className="flex flex-col gap-1 py-0">
-                        {NAVIGATIONS.map((item, index) => (
+                        {filteredNavigations.map((item, index) => (
                             <MobileNavItem key={index} item={item} onLinkClick={() => setIsSheetOpen(false)} />
                         ))}
                     </div>

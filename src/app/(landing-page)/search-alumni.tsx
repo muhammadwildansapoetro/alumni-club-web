@@ -107,7 +107,7 @@ export default function SearchAlumni() {
                                         <div className="flex items-center space-x-3">
                                             <div>
                                                 <CardTitle className="text-lg">{alumni.name}</CardTitle>
-                                                <Badge variant={alumni.major as "tep" | "tpn" | "tin"} size={"xs"}>
+                                                <Badge variant={alumni.major.toUpperCase() as "TEP" | "TPN" | "TIN"} size={"xs"}>
                                                     {majorLabels[alumni.major as keyof typeof majorLabels]}
                                                 </Badge>
                                             </div>

@@ -17,16 +17,38 @@ export default function LoginClient() {
     const searchParams = useSearchParams();
     const { loginWithGoogle, isAuthenticated, user } = useAuthStore();
 
+    // Get redirect path from URL params or cookie
+    const getRedirectPath = () => {
+        // First check URL params (for backward compatibility)
+        const urlRedirect = searchParams.get("redirect");
+        if (urlRedirect) return urlRedirect;
+
+        // Then check document.cookie for redirect-path (client-side)
+        const cookies = document.cookie.split(";");
+        for (const cookie of cookies) {
+            const [name, value] = cookie.trim().split("=");
+            if (name === "redirect-path") {
+                return decodeURIComponent(value);
+            }
+        }
+
+        return "/dashboard";
+    };
+
     // Redirect if already authenticated (only for initial page load, not after login)
     useEffect(() => {
         if (isAuthenticated && !googleLoading) {
-            const redirect = searchParams.get("redirect") || "/dashboard";
+            const redirect = getRedirectPath();
+
+            // Clear the redirect cookie
+            document.cookie = "redirect-path=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
 
             // Use setTimeout to ensure state is fully updated
             setTimeout(() => {
                 router.push(redirect);
             }, 100);
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated, router, searchParams, user, googleLoading]);
 
     const handleGoogleSignIn = async () => {
@@ -39,14 +61,9 @@ export default function LoginClient() {
             // Send to backend
             await loginWithGoogle(credential);
 
-            toast.success("Login Berhasil!", {
-                description: "Selamat datang kembali. Mengalihkan ke dashboard...",
-                duration: 2000,
-            });
-
             // Add delay to ensure Zustand persist middleware syncs to cookies
             setTimeout(() => {
-                const redirect = searchParams.get("redirect") || "/dashboard";
+                const redirect = getRedirectPath();
                 router.push(redirect);
             }, 500);
 
@@ -72,13 +89,13 @@ export default function LoginClient() {
                 <CardHeader>
                     <div className="flex w-full items-center justify-center gap-3">
                         <Image src="/logo/logo-ika-ftip-unpad.png" alt="Logo" width={50} height={50} />
-                        <h1 className="text-xl font-bold">FTIP Unpad Alumni Club</h1>
+                        <h1 className="text-primary-gradient text-xl font-bold">FTIP Unpad Alumni Club</h1>
                     </div>
                     <p className="text-center text-sm">Masuk menggunakan akun Google Anda</p>
                 </CardHeader>
 
                 <CardContent className="space-y-4 text-center">
-                    <Button variant="outline" size="lg" className="w-full" onClick={handleGoogleSignIn} disabled={googleLoading}>
+                    <Button variant="outline" size="lg" onClick={handleGoogleSignIn} disabled={googleLoading}>
                         {googleLoading ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

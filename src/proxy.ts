@@ -42,15 +42,29 @@ export async function proxy(request: NextRequest) {
         if (!authTokenCookie) {
             // No token found, redirect to login
             const loginUrl = new URL("/login", request.url);
-            loginUrl.searchParams.set("redirect", pathname);
-            return NextResponse.redirect(loginUrl);
+            // Store redirect path in a session cookie instead of URL parameter
+            const response = NextResponse.redirect(loginUrl);
+            response.cookies.set("redirect-path", pathname, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                maxAge: 60 * 5, // 5 minutes
+            });
+            return response;
         }
 
         if (!validateToken(authTokenCookie)) {
             // Invalid token, redirect to login
             const loginUrl = new URL("/login", request.url);
-            loginUrl.searchParams.set("redirect", pathname);
-            return NextResponse.redirect(loginUrl);
+            // Store redirect path in a session cookie instead of URL parameter
+            const response = NextResponse.redirect(loginUrl);
+            response.cookies.set("redirect-path", pathname, {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                maxAge: 60 * 5, // 5 minutes
+            });
+            return response;
         }
 
         // Token is valid, allow access

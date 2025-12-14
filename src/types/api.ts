@@ -44,7 +44,7 @@ export interface User {
     profile: {
         id: string;
         fullName: string;
-        department: string;
+        department: string; // "TEP" | "TPN" | "TIN" | string for API compatibility
         classYear: number; // API returns number, not string
         city: string | null;
         industry: string | null;
