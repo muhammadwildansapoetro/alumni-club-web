@@ -21,8 +21,6 @@ export default function LoginClient() {
     useEffect(() => {
         if (isAuthenticated && !googleLoading) {
             const redirect = searchParams.get("redirect") || "/dashboard";
-            console.log("User authenticated, redirecting to:", redirect);
-            console.log("User data:", user);
 
             // Use setTimeout to ensure state is fully updated
             setTimeout(() => {
@@ -38,13 +36,8 @@ export default function LoginClient() {
             // Get Google ID token
             const credential = await signInWithGoogle({ text: "signin_with" });
 
-            console.log("Google credential received, sending to backend...");
-
             // Send to backend
-            const result = await loginWithGoogle(credential);
-
-            console.log("Login successful, auth state updated");
-            console.log("Login result:", result);
+            await loginWithGoogle(credential);
 
             toast.success("Login Berhasil!", {
                 description: "Selamat datang kembali. Mengalihkan ke dashboard...",

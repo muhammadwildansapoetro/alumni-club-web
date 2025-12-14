@@ -4,17 +4,14 @@ function validateToken(token: string): boolean {
     // For your specific backend token format (396 chars, non-JWT)
     // Just check if it exists and has reasonable length
     if (!token) {
-        console.log("Token validation failed: No token provided");
         return false;
     }
 
     // Check if token has reasonable length (your backend returns 396 chars)
     if (token.length < 50) {
-        console.log("Token validation failed: Token too short");
         return false;
     }
 
-    console.log("Token validation passed: Backend token format detected");
     return true;
 }
 
@@ -44,28 +41,19 @@ export async function proxy(request: NextRequest) {
 
         if (!authTokenCookie) {
             // No token found, redirect to login
-            console.log("No auth-token cookie found, redirecting to login");
             const loginUrl = new URL("/login", request.url);
             loginUrl.searchParams.set("redirect", pathname);
             return NextResponse.redirect(loginUrl);
         }
 
-        console.log("Dashboard access check:", {
-            hasToken: !!authTokenCookie,
-            tokenFormat: authTokenCookie.split(".").length === 3 ? "JWT" : "Other",
-            tokenStart: authTokenCookie.substring(0, 20) + "..."
-        });
-
         if (!validateToken(authTokenCookie)) {
             // Invalid token, redirect to login
-            console.log("Token validation failed, redirecting to login");
             const loginUrl = new URL("/login", request.url);
             loginUrl.searchParams.set("redirect", pathname);
             return NextResponse.redirect(loginUrl);
         }
 
         // Token is valid, allow access
-        console.log("Token validation passed, allowing dashboard access");
         return NextResponse.next();
     }
 

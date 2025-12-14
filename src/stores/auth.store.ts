@@ -19,13 +19,6 @@ export const useAuthStore = create<AuthState>()(
 
                 try {
                     const data = await googleAuthService.signInWithGoogle({ token });
-                    console.log("Login successful:", { user: data.user?.email });
-                    console.log("Token received:", {
-                        hasToken: !!data.token,
-                        tokenLength: data.token?.length,
-                        tokenStart: data.token ? data.token.substring(0, 20) + "..." : "None",
-                        tokenFormat: data.token ? (data.token.split(".").length === 3 ? "JWT" : "Other") : "None"
-                    });
 
                     set({
                         user: data.user,
@@ -35,7 +28,7 @@ export const useAuthStore = create<AuthState>()(
                     });
 
                     // Set auth cookie for server-side middleware
-                    if (typeof window !== 'undefined') {
+                    if (typeof window !== "undefined") {
                         document.cookie = `auth-token=${data.token}; path=/; max-age=3600; same-site=lax`;
                     }
 
@@ -47,7 +40,7 @@ export const useAuthStore = create<AuthState>()(
                     let errorMessage = "Google login gagal";
 
                     // Enhanced error handling to extract detailed API errors
-                    if (err && typeof err === 'object' && 'message' in err) {
+                    if (err && typeof err === "object" && "message" in err) {
                         errorMessage = (err as any).message;
                     } else if (err instanceof Error) {
                         errorMessage = err.message;
@@ -93,11 +86,10 @@ export const useAuthStore = create<AuthState>()(
 
                 try {
                     const data = await googleAuthService.registerWithGoogle({ token, department, classYear });
-                    console.log("Registration successful:", { user: data.data?.user?.email });
 
                     // For registration, the response structure is different
                     // The user data is nested in data.data, and token is in data.data.token
-                  set({
+                    set({
                         user: {
                             ...data.data.user,
                             profile: {
@@ -109,8 +101,8 @@ export const useAuthStore = create<AuthState>()(
                                 industry: null,
                                 employmentLevel: null,
                                 jobTitle: null,
-                                companyName: null
-                            }
+                                companyName: null,
+                            },
                         },
                         token: data.data.token,
                         isAuthenticated: true,
@@ -118,7 +110,7 @@ export const useAuthStore = create<AuthState>()(
                     });
 
                     // Set auth cookie for server-side middleware
-                    if (typeof window !== 'undefined') {
+                    if (typeof window !== "undefined") {
                         document.cookie = `auth-token=${data.data.token}; path=/; max-age=3600; same-site=lax`;
                     }
 
@@ -130,7 +122,7 @@ export const useAuthStore = create<AuthState>()(
                     let errorMessage = "Registrasi Google gagal";
 
                     // Enhanced error handling to extract detailed API errors
-                    if (err && typeof err === 'object' && 'message' in err) {
+                    if (err && typeof err === "object" && "message" in err) {
                         errorMessage = (err as any).message;
                     } else if (err instanceof Error) {
                         errorMessage = err.message;
@@ -180,8 +172,8 @@ export const useAuthStore = create<AuthState>()(
                 });
 
                 // Clear auth cookie
-                if (typeof window !== 'undefined') {
-                    document.cookie = 'auth-token=; path=/; max-age=0; same-site=lax';
+                if (typeof window !== "undefined") {
+                    document.cookie = "auth-token=; path=/; max-age=0; same-site=lax";
                 }
             },
 
@@ -213,7 +205,7 @@ export const useAuthStore = create<AuthState>()(
 
             clearError: () => set({ error: null }),
         }),
-      {
+        {
             name: "auth-storage",
             partialize: (state) => ({
                 user: state.user,

@@ -17,8 +17,6 @@ const NavigationMenu = dynamic(() => import("./navigation-menu"), { ssr: false }
 
 const Topbar = () => {
     const { user, isAuthenticated, logout } = useAuthStore();
-    console.log("user", user);
-    console.log("isAuthenticated", isAuthenticated);
     const navigation = useNavigation();
     const isMobile = useMobile();
     const abbr = abbreviation(user?.name || "");
@@ -104,7 +102,7 @@ const Topbar = () => {
                                 </div>
                             </div>
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent className="mt-2 w-[180px]">
+                        <DropdownMenuContent className="mt-2 w-45">
                             <DropdownMenuItem onClick={handleLogout} className="hover:cursor-pointer focus:bg-red-50 focus:text-red-500">
                                 <LogOut className="focus:text-red-500" /> Log out
                             </DropdownMenuItem>
