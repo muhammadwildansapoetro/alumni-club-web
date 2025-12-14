@@ -19,7 +19,13 @@ export const useAuthStore = create<AuthState>()(
 
                 try {
                     const data = await googleAuthService.signInWithGoogle({ token });
-                    console.log("Login data:", data);
+                    console.log("Login successful:", { user: data.user?.email });
+                    console.log("Token received:", {
+                        hasToken: !!data.token,
+                        tokenLength: data.token?.length,
+                        tokenStart: data.token ? data.token.substring(0, 20) + "..." : "None",
+                        tokenFormat: data.token ? (data.token.split(".").length === 3 ? "JWT" : "Other") : "None"
+                    });
 
                     set({
                         user: data.user,
@@ -28,12 +34,25 @@ export const useAuthStore = create<AuthState>()(
                         isLoading: false,
                     });
 
+                    // Set auth cookie for server-side middleware
+                    if (typeof window !== 'undefined') {
+                        document.cookie = `auth-token=${data.token}; path=/; max-age=3600; same-site=lax`;
+                    }
+
                     toast.success("Login Berhasil!", {
                         description: "Selamat datang kembali",
                         duration: 3000,
                     });
-                } catch (err: any) {
-                    const errorMessage = err.message || "Google login gagal";
+                } catch (err: unknown) {
+                    let errorMessage = "Google login gagal";
+
+                    // Enhanced error handling to extract detailed API errors
+                    if (err && typeof err === 'object' && 'message' in err) {
+                        errorMessage = (err as any).message;
+                    } else if (err instanceof Error) {
+                        errorMessage = err.message;
+                    }
+
                     set({
                         error: errorMessage,
                         isLoading: false,
@@ -52,6 +71,12 @@ export const useAuthStore = create<AuthState>()(
                             description: "Email sudah terdaftar dengan metode login biasa. Silakan login dengan password.",
                             duration: 5000,
                         });
+                    } else if (errorMessage.includes("The column") && errorMessage.includes("does not exist")) {
+                        // Handle database/Prisma errors with user-friendly message
+                        toast.error("Kesalahan Database", {
+                            description: "Terjadi kesalahan pada sistem database. Silakan coba lagi nanti atau hubungi administrator.",
+                            duration: 5000,
+                        });
                     } else {
                         toast.error("Login Google Gagal", {
                             description: errorMessage,
@@ -68,11 +93,11 @@ export const useAuthStore = create<AuthState>()(
 
                 try {
                     const data = await googleAuthService.registerWithGoogle({ token, department, classYear });
-                    console.log("Register data:", data);
+                    console.log("Registration successful:", { user: data.data?.user?.email });
 
                     // For registration, the response structure is different
                     // The user data is nested in data.data, and token is in data.data.token
-                    set({
+                  set({
                         user: {
                             ...data.data.user,
                             profile: {
@@ -92,12 +117,25 @@ export const useAuthStore = create<AuthState>()(
                         isLoading: false,
                     });
 
+                    // Set auth cookie for server-side middleware
+                    if (typeof window !== 'undefined') {
+                        document.cookie = `auth-token=${data.data.token}; path=/; max-age=3600; same-site=lax`;
+                    }
+
                     toast.success("Registrasi Berhasil!", {
                         description: data.message,
                         duration: 3000,
                     });
-                } catch (err: any) {
-                    const errorMessage = err.message || "Registrasi Google gagal";
+                } catch (err: unknown) {
+                    let errorMessage = "Registrasi Google gagal";
+
+                    // Enhanced error handling to extract detailed API errors
+                    if (err && typeof err === 'object' && 'message' in err) {
+                        errorMessage = (err as any).message;
+                    } else if (err instanceof Error) {
+                        errorMessage = err.message;
+                    }
+
                     set({
                         error: errorMessage,
                         isLoading: false,
@@ -116,7 +154,14 @@ export const useAuthStore = create<AuthState>()(
                         });
                         // Redirect to login page
                         window.location.href = "/login";
+                    } else if (errorMessage.includes("The column") && errorMessage.includes("does not exist")) {
+                        // Handle database/Prisma errors with user-friendly message
+                        toast.error("Kesalahan Database", {
+                            description: "Terjadi kesalahan pada sistem database. Silakan coba lagi nanti atau hubungi administrator.",
+                            duration: 5000,
+                        });
                     } else {
+                        // Show the actual error message for other cases
                         toast.error("Registrasi Google Gagal", {
                             description: errorMessage,
                             duration: 5000,
@@ -133,6 +178,11 @@ export const useAuthStore = create<AuthState>()(
                     token: null,
                     isAuthenticated: false,
                 });
+
+                // Clear auth cookie
+                if (typeof window !== 'undefined') {
+                    document.cookie = 'auth-token=; path=/; max-age=0; same-site=lax';
+                }
             },
 
             // CHECK AUTH ON REFRESH
@@ -156,9 +206,14 @@ export const useAuthStore = create<AuthState>()(
                 // CALL /auth/refresh IF YOU IMPLEMENT IT
             },
 
+            // GET TOKEN (for API calls)
+            getToken: () => {
+                return get().token;
+            },
+
             clearError: () => set({ error: null }),
         }),
-        {
+      {
             name: "auth-storage",
             partialize: (state) => ({
                 user: state.user,

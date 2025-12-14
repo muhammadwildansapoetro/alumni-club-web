@@ -42,6 +42,50 @@
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
     --radius-xl: calc(var(--radius) + 4px);
+
+    /* === PRIMARY SCALE === */
+    --color-primary-50: var(--primary-50);
+    --color-primary-100: var(--primary-100);
+    --color-primary-200: var(--primary-200);
+    --color-primary-300: var(--primary-300);
+    --color-primary-400: var(--primary-400);
+    --color-primary-500: var(--primary-500);
+    --color-primary: var(--primary-500);
+    --color-primary-600: var(--primary-600);
+    --color-primary-700: var(--primary-700);
+    --color-primary-800: var(--primary-800);
+    --color-primary-900: var(--primary-900);
+
+    /* === SECONDARY SCALE === */
+    --color-secondary-50: var(--secondary-50);
+    --color-secondary-100: var(--secondary-100);
+    --color-secondary-200: var(--secondary-200);
+    --color-secondary-300: var(--secondary-300);
+    --color-secondary-400: var(--secondary-400);
+    --color-secondary-500: var(--secondary-500);
+    --color-secondary: var(--secondary-500);
+    --color-secondary-600: var(--secondary-600);
+    --color-secondary-700: var(--secondary-700);
+    --color-secondary-800: var(--secondary-800);
+    --color-secondary-900: var(--secondary-900);
+
+    /* === ACCENT SCALE === */
+    --color-accent-50: var(--accent-50);
+    --color-accent-100: var(--accent-100);
+    --color-accent-200: var(--accent-200);
+    --color-accent-300: var(--accent-300);
+    --color-accent-400: var(--accent-400);
+    --color-accent-500: var(--accent-500);
+    --color-accent: var(--accent-500);
+    --color-accent-500: var(--accent-500);
+    --color-accent-600: var(--accent-600);
+    --color-accent-700: var(--accent-700);
+    --color-accent-800: var(--accent-800);
+    --color-accent-900: var(--accent-900);
+
+    --background-primary-gradient: var(--gradient-primary);
+    --background-secondary-gradient: var(--gradient-secondary);
+    --background-accent-gradient: var(--gradient-accent);
 }
 
 :root {
@@ -77,6 +121,58 @@
     --sidebar-accent-foreground: oklch(0.205 0 0);
     --sidebar-border: oklch(0.922 0 0);
     --sidebar-ring: oklch(0.708 0 0);
+
+    /* === PRIMARY SCALE (Brand Green) === */
+    --primary-50: oklch(0.97 0.04 166.41);
+    --primary-100: oklch(0.92 0.07 166.41);
+    --primary-200: oklch(0.85 0.11 166.41);
+    --primary-300: oklch(0.76 0.16 166.41);
+    --primary-400: oklch(0.6 0.22 166.41);
+    --primary-500: oklch(0.44 0.285 166.41); /* your original */
+    --primary-600: oklch(0.38 0.26 166.41);
+    --primary-700: oklch(0.3 0.22 166.41);
+    --primary-800: oklch(0.23 0.17 166.41);
+    --primary-900: oklch(0.18 0.13 166.41);
+
+    /* default aliases */
+    --primary: var(--primary-500);
+    --primary-foreground: oklch(0.985 0 0);
+
+    /* === SECONDARY (Soft Neutral Green) === */
+    --secondary-50: oklch(0.98 0.01 166.41);
+    --secondary-100: oklch(0.95 0.02 166.41);
+    --secondary-200: oklch(0.9 0.03 166.41);
+    --secondary-300: oklch(0.84 0.04 166.41);
+    --secondary-400: oklch(0.72 0.05 166.41);
+    --secondary-500: oklch(0.6 0.06 166.41);
+    --secondary-600: oklch(0.48 0.06 166.41);
+    --secondary-700: oklch(0.36 0.05 166.41);
+    --secondary-800: oklch(0.26 0.04 166.41);
+    --secondary-900: oklch(0.18 0.03 166.41);
+
+    --secondary: var(--secondary-100);
+    --secondary-foreground: oklch(0.205 0 0);
+
+    /* === ACCENT (Amber / Orange) === */
+    --accent-50: oklch(0.97 0.05 72);
+    --accent-100: oklch(0.93 0.08 72);
+    --accent-200: oklch(0.87 0.12 72);
+    --accent-300: oklch(0.79 0.16 72);
+    --accent-400: oklch(0.7 0.2 72);
+    --accent-500: oklch(0.64 0.24 72); /* ≈ #F9A029 */
+    --accent-600: oklch(0.56 0.22 72);
+    --accent-700: oklch(0.46 0.2 72);
+    --accent-800: oklch(0.36 0.17 72);
+    --accent-900: oklch(0.26 0.14 72);
+
+    --accent: var(--accent-500);
+    --accent-foreground: oklch(0.145 0 0);
+
+    --gradient-primary: linear-gradient(135deg, oklch(0.58 0.22 166.41), oklch(0.48 0.26 166.41), oklch(0.38 0.24 166.41));
+
+    --gradient-secondary: linear-gradient(to bottom, oklch(0.98 0.01 166.41), oklch(0.92 0.03 166.41));
+
+    --gradient-accent: linear-gradient(to right, oklch(0.7 0.2 72), oklch(0.56 0.22 72));
 }
 
 .dark {
@@ -119,5 +215,40 @@
     }
     body {
         @apply bg-background text-foreground;
+    }
+}
+
+@layer utilities {
+    .text-primary-gradient {
+        background-image: var(--gradient-primary);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .text-secondary-gradient {
+        background-image: var(--gradient-secondary);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .text-accent-gradient {
+        background-image: var(--gradient-accent);
+        background-clip: text;
+        -webkit-background-clip: text;
+        color: transparent;
+    }
+
+    .bg-primary-gradient {
+        background-image: var(--gradient-primary);
+    }
+
+    .bg-secondary-gradient {
+        background-image: var(--gradient-secondary);
+    }
+
+    .bg-accent-gradient {
+        background-image: var(--gradient-accent);
     }
 }

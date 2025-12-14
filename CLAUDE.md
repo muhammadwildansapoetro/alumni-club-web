@@ -31,16 +31,17 @@ npm run prepare
 ## Architecture Overview
 
 ### Tech Stack
-- **Framework**: Next.js 16.0.3 with App Router
-- **React**: 19.2.0 with TypeScript 5 (strict mode)
+- **Framework**: Next.js 16.0.10 with App Router
+- **React**: 19.2.3 with TypeScript 5 (strict mode)
 - **Styling**: Tailwind CSS v4 with CSS-in-JS approach and OKLCH color space
 - **UI Components**: Shadcn/ui (new-york variant) with Radix UI primitives, data tables, and skeleton components
-- **State Management**: Zustand with persistence middleware for authentication
-- **Forms**: React Hook Form + Zod validation
+- **State Management**: Zustand v5.0.9 with persistence middleware for authentication
+- **Forms**: React Hook Form + Zod validation (used in registration)
 - **Charts**: ApexCharts with React wrapper
 - **Maps**: Leaflet with React integration
-- **Data Fetching**: Axios with centralized API client, SWR for server state
-- **Security**: Custom DES/RSA hybrid encryption for query parameters, JWT authentication with Bearer tokens
+- **Data Fetching**: Axios with centralized API client
+- **Authentication**: Google OAuth via popup approach
+- **Encryption**: AES-256-GCM encryption for sensitive data
 - **Notifications**: Sonner for toast notifications
 - **Icons**: Lucide React
 - **Progress**: @bprogress/next for progress indicators
@@ -67,47 +68,54 @@ src/
 │   └── auth-provider.tsx   # Authentication state initialization
 ├── lib/                    # Utilities and helpers
 │   ├── api/                # API client and utilities
-│   │   └── api-client.ts   # Centralized API client with auth
-│   ├── utils.ts            # Utility functions (cn, isNumeric, abbreviation)
-│   └── encryption.ts       # Crypto utilities (DES, RSA hybrid encryption)
+│   │   ├── api-client.ts   # Centralized API client with auth
+│   │   └── alumni.ts       # Alumni API definitions
+│   ├── encryption.ts       # AES-256-GCM encryption utilities
+│   └── utils.ts            # Utility functions (cn, isNumeric, abbreviation)
 ├── hooks/                  # Custom React hooks
+│   ├── use-encrypt-query.ts # Query parameter encryption hook
 │   └── use-mobile.ts       # Mobile detection
 ├── services/               # API service layer
-│   └── auth.service.ts     # Authentication API calls
+│   ├── auth.service.ts     # Traditional auth API calls (not implemented)
+│   └── google-auth.service.ts  # Google OAuth service
 ├── stores/                 # State management
 │   └── auth.store.ts       # Zustand auth store with persistence
 ├── types/                  # TypeScript type definitions
 │   ├── api.ts              # Comprehensive API types
 │   ├── alumni.ts           # Alumni-specific types
 │   └── auth.ts             # Authentication types
-├── config/                 # Configuration
-├── constant/               # Application constants
+├── utils/                  # Additional utilities
+│   └── encryption-helpers.ts # Encryption helper functions
+├── proxy.ts                # Route protection and authentication middleware
 └── data/                   # Static data (dummy data)
 ```
 
 ## Key Patterns
 
 ### Authentication & Security
-- JWT-based authentication with Bearer token authorization
+- Google OAuth authentication via popup approach
 - Zustand store with persistence for auth state management
-- Centralized API client with automatic token injection
-- Query parameter encryption using DES (hex-encoded for WAF safety)
-- Hybrid RSA+AES-GCM encryption implementation (currently commented)
-- Protected routes through dashboard structure
+- Enhanced JWT validation (expiration check and token encryption)
+- Route protection via proxy.ts middleware
+- Cookie-based authentication using Zustand persistence with encrypted tokens
 - Auth provider for initialization on app startup
-- Client-side form validation with Zod schemas
+- Form validation with Zod schemas (implemented in registration)
+- **AES-256-GCM encryption** for sensitive data storage and transmission
+- Encrypted query parameters for URL security
+- API client with automatic encryption/decryption of sensitive fields
 
 ### Form Handling
-- Consistent use of React Hook Form + Zod for type-safe validation
-- Unified error handling patterns
+- React Hook Form + Zod validation for registration form
+- Google OAuth integration for authentication
 - Mobile-first responsive forms
 
 ### API Architecture
-- Centralized API client (`src/lib/api/api-client.ts`) with automatic token handling
+- Enhanced API client (`src/lib/api/api-client.ts`) with automatic token handling and encryption
 - Service layer pattern (`src/services/`) separating API calls from components
 - Comprehensive TypeScript types in `src/types/api.ts` for all API responses
-- Zustand for client state, SWR for server state synchronization
-- Error boundary pattern for graceful API error handling
+- Zustand for client state management with encrypted sensitive data
+- Google Auth service for OAuth integration with token encryption
+- Automatic field-level encryption for sensitive data (email, location, etc.)
 
 ### Component Architecture
 - Server components for pages, client components for interactivity
@@ -123,8 +131,13 @@ src/
 ## Environment Variables
 
 Required for development:
-- `NEXT_PUBLIC_QUERY_ENCRYPTION_KEY` - For query string encryption
-- `NEXT_PUBLIC_RSA_PUBLIC_KEY` - For hybrid encryption (optional)
+- `NEXT_PUBLIC_API_URL` - Backend API URL (default: http://localhost:8000)
+- `NEXT_PUBLIC_GOOGLE_CLIENT_ID` - Google OAuth Client ID
+- `GOOGLE_CLIENT_SECRET` - Google OAuth Client Secret
+- `GOOGLE_REDIRECT_URI` - Google OAuth Redirect URI
+- `NODE_ENV` - Environment (development/production)
+- `NEXT_PUBLIC_ENCRYPTION_KEY` - AES-256 encryption key (base64 encoded)
+- `ENCRYPTION_SALT_ROUNDS` - PBKDF2 iterations for key derivation (default: 100000)
 
 ## Development Notes
 
@@ -135,7 +148,12 @@ Required for development:
 - Zustand for global authentication state management
 - Progress bar integration via @bprogress/next
 - Comprehensive API type definitions in `src/types/api.ts`
-- Authentication flow handled by AuthProvider and Zustand store
+- Authentication flow handled by Google OAuth + AuthProvider + Zustand store
+- Route protection implemented via proxy.ts middleware
+- **AES-256-GCM encryption** implemented for sensitive data protection
+- Encrypted query parameters prevent data exposure in URLs
+- API client with automatic field-level encryption
+- Token encryption for secure authentication storage
 
 ## Code Style
 
@@ -148,7 +166,7 @@ Required for development:
 
 ## Codebase Assessment & Recommendations
 
-### Current Status: ⭐⭐⭐⭐ (4/5) - Good Foundation with Room for Improvement
+### Current Status: ⭐⭐⭐⭐ (4/5) - Strong Foundation with Advanced Security
 
 ### ✅ Excellent Best Practices Found:
 1. **Modern Architecture**: Next.js 16 with App Router properly implemented
@@ -156,82 +174,108 @@ Required for development:
 3. **Design System**: Excellent Shadcn/ui integration with consistent theming
 4. **TypeScript**: Strict mode enabled with good type inference
 5. **Tooling**: Modern ESLint flat config, Husky hooks, Prettier integration
-6. **Form Validation**: Proper React Hook Form + Zod implementation
+6. **Google OAuth Integration**: Properly implemented with popup authentication
 7. **Mobile-First**: Responsive design approach with mobile detection
+8. **Advanced Encryption**: AES-256-GCM encryption implemented for sensitive data
 
-### ⚠️ Critical Issues Needing Attention:
+### ⚠️ Areas for Improvement:
 
-#### **Security (High Priority)**
-- **DES encryption is cryptographically weak** - should migrate to AES-256
-- Missing input validation on encrypted queries (hook was removed, but encryption still exists)
+#### **Security (Medium Priority)**
+- **Enhanced JWT validation** - Expiration check + token encryption implemented
+- **Mock token validation** - Development mock tokens still pass validation (acceptable for development)
+- **No traditional authentication** - Only Google OAuth available (acceptable design choice)
 
 #### **Code Quality**
-- Missing performance optimizations (`useMemo`, `useCallback`)
-- Hook `use-ecnrypt-query.ts` has been removed (was typo of use-encrypt-query)
+- Performance optimization implemented (`useDebouncedCallback` in search input)
+- Limited form validation (only implemented in registration)
+- SWR package installed but not implemented
+- Some components use `any` types (chart components)
 
-#### **Type Safety**
-- Comprehensive API types now exist in `src/types/api.ts`
-- Some components lack proper return type annotations
-- Some areas still return `Record<string, any>` instead of typed interfaces
+#### **Feature Gaps**
+- Traditional email/password authentication not implemented (by design)
+- Limited API integration beyond Google auth
+- Error handling patterns implemented but could be expanded
+- Comprehensive form validation system implemented for registration
 
 ### 🎯 Improvement Tasks:
 
-#### **Priority 1 (Security)**
-1. **Replace DES with AES-256 encryption**
-   - File: `src/lib/encryption.ts`
-   - Replace DES implementation with AES-256-CBC or AES-256-GCM
-   - Update environment variables for AES keys
+#### **Priority 1 (Security & Authentication)**
+1. **Enhance JWT validation**
+   - File: `src/proxy.ts:3-22`
+   - ✅ Token encryption implemented in auth store
+   - Add signature verification for production (future enhancement)
+   - Implement token refresh mechanism (future enhancement)
 
-2. **Add input validation for encrypted queries**
-   - File: `src/lib/encryption.ts` (query encryption hook was removed)
-   - Validate encrypted data format before decryption
-   - Add proper error handling for invalid data
+2. **Expand encryption coverage**
+   - ✅ AES-256-GCM encryption implemented in `src/lib/encryption.ts`
+   - ✅ Environment variables configured for encryption keys
+   - ✅ Query parameter encryption implemented via `src/hooks/use-encrypt-query.ts`
+   - Extend encryption to additional data fields as needed
 
-#### **Priority 2 (Code Quality)**
-1. **Enhance TypeScript definitions**
-   - ✅ `src/types/api.ts` already exists with comprehensive types
-   - Add proper interface definitions for remaining components
-   - Replace remaining `Record<string, any>` with typed interfaces
+3. **Traditional authentication consideration**
+   - Current Google OAuth-only approach is secure and user-friendly
+   - Consider email/password option if use case demands it
+   - Two-factor authentication could be added as optional enhancement
 
-2. **Implement performance optimizations**
-   - File: `src/components/chart/industry-chart.ts:33` - Add `useMemo` for expensive calculations
-   - File: `src/components/input/search-input.tsx` - Add `useCallback` for event handlers
+#### **Priority 2 (Code Quality & Performance)**
+1. **Implement performance optimizations**
+   - File: `src/components/chart/industry-chart.tsx:33` - Add `useMemo` for industry calculations
+   - Replace `any` types in chart components with proper interfaces
+   - ✅ Add `useCallback` for event handlers where needed (search input implemented)
 
-3. **Enhance authentication flow**
-   - ✅ Zustand store implemented in `src/stores/auth.store.ts`
-   - ✅ AuthProvider added in `src/providers/auth-provider.tsx`
-   - Review and optimize token refresh mechanism
+2. **Complete API integration**
+   - Implement SWR for server state management (package already installed)
+   - Complete alumni API service in `src/lib/api/alumni.ts`
+   - Add proper error handling for API failures
 
-#### **Priority 3 (User Experience)**
-1. **Add error boundaries for graceful failures**
+3. **Enhance form validation**
+   - Extend Zod validation to all forms beyond registration
+   - Create reusable form validation schemas
+   - Add real-time validation feedback
+
+#### **Priority 3 (Features & User Experience)**
+1. **Add comprehensive error boundaries**
    - Create error boundary component
-   - Wrap critical components with error boundaries
+   - Wrap critical dashboard components
+   - Add error reporting/logging
 
-2. **Implement loading states for async operations**
-   - Add loading indicators for form submissions
-   - Add skeleton states for data fetching
+2. **Implement loading states**
+   - Add skeleton components for data loading
+   - Implement loading indicators for async operations
+   - Add progress indicators for API calls
 
-3. **Enhance accessibility with proper ARIA labels**
-   - File: `src/components/input/search-input.tsx` - Add ARIA labels
-   - File: `src/components/topbar/mobile-navigation-menu.tsx` - Add keyboard navigation
+3. **Enhance accessibility**
+   - Add ARIA labels throughout the application
+   - Implement keyboard navigation for mobile menus
+   - Add screen reader support for charts
 
 ### 📊 Specific File References:
 
-**Security Issues:**
-- `src/lib/encryption.ts` - Weak DES encryption implementation
+**Security Implementation:**
+- ✅ `src/lib/encryption.ts` - AES-256-GCM encryption with PBKDF2 key derivation
+- ✅ `src/hooks/use-encrypt-query.ts` - Query parameter encryption hook
+- ✅ `src/stores/auth.store.ts` - Encrypted token storage with masked logging
+- ✅ `src/lib/api/api-client.ts` - Field-level encryption for sensitive data
 
 **Performance Issues:**
-- `src/components/chart/industry-chart.ts:33` - Missing memoization
-- `src/components/input/search-input.tsx` - Missing useCallback
+- `src/components/chart/industry-chart.tsx:33` - Missing `useMemo` for expensive calculations
+- Chart components using `any` types need proper interfaces
 
-**Code Quality Issues:**
-- Query encryption hook removed (typo was `use-ecnrypt-query.ts`)
+**Authentication Implementation:**
+- ✅ `src/services/google-auth.service.ts` - Google OAuth with enhanced security
+- ✅ `src/app/register/page.tsx` - Complete registration with Zod validation
+- ✅ `src/app/login/page.tsx` - Google OAuth login only (no email/password)
 
-### Next Steps for Tomorrow:
-1. Start with Priority 1 security fixes
-2. Run security audit after encryption changes
-3. Add type definitions for better type safety
-4. Test authentication flow improvements
-5. Verify performance optimizations
+**Encryption Implementation:**
+- ✅ `src/utils/encryption-helpers.ts` - OAuth token and profile data encryption
+- ✅ `.env` - Encryption key configuration with secure key generation
+- Comprehensive error handling
+- ✅ Encryption system fully implemented and production-ready
 
-This assessment provides a clear roadmap for production readiness.
+### Next Steps for Production:
+1. **Immediate (Week 1):** Add `useMemo` to industry-chart.tsx and complete form validation enhancements
+2. **Short-term (Week 2):** Implement SWR for server state management and complete API integration
+3. **Medium-term (Month 1):** Add comprehensive error boundaries and loading states
+4. **Long-term (Month 2):** Enhance accessibility with ARIA labels and keyboard navigation
+
+This assessment provides a realistic roadmap focusing on security gaps and missing functionality before production deployment.

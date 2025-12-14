@@ -5,18 +5,18 @@ import AlumniPageClient from "./client";
 export const dynamic = 'force-dynamic';
 
 export default async function AgriculturalEngineeringPage() {
+    let initialAlumni;
+
     try {
-        const initialAlumni = await fetchAlumniDirectory(1, 10, {
+        initialAlumni = await fetchAlumniDirectory(1, 10, {
             department: "TEP",
         });
-
-        return <AlumniPageClient initialAlumni={initialAlumni} />;
     } catch (error) {
         // Handle fetch errors gracefully
         console.error('Failed to fetch alumni data:', error);
 
         // Return empty data structure if fetch fails
-        const emptyAlumni = {
+        initialAlumni = {
             users: [],
             items: [],
             pagination: {
@@ -26,7 +26,7 @@ export default async function AgriculturalEngineeringPage() {
                 totalPages: 0,
             },
         };
-
-        return <AlumniPageClient initialAlumni={emptyAlumni} />;
     }
+
+    return <AlumniPageClient initialAlumni={initialAlumni} />;
 }

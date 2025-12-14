@@ -68,6 +68,7 @@ export interface AuthState {
     clearError: () => void;
     checkAuth: () => Promise<void>;
     refreshToken: () => Promise<void>;
+    getToken: () => string | null;
 }
 
 export interface ApiResponse<T> {

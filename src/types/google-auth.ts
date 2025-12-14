@@ -107,6 +107,7 @@ export interface ApiError {
     message: string;
     status?: number;
     code?: string;
+    details?: any; // Full error response for debugging
 }
 
 // Extend Window interface for Google GIS
