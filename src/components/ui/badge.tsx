@@ -5,7 +5,7 @@ import { XIcon } from "lucide-react";
 import * as React from "react";
 
 const badgeVariants = cva(
-    "inline-flex items-center justify-center rounded-[5px] border px-2 py-0.5 text-[0.65rem] tracking-wide font-bold w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden capitalize",
+    "inline-flex items-center justify-center rounded-[5px] border tracking-wide font-bold w-fit whitespace-nowrap shrink-0 [&>svg]:size-3 gap-1 [&>svg]:pointer-events-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive transition-[color,box-shadow] overflow-hidden capitalize",
     {
         variants: {
             variant: {
@@ -19,13 +19,16 @@ const badgeVariants = cva(
             },
 
             size: {
-                default: "text-sm",
-                xs: "text-[0.675rem]",
+                xs: "text-[0.65rem] px-1.5 py-0.5",
+                sm: "text-[0.7rem] px-2 py-0.5",
+                md: "text-sm px-2.5 py-1",
+                lg: "text-base px-3 py-1.5",
+                xl: "text-lg px-4 py-2",
             },
         },
         defaultVariants: {
             variant: "default",
-            size: "default",
+            size: "xl",
         },
     },
 );

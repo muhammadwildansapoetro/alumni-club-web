@@ -12,6 +12,7 @@ import { Badge } from "../ui/badge";
 import dynamic from "next/dynamic";
 import MobileNavigationMenu from "./mobile-navigation-menu";
 import { useAuthStore } from "@/stores/auth.store";
+import { TDepartment } from "@/types/alumni";
 const SearchInput = dynamic(() => import("../input/search-input"), { ssr: false });
 const NavigationMenu = dynamic(() => import("./navigation-menu"), { ssr: false });
 
@@ -96,20 +97,7 @@ const Topbar = () => {
                                         Admin
                                     </Badge>
                                 )}
-                                <Badge
-                                    size="xs"
-                                    variant={
-                                        user?.profile?.department?.toUpperCase() as
-                                            | "TEP"
-                                            | "TPN"
-                                            | "TIN"
-                                            | "default"
-                                            | "outline"
-                                            | "destructive"
-                                            | null
-                                            | undefined
-                                    }
-                                >
+                                <Badge size="xs" variant={user?.profile?.department as keyof typeof TDepartment}>
                                     {user?.profile?.department} - {user.profile?.classYear || "Alumni"}
                                 </Badge>
                             </div>

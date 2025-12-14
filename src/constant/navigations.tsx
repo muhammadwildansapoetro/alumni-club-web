@@ -1,4 +1,13 @@
-import { AppleIcon, BriefcaseBusinessIcon, ChartColumnBigIcon, StoreIcon, TractorIcon, UserCheckIcon, UsersIcon, WarehouseIcon } from "lucide-react";
+import {
+    AppleIcon,
+    BriefcaseBusinessIcon,
+    ChartColumnBigIcon,
+    HandshakeIcon,
+    TractorIcon,
+    UserCheckIcon,
+    UsersIcon,
+    WarehouseIcon,
+} from "lucide-react";
 
 export interface INavigation {
     name: string;
@@ -69,11 +78,11 @@ export const NAVIGATIONS: INavigation[] = [
         active: ["/dashboard/jobs"],
     },
     {
-        name: "Toko",
-        icon: StoreIcon,
-        href: "/dashboard/shop",
+        name: "Bisnis",
+        icon: HandshakeIcon,
+        href: "/dashboard/business",
         roles: [],
-        active: ["/dashboard/shop"],
+        active: ["/dashboard/business"],
     },
 ];
 

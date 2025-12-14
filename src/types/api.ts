@@ -44,7 +44,7 @@ export interface User {
     profile: {
         id: string;
         fullName: string;
-        department: string; // "TEP" | "TPN" | "TIN" | string for API compatibility
+        department: "TEP" | "TPN" | "TIN" | string; // "TEP" | "TPN" | "TIN" | string for API compatibility
         classYear: number; // API returns number, not string
         city: string | null;
         industry: string | null;
@@ -221,13 +221,22 @@ export interface AlumniStatistics {
 // Statistics API Types Based on Backend Documentation
 
 // Industry Field Types
-export type IndustryField = "AGRICULTURE" | "FOOD_TECH" | "BIOTECH" | "RESEARCH" |
-                            "EDUCATION" | "ENGINEERING" | "BUSINESS" | "MARKETING" |
-                            "FINANCE" | "GOVERNMENT" | "FREELANCE" | "OTHER";
+export type IndustryField =
+    | "AGRICULTURE"
+    | "FOOD_TECH"
+    | "BIOTECH"
+    | "RESEARCH"
+    | "EDUCATION"
+    | "ENGINEERING"
+    | "BUSINESS"
+    | "MARKETING"
+    | "FINANCE"
+    | "GOVERNMENT"
+    | "FREELANCE"
+    | "OTHER";
 
 // Employment Level Types
-export type EmploymentLevel = "INTERN" | "STAFF" | "SUPERVISOR" | "MANAGER" |
-                              "SENIOR_MANAGER" | "DIRECTOR" | "VP" | "C_LEVEL" | "FOUNDER" | "OTHER";
+export type EmploymentLevel = "INTERN" | "STAFF" | "SUPERVISOR" | "MANAGER" | "SENIOR_MANAGER" | "DIRECTOR" | "VP" | "C_LEVEL" | "FOUNDER" | "OTHER";
 
 // Department Types
 export type DepartmentType = "TEP" | "TPN" | "TIN";

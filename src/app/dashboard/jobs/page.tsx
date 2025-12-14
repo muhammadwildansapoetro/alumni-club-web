@@ -1,3 +1,3 @@
 export default async function JobsPage() {
-    return <div>JobsPage</div>;
+    return <div>Jobs Page</div>;
 }
