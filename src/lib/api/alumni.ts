@@ -4,14 +4,15 @@ import type { AlumniDirectoryResponse, AlumniFilters } from "@/types/alumni";
 export async function fetchAlumniDirectory(
     page: number = 1,
     limit: number = 10,
-    filters: Partial<AlumniFilters> = {}
+    filters: Partial<AlumniFilters> = {},
 ): Promise<AlumniDirectoryResponse & { items: AlumniDirectoryResponse["users"] }> {
     const searchParams = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
         ...Object.fromEntries(
-            Object.entries(filters).filter(([_, value]) => value !== undefined && value !== "")
-        )
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            Object.entries(filters).filter(([_, value]) => value !== undefined && value !== ""),
+        ),
     });
 
     const response = await apiClient(`/alumni/directory?${searchParams}`);

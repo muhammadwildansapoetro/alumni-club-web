@@ -12,6 +12,7 @@ const badgeVariants = cva(
                 default: "border-transparent bg-primary text-primary-foreground shadow hover:bg-primary/80",
                 destructive: "border-transparent bg-destructive text-destructive-foreground shadow hover:bg-destructive/80",
                 outline: "text-foreground border-primary text-primary hover:bg-primary/5",
+                admin: "text-blue-500 border-blue-500 ",
                 TEP: "border-green-600 text-green-600 bg-transparent hover:bg-green-50",
                 TPN: "border-red-600 text-red-600 bg-transparent hover:bg-red-50",
                 TIN: "border-orange-600 text-orange-600 bg-transparent hover:bg-orange-50",

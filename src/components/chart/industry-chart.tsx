@@ -50,38 +50,44 @@ export default function IndustryChart() {
         };
     }, []); // Empty dependency array since all data is static inside the callback
 
-    const options: ApexOptions = useMemo(() => ({
-        chart: {
-            toolbar: { show: false },
-        },
-        plotOptions: {
-            bar: {
-                horizontal: true,
-                borderRadius: 5,
-                distributed: true,
+    const options: ApexOptions = useMemo(
+        () => ({
+            chart: {
+                toolbar: { show: false },
             },
-        },
-        colors: chartData.barColors,
-        dataLabels: {
-            enabled: true,
-        },
-        xaxis: {
-            categories: chartData.labels,
-            title: {
-                text: "Orang",
+            plotOptions: {
+                bar: {
+                    horizontal: true,
+                    borderRadius: 5,
+                    distributed: true,
+                },
             },
-        },
-        legend: {
-            show: false,
-        },
-    }), [chartData.barColors, chartData.labels]);
+            colors: chartData.barColors,
+            dataLabels: {
+                enabled: true,
+            },
+            xaxis: {
+                categories: chartData.labels,
+                title: {
+                    text: "Orang",
+                },
+            },
+            legend: {
+                show: false,
+            },
+        }),
+        [chartData.barColors, chartData.labels],
+    );
 
-    const series = useMemo(() => [
-        {
-            name: "Jumlah",
-            data: chartData.values as number[],
-        },
-    ], [chartData.values]);
+    const series = useMemo(
+        () => [
+            {
+                name: "Jumlah",
+                data: chartData.values as number[],
+            },
+        ],
+        [chartData.values],
+    );
 
     return (
         <Card className="h-fit gap-1">

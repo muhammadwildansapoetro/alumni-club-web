@@ -218,6 +218,226 @@ export interface AlumniStatistics {
     recentRegistrations: Alumni[];
 }
 
+// Statistics API Types Based on Backend Documentation
+
+// Industry Field Types
+export type IndustryField = "AGRICULTURE" | "FOOD_TECH" | "BIOTECH" | "RESEARCH" |
+                            "EDUCATION" | "ENGINEERING" | "BUSINESS" | "MARKETING" |
+                            "FINANCE" | "GOVERNMENT" | "FREELANCE" | "OTHER";
+
+// Employment Level Types
+export type EmploymentLevel = "INTERN" | "STAFF" | "SUPERVISOR" | "MANAGER" |
+                              "SENIOR_MANAGER" | "DIRECTOR" | "VP" | "C_LEVEL" | "FOUNDER" | "OTHER";
+
+// Department Types
+export type DepartmentType = "TEP" | "TPN" | "TIN";
+
+// Alumni Statistics Types
+export interface AlumniStatsPublicResponse {
+    totalAlumni: number;
+    departmentStats: {
+        tep: number;
+        tpn: number;
+        tin: number;
+    };
+    classYearStats: {
+        before2010: number;
+        _2010_2015: number;
+        _2016_2020: number;
+        after2020: number;
+    };
+    employmentStats: {
+        employedAlumni: number;
+        alumniByIndustry: Record<string, number>;
+        alumniByLevel: Record<string, number>;
+    };
+    geographicStats: {
+        alumniByCity: Record<string, number>;
+    };
+    averageClassYear: number | null;
+    lastUpdated: string;
+}
+
+export interface AlumniStatsDashboardResponse extends AlumniStatsPublicResponse {
+    incomeStats: {
+        alumniByIncome: Record<string, number>;
+    };
+}
+
+// Alumni Search Types
+export interface AlumniSearchQuery {
+    page?: number;
+    limit?: number;
+    search?: string;
+    department?: DepartmentType;
+    classYearFrom?: number;
+    classYearTo?: number;
+    city?: string;
+    industry?: IndustryField;
+    employmentLevel?: EmploymentLevel;
+    sortBy?: "name" | "classYear" | "department" | "createdAt";
+    sortOrder?: "asc" | "desc";
+}
+
+export interface AlumniSearchResult {
+    id: string;
+    fullName: string;
+    department: string;
+    classYear: number;
+    city?: string;
+    industry?: string;
+    jobTitle?: string;
+    companyName?: string;
+    employmentLevel?: string;
+}
+
+export interface AlumniSearchPagination {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNext: boolean;
+    hasPrevious: boolean;
+}
+
+export interface AlumniSearchFilters {
+    search?: string;
+    department?: string;
+    classYearFrom?: number;
+    classYearTo?: number;
+    city?: string;
+    industry?: string;
+    employmentLevel?: string;
+}
+
+export interface AlumniSearchResponse {
+    alumni: AlumniSearchResult[];
+    pagination: AlumniSearchPagination;
+    filters: AlumniSearchFilters;
+}
+
+// Job Statistics Types
+export interface JobStatsPublicResponse {
+    totalJobs: number;
+    activeJobs: number;
+    inactiveJobs: number;
+    jobTypeStats: Record<string, number>;
+    locationStats: Record<string, number>;
+    companyStats: Record<string, number>;
+    industryStats: Record<string, number>;
+    averageSalaryRange: string | null;
+    lastUpdated: string;
+}
+
+export interface JobStatsDashboardResponse extends JobStatsPublicResponse {
+    salaryStats: {
+        salaryRangeDistribution: Record<string, number>;
+        averageSalaryMin: number | null;
+        averageSalaryMax: number | null;
+    };
+    applicationStats?: {
+        totalApplications: number;
+        avgApplicationsPerJob: number;
+        applicationRate: number;
+    };
+    timeStats: {
+        avgTimeToFill: number | null;
+        jobPostingTrends: {
+            thisMonth: number;
+            lastMonth: number;
+            growth: number;
+        };
+    };
+}
+
+// Business Statistics Types
+export interface BusinessStatsPublicResponse {
+    totalBusinesses: number;
+    activeBusinesses: number;
+    inactiveBusinesses: number;
+    categoryStats: Record<string, number>;
+    locationStats: Record<string, number>;
+    websiteStats: {
+        withWebsite: number;
+        withoutWebsite: number;
+        websiteRate: number;
+    };
+    lastUpdated: string;
+}
+
+export interface BusinessStatsDashboardResponse extends BusinessStatsPublicResponse {
+    contactStats?: {
+        withContactInfo: number;
+        withoutContactInfo: number;
+        contactInfoRate: number;
+    };
+    revenueStats?: {
+        totalRevenue?: number;
+        avgRevenuePerBusiness?: number;
+        revenueDistribution: Record<string, number>;
+    };
+    growthStats: {
+        newBusinessesThisMonth: number;
+        newBusinessesLastMonth: number;
+        growth: number;
+    };
+}
+
+// Combined Statistics Types
+export interface AllStatsPublicResponse {
+    alumni: AlumniStatsPublicResponse;
+    jobs: JobStatsPublicResponse;
+    business: BusinessStatsPublicResponse;
+    overview: {
+        totalItems: number;
+        lastUpdated: string;
+    };
+}
+
+export interface AllStatsDashboardResponse {
+    alumni: AlumniStatsDashboardResponse;
+    jobs: JobStatsDashboardResponse;
+    business: BusinessStatsDashboardResponse;
+    overview: {
+        totalItems: number;
+        totalActiveItems: number;
+        lastUpdated: string;
+        platformHealth: {
+            userEngagement: number;
+            contentFreshness: number;
+            dataCompleteness: number;
+        };
+    };
+}
+
+// Statistics Query Parameters
+export interface StatsQueryOptions {
+    refresh?: boolean;
+}
+
+export interface AlumniStatsQueryOptions extends StatsQueryOptions {
+    includeIncome?: boolean;
+}
+
+export interface JobStatsQueryOptions extends StatsQueryOptions {
+    includeSalaryDetails?: boolean;
+    includeApplicationStats?: boolean;
+}
+
+export interface BusinessStatsQueryOptions extends StatsQueryOptions {
+    includeRevenueData?: boolean;
+    includeContactStats?: boolean;
+}
+
+export interface AllStatsQueryOptions extends StatsQueryOptions {
+    refreshAlumni?: boolean;
+    refreshJobs?: boolean;
+    refreshBusiness?: boolean;
+    includeIncome?: boolean;
+    includeSalaryDetails?: boolean;
+    includeRevenueData?: boolean;
+}
+
 export interface DashboardStats {
     totalUsers: number;
     totalAlumni: number;

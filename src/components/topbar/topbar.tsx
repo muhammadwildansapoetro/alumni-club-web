@@ -92,11 +92,24 @@ const Topbar = () => {
                             </span>
                             <div className="flex items-center gap-2">
                                 {user.role === "ADMIN" && (
-                                    <Badge size="xs" variant={"outline"}>
+                                    <Badge size="xs" variant={"admin"}>
                                         Admin
                                     </Badge>
                                 )}
-                                <Badge size="xs" variant={user?.profile?.department?.toUpperCase() as "TEP" | "TPN" | "TIN" | "default" | "outline" | "destructive" | null | undefined}>
+                                <Badge
+                                    size="xs"
+                                    variant={
+                                        user?.profile?.department?.toUpperCase() as
+                                            | "TEP"
+                                            | "TPN"
+                                            | "TIN"
+                                            | "default"
+                                            | "outline"
+                                            | "destructive"
+                                            | null
+                                            | undefined
+                                    }
+                                >
                                     {user?.profile?.department} - {user.profile?.classYear || "Alumni"}
                                 </Badge>
                             </div>
