@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import type { AlumniDirectoryResponse } from "@/types/alumni";
 
 interface AlumniDirectoryResponseWithItems extends AlumniDirectoryResponse {
@@ -12,7 +11,7 @@ interface ClientAlumniPageProps {
 }
 
 export default function ClientAlumniPage({ initialAlumni }: ClientAlumniPageProps) {
-    const [alumni, setAlumni] = useState(initialAlumni);
+    const alumni = initialAlumni;
 
     return (
         <div>

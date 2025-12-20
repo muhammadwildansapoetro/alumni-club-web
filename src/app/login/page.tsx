@@ -1,124 +1,183 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import Link from "next/link";
-import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
-import { useRouter, useSearchParams } from "next/navigation";
-import { useAuthStore } from "@/stores/auth.store";
-import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
-import { signInWithGoogle } from "@/lib/google-signin";
+import { Loader2, LogInIcon } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Input } from "@/components/ui/input";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import { useForm } from "react-hook-form";
+import z from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+
+const photoCards = ["/photo/login/green.jpg", "/photo/login/red.jpg", "/photo/login/orange.jpg"];
+
+const loginSchema = z.object({
+    email: z.email({ message: "Email tidak valid" }),
+    password: z.string().min(1, "Password harus diisi"),
+});
+
+type loginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginClient() {
-    const [googleLoading, setGoogleLoading] = useState(false);
-    const router = useRouter();
-    const searchParams = useSearchParams();
-    const { loginWithGoogle, isAuthenticated, user } = useAuthStore();
+    const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const [isTransitioning, setIsTransitioning] = useState(false);
 
-    // Get redirect path from URL params or cookie
-    const getRedirectPath = () => {
-        // First check URL params (for backward compatibility)
-        const urlRedirect = searchParams.get("redirect");
-        if (urlRedirect) return urlRedirect;
+    const form = useForm<loginFormValues>({
+        resolver: zodResolver(loginSchema),
+        mode: "onChange",
+        defaultValues: {
+            email: "",
+            password: "",
+        },
+    });
 
-        // Then check document.cookie for redirect-path (client-side)
-        const cookies = document.cookie.split(";");
-        for (const cookie of cookies) {
-            const [name, value] = cookie.trim().split("=");
-            if (name === "redirect-path") {
-                return decodeURIComponent(value);
-            }
-        }
-
-        return "/dashboard";
-    };
-
-    // Redirect if already authenticated (only for initial page load, not after login)
-    useEffect(() => {
-        if (isAuthenticated && !googleLoading) {
-            const redirect = getRedirectPath();
-
-            // Clear the redirect cookie
-            document.cookie = "redirect-path=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-
-            // Use setTimeout to ensure state is fully updated
-            setTimeout(() => {
-                router.push(redirect);
-            }, 100);
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isAuthenticated, router, searchParams, user, googleLoading]);
-
-    const handleGoogleSignIn = async () => {
-        setGoogleLoading(true);
-
+    const login = async (values: loginFormValues) => {
         try {
-            // Get Google ID token
-            const credential = await signInWithGoogle({ text: "signin_with" });
-
-            // Send to backend
-            await loginWithGoogle(credential);
-
-            // Add delay to ensure Zustand persist middleware syncs to cookies
-            setTimeout(() => {
-                const redirect = getRedirectPath();
-                router.push(redirect);
-            }, 500);
-
-            // The useEffect will handle the redirect once isAuthenticated is true
-        } catch (error: any) {
-            console.error("Google Sign-In error:", error);
-
-            // Clear any existing toasts before showing new one
-            toast.dismiss();
-
-            toast.error("Google Sign-In Gagal", {
-                description: error.message || "Terjadi kesalahan saat masuk dengan Google",
-                duration: 5000,
-            });
-        } finally {
-            setGoogleLoading(false);
+            console.log("Login log:", values);
+        } catch (error) {
+            console.error("Login error:", error);
         }
     };
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setIsTransitioning(true);
+            setTimeout(() => {
+                setCurrentPhotoIndex((prevIndex) => (prevIndex === photoCards.length - 1 ? 0 : prevIndex + 1));
+                setIsTransitioning(false);
+            }, 150);
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
-        <div className="to-primary-100 from-secondary-100 flex min-h-screen w-full items-center justify-center bg-linear-to-b px-5">
-            <Card className="w-md gap-3 rounded-xl border bg-white shadow-xl">
-                <CardHeader>
-                    <div className="flex w-full items-center justify-center gap-3">
-                        <Image src="/logo/logo-ika-ftip-unpad.png" alt="Logo" width={50} height={50} />
-                        <h1 className="text-primary-gradient text-xl font-bold">FTIP Unpad Alumni Club</h1>
+        <div className="flex min-h-screen w-full">
+            {/* Left Side - Login Form */}
+            <div className="flex w-full flex-col items-center justify-center p-5 lg:w-1/2 lg:p-10">
+                <div className="flex w-full flex-col items-start justify-center gap-5 sm:w-fit">
+                    {/* Heading */}
+                    <div className="w-full">
+                        <h1 className="text-xl font-semibold lg:text-3xl">Login Dashboard</h1>
+                        <h1 className="text-primary-gradient text-2xl font-bold lg:text-4xl">FTIP Unpad Alumni Club</h1>
+                        <p className="text-muted-foreground pt-2 text-sm">
+                            Belum memiliki akun? Silakan{" "}
+                            <Link href="/register" className="text-primary font-bold hover:underline">
+                                Daftar
+                            </Link>
+                        </p>
                     </div>
-                    <p className="text-center text-sm">Masuk menggunakan akun Google Anda</p>
-                </CardHeader>
 
-                <CardContent className="space-y-4 text-center">
-                    <Button variant="outline" size="lg" onClick={handleGoogleSignIn} disabled={googleLoading}>
-                        {googleLoading ? (
-                            <>
-                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                Memproses...
-                            </>
-                        ) : (
-                            <>
-                                <Image src="/logo/google.svg" alt="Google Logo" width={20} height={20} className="mr-2" />
-                                Masuk dengan Google
-                            </>
-                        )}
-                    </Button>
-                </CardContent>
+                    {/* Form */}
+                    <div className="w-full">
+                        <Form {...form}>
+                            <form onSubmit={form.handleSubmit(login)} className="space-y-3">
+                                <FormField
+                                    control={form.control}
+                                    name="email"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Email</FormLabel>
+                                            <FormControl>
+                                                <Input placeholder="Masukkan email" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
+                                <FormField
+                                    control={form.control}
+                                    name="password"
+                                    render={({ field }) => (
+                                        <FormItem>
+                                            <FormLabel>Password</FormLabel>
+                                            <FormControl>
+                                                <Input type="password" placeholder="Masukkan password" {...field} />
+                                            </FormControl>
+                                            <FormMessage />
+                                        </FormItem>
+                                    )}
+                                />
 
-                <CardFooter>
-                    <p className="w-full text-center text-xs font-medium">
-                        Belum memiliki akun? Silakan{" "}
-                        <Link href="/register" className="text-primary font-bold hover:underline">
-                            Daftar
-                        </Link>
-                    </p>
-                </CardFooter>
-            </Card>
+                                <Button type="submit" variant={"default"} className="w-full">
+                                    <LogInIcon /> Login
+                                </Button>
+                            </form>
+                        </Form>
+                    </div>
+
+                    <div className="relative w-full">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t border-gray-300" />
+                        </div>
+                        <div className="relative flex justify-center text-sm">
+                            <span className="bg-background text-muted-foreground px-2">Atau</span>
+                        </div>
+                    </div>
+
+                    {/* Google Login */}
+                    <div className="w-full">
+                        <Button variant="outline" onClick={() => {}} className="w-full">
+                            {false ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Memproses...
+                                </>
+                            ) : (
+                                <>
+                                    <Image src="/logo/google.svg" alt="Google Logo" width={15} height={15} className="mr-2" />
+                                    Masuk dengan Google
+                                </>
+                            )}
+                        </Button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Right Side - Auto-Sliding Photo Carousel */}
+            <div className="hidden w-1/2 items-center justify-center bg-white p-5 lg:flex">
+                <div className="relative h-full w-full overflow-hidden rounded-xl shadow-2xl">
+                    <div className="relative h-full w-full">
+                        {photoCards.map((photo, index) => (
+                            <div
+                                key={photo}
+                                className={`absolute inset-0 transition-opacity duration-300 ease-in-out ${
+                                    index === currentPhotoIndex ? "opacity-100" : "opacity-0"
+                                }`}
+                            >
+                                <Image
+                                    src={photo}
+                                    alt={`FTIP Unpad Campus - Photo ${index + 1}`}
+                                    fill
+                                    className="object-cover"
+                                    priority={index === 0}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                    {/* Optional: Dot indicators for manual navigation */}
+                    <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform space-x-2">
+                        {photoCards.map((_, index) => (
+                            <button
+                                key={index}
+                                className={`h-2 w-2 rounded-full transition-all duration-300 ${
+                                    index === currentPhotoIndex ? "w-8 bg-white" : "bg-white/50"
+                                }`}
+                                onClick={() => {
+                                    setIsTransitioning(true);
+                                    setTimeout(() => {
+                                        setCurrentPhotoIndex(index);
+                                        setIsTransitioning(false);
+                                    }, 150);
+                                }}
+                            />
+                        ))}
+                    </div>
+                </div>
+            </div>
         </div>
     );
 }

@@ -27,34 +27,52 @@ const ReactSelect = <Option, IsMulti extends boolean = false, Group extends Grou
             <Select
                 {...props}
                 className={cn(
-                    "border-input flex h-[37px]! w-full min-w-0 rounded-md bg-white shadow-xs transition-[color,box-shadow] outline-none",
+                    "border-input flex h-9.25! w-full min-w-0 rounded-md bg-white shadow-xs transition-[color,box-shadow] outline-none",
                     fieldState?.error && "border-destructive ring-destructive/20 ring-[3px]",
                     props.isDisabled ? "pointer-events-none cursor-not-allowed border-neutral-500 text-black" : "bg-white",
                     props["aria-invalid"] && "border-destructive/20 ring-destructive/20 ring-[3px]",
                     className,
                 )}
                 styles={{
-                    control: (base, state) => ({
-                        ...base,
-                        display: "flex",
-                        alignItems: "center",
-                        minHeight: "100%",
-                        width: "100%",
-                        padding: "0 5px",
-                        borderRadius: "7px",
-                        fontSize: "12px",
-                        backgroundColor: state.isDisabled ? "var(--muted)" : "var(--background)",
-                        cursor: state.isDisabled ? "not-allowed" : "pointer",
-                        opacity: state.isDisabled ? 0.5 : 1,
-                        borderWidth: "1px",
-                        borderColor: state.isFocused ? "oklch(from var(--primary) l c h / 50%)" : "var(--border)",
-                        boxShadow: state.isFocused ? "0 0 0 3px oklch(from var(--primary) l c h / 50%)" : "none",
-                        transition: "border-color 0.2s, box-shadow 0.2s",
-                        "&:hover": {
-                            borderColor: "oklch(from var(--primary) l c h / 50%)",
-                            boxShadow: state.isFocused ? "0 0 0 3px oklch(from var(--primary) l c h / 50%)" : "none",
-                        },
-                    }),
+                    control: (base, state) => {
+                        const hasError = fieldState?.error;
+                        const errorColor = "var(--destructive)";
+                        const errorFocusColor = "(var(--destructive) / 0.2)";
+
+                        return {
+                            ...base,
+                            display: "flex",
+                            alignItems: "center",
+                            minHeight: "100%",
+                            width: "100%",
+                            padding: "0 5px",
+                            borderRadius: "7px",
+                            fontSize: "12px",
+                            backgroundColor: state.isDisabled ? "var(--muted)" : "var(--background)",
+                            cursor: state.isDisabled ? "not-allowed" : "pointer",
+                            opacity: state.isDisabled ? 0.5 : 1,
+                            borderWidth: "1px",
+                            borderColor: hasError ? errorColor : state.isFocused ? "oklch(from var(--primary) l c h / 50%)" : "var(--border)",
+                            boxShadow: hasError
+                                ? state.isFocused
+                                    ? `0 0 0 3px ${errorFocusColor}`
+                                    : "none"
+                                : state.isFocused
+                                  ? "0 0 0 3px oklch(from var(--primary) l c h / 50%)"
+                                  : "none",
+                            transition: "border-color 0.2s, box-shadow 0.2s",
+                            "&:hover": {
+                                borderColor: hasError ? errorColor : "oklch(from var(--primary) l c h / 50%)",
+                                boxShadow: hasError
+                                    ? state.isFocused
+                                        ? `0 0 0 3px ${errorFocusColor}`
+                                        : "none"
+                                    : state.isFocused
+                                      ? "0 0 0 3px oklch(from var(--primary) l c h / 50%)"
+                                      : "none",
+                            },
+                        };
+                    },
                     placeholder: (provided) => ({
                         ...provided,
                         fontSize: "12px",

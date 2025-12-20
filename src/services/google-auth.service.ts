@@ -5,7 +5,7 @@ import {
     GoogleRegisterRequest,
     GoogleLoginResponse,
     GoogleRegisterResponse,
-    ApiError
+    ApiError,
 } from "@/types/google-auth";
 
 // Google OAuth configuration
@@ -13,7 +13,7 @@ const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
 async function request<T>(url: string, options: RequestInit): Promise<T> {
     // Get API base URL from environment
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
     const res = await fetch(`${apiUrl}${url}`, {
         ...options,
@@ -31,10 +31,10 @@ async function request<T>(url: string, options: RequestInit): Promise<T> {
 
         if (data.error) {
             // If the error contains detailed information (like the Prisma error), extract the relevant part
-            if (typeof data.error === 'string' && data.error.includes('Invalid `prisma.')) {
+            if (typeof data.error === "string" && data.error.includes("Invalid `prisma.")) {
                 // Extract the actual error message from Prisma errors
-                const lines = data.error.split('\n');
-                const errorLine = lines.find((line: string) => line.includes('The column') || line.includes('does not exist'));
+                const lines = data.error.split("\n");
+                const errorLine = lines.find((line: string) => line.includes("The column") || line.includes("does not exist"));
                 if (errorLine) {
                     errorMessage = errorLine.trim();
                 } else {
@@ -73,6 +73,7 @@ export const googleAuthService = {
                 // Initialize if already loaded
                 window.google.accounts.id.initialize({
                     client_id: GOOGLE_CLIENT_ID,
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     callback: (response: GoogleCredentialResponse) => {
                         // This callback will be handled by the sign-in button
                     },
@@ -93,7 +94,8 @@ export const googleAuthService = {
                     // Initialize Google Sign-In
                     window.google.accounts.id.initialize({
                         client_id: GOOGLE_CLIENT_ID,
-                        callback: (response: GoogleCredentialResponse) => {
+                        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                        callback: (_response: GoogleCredentialResponse) => {
                             // This callback will be handled by the sign-in button component
                         },
                         auto_select: false,
@@ -160,7 +162,7 @@ export const googleAuthService = {
 
     decodeGoogleToken(token: string): GoogleDecodedToken {
         // Check if this is a mock token (for development)
-        if (token.startsWith('google-auth-')) {
+        if (token.startsWith("google-auth-")) {
             // Return mock decoded token for development
             return {
                 sub: "mock-user-id",
@@ -172,7 +174,7 @@ export const googleAuthService = {
                 iss: "https://accounts.google.com",
                 aud: "mock-client-id",
                 exp: Math.floor(Date.now() / 1000) + 3600,
-                iat: Math.floor(Date.now() / 1000)
+                iat: Math.floor(Date.now() / 1000),
             };
         }
 
@@ -217,4 +219,3 @@ export const googleAuthService = {
         });
     },
 };
-

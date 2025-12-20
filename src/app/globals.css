@@ -128,7 +128,7 @@
     --primary-200: oklch(0.85 0.11 166.41);
     --primary-300: oklch(0.76 0.16 166.41);
     --primary-400: oklch(0.6 0.22 166.41);
-    --primary-500: oklch(0.44 0.285 166.41); /* your original */
+    --primary-500: oklch(0.44 0.285 166.41);
     --primary-600: oklch(0.38 0.26 166.41);
     --primary-700: oklch(0.3 0.22 166.41);
     --primary-800: oklch(0.23 0.17 166.41);
@@ -136,7 +136,7 @@
 
     /* default aliases */
     --primary: var(--primary-500);
-    --primary-foreground: oklch(0.985 0 0);
+    --primary-foreground: oklch(0.98 0.01 166.41);
 
     /* === SECONDARY (Soft Neutral Green) === */
     --secondary-50: oklch(0.98 0.01 166.41);
@@ -151,7 +151,7 @@
     --secondary-900: oklch(0.18 0.03 166.41);
 
     --secondary: var(--secondary-100);
-    --secondary-foreground: oklch(0.205 0 0);
+    --secondary-foreground: oklch(0.44 0.285 166.41);
 
     /* === ACCENT (Amber / Orange) === */
     --accent-50: oklch(0.97 0.05 72);
@@ -159,7 +159,7 @@
     --accent-200: oklch(0.87 0.12 72);
     --accent-300: oklch(0.79 0.16 72);
     --accent-400: oklch(0.7 0.2 72);
-    --accent-500: oklch(0.64 0.24 72); /* ≈ #F9A029 */
+    --accent-500: oklch(0.64 0.24 72);
     --accent-600: oklch(0.56 0.22 72);
     --accent-700: oklch(0.46 0.2 72);
     --accent-800: oklch(0.36 0.17 72);
@@ -170,9 +170,9 @@
 
     --gradient-primary: linear-gradient(135deg, oklch(0.58 0.22 166.41), oklch(0.48 0.26 166.41), oklch(0.38 0.24 166.41));
 
-    --gradient-secondary: linear-gradient(to bottom, oklch(0.98 0.01 166.41), oklch(0.92 0.03 166.41));
+    --gradient-secondary: linear-gradient(135deg, oklch(0.98 0.01 166.41), oklch(0.6 0.06 166.41));
 
-    --gradient-accent: linear-gradient(to right, oklch(0.7 0.2 72), oklch(0.56 0.22 72));
+    --gradient-accent: linear-gradient(135deg, oklch(0.93 0.08 72), oklch(0.7 0.2 72));
 }
 
 .dark {

@@ -57,7 +57,7 @@ export default function TopBar() {
                             <span className="sr-only">Buka menu</span>
                         </Button>
                     </SheetTrigger>
-                    <SheetContent side="right" className="w-[300px] sm:w-[400px]">
+                    <SheetContent side="right" className="w-75 sm:w-100">
                         <SheetHeader>
                             <SheetTitle>Menu</SheetTitle>
                             <SheetDescription>Navigasi FTIP Alumni Club</SheetDescription>
