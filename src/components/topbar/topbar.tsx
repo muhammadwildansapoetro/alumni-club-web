@@ -6,20 +6,20 @@ import { LogOut, UserIcon } from "lucide-react";
 import { useRouter as useNavigation } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMobile } from "@/hooks/use-mobile";
+import { useAuth } from "@/hooks/use-auth";
 import LogoTitle from "./logo-title";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import dynamic from "next/dynamic";
 import MobileNavigationMenu from "./mobile-navigation-menu";
-import { useAuthStore } from "@/stores/auth.store";
 import { TDepartment } from "@/types/alumni";
 const SearchInput = dynamic(() => import("../input/search-input"), { ssr: false });
 const NavigationMenu = dynamic(() => import("./navigation-menu"), { ssr: false });
 
 const Topbar = () => {
-    const { user, isAuthenticated, logout } = useAuthStore();
     const navigation = useNavigation();
     const isMobile = useMobile();
+    const { user, logout, isAuthenticated } = useAuth();
     const abbr = abbreviation(user?.name || "");
     const [scrollUp, setScrollUp] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -27,7 +27,6 @@ const Topbar = () => {
     const handleLogout = async () => {
         try {
             logout();
-            navigation.push("/login");
         } catch (error) {
             console.error(error);
         }

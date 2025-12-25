@@ -1,39 +1,48 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useAuthStore } from "@/stores/auth.store";
-import { Loading } from "@/components/ui/loading";
+import { useEffect } from 'react';
+import { useAuthStore } from '@/stores/auth.store';
 
 interface AuthProviderProps {
     children: React.ReactNode;
 }
 
-/**
- * AuthProvider component that initializes authentication state
- * on app startup by checking for existing tokens
- */
 export function AuthProvider({ children }: AuthProviderProps) {
-    const { checkAuth } = useAuthStore();
-    const [isInitialized, setIsInitialized] = useState(false);
+    const { setLoading, setUser, clearAuth } = useAuthStore();
 
     useEffect(() => {
-        const initializeAuth = async () => {
-            try {
-                await checkAuth();
-            } catch (error) {
-                console.error("Failed to initialize auth:", error);
-            } finally {
-                setIsInitialized(true);
+        // Validate session on load
+        const validateSession = async () => {
+            const token = document.cookie.split('; ').find(row => row.startsWith('auth-token='))?.split('=')[1];
+
+            if (token) {
+                setLoading(true);
+                try {
+                    const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE_URL}/auth/me`, {
+                        headers: { 'Authorization': `Bearer ${token}` },
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        setUser(data.user, token);
+                    } else {
+                        // Token invalid, clear everything
+                        document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                        clearAuth();
+                    }
+                } catch (error) {
+                    console.error('Session validation failed', error);
+                    // Clear auth on error
+                    document.cookie = 'auth-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+                    clearAuth();
+                } finally {
+                    setLoading(false);
+                }
             }
         };
 
-        initializeAuth();
-    }, [checkAuth]);
-
-    // Show loading state while initializing auth
-    if (!isInitialized) {
-        return <Loading size="lg" overlay={true} />;
-    }
+        validateSession();
+    }, [setLoading, setUser, clearAuth]);
 
     return <>{children}</>;
 }

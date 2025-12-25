@@ -21,7 +21,6 @@ export interface PaginatedResponse<T> extends ApiResponse<T[]> {
 export interface LoginRequest {
     username: string;
     password: string;
-    rememberMe?: boolean;
 }
 
 export interface LoginResponse {

@@ -168,11 +168,11 @@
     --accent: var(--accent-500);
     --accent-foreground: oklch(0.145 0 0);
 
-    --gradient-primary: linear-gradient(135deg, oklch(0.58 0.22 166.41), oklch(0.48 0.26 166.41), oklch(0.38 0.24 166.41));
+    --gradient-primary: linear-gradient(135deg, oklch(0.6 0.22 166.41), oklch(0.44 0.285 166.41), oklch(0.38 0.26 166.41));
 
-    --gradient-secondary: linear-gradient(135deg, oklch(0.98 0.01 166.41), oklch(0.6 0.06 166.41));
+    --gradient-secondary: linear-gradient(135deg, oklch(0.84 0.04 166.41), oklch(0.72 0.05 166.41), oklch(0.6 0.06 166.41));
 
-    --gradient-accent: linear-gradient(135deg, oklch(0.93 0.08 72), oklch(0.7 0.2 72));
+    --gradient-accent: linear-gradient(135deg, oklch(0.87 0.12 72), oklch(0.79 0.16 72));
 }
 
 .dark {

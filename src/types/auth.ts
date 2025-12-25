@@ -19,7 +19,6 @@ export interface GoogleAuthRequest {
 export interface LoginRequest {
     email: string;
     password: string;
-    rememberMe?: boolean;
 }
 
 export interface LoginResponse {
@@ -64,6 +63,7 @@ export interface AuthState {
     // Actions
     loginWithGoogle: (token: string) => Promise<void>;
     registerWithGoogle: (token: string, department: string, classYear: number) => Promise<void>;
+    registerWithEmail: (email: string, password: string, name: string, department: string, classYear: number) => Promise<void>;
     logout: () => void;
     clearError: () => void;
     checkAuth: () => Promise<void>;
@@ -81,4 +81,35 @@ export interface ApiError {
     message: string;
     status?: number;
     code?: string;
+}
+
+export interface RegisterResponse {
+    success: boolean;
+    message: string;
+    user: {
+        id: string;
+        email: string;
+        name: string;
+        emailVerified: boolean;
+        profile: {
+            department: string;
+            classYear: number;
+        };
+    };
+}
+
+export interface VerifyEmailRequest {
+    token: string;
+}
+
+export interface VerifyEmailResponse {
+    success: boolean;
+    message: string;
+    user?: {
+        id: string;
+        email: string;
+        name: string;
+        emailVerified: boolean;
+        profile?: any;
+    };
 }

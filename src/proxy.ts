@@ -36,7 +36,7 @@ export async function proxy(request: NextRequest) {
 
     // Check if the route is under /dashboard
     if (pathname.startsWith("/dashboard")) {
-        // Get token from auth-token cookie set by Zustand store
+        // Get token from auth-token cookie (set by useAuth hook)
         const authTokenCookie = request.cookies.get("auth-token")?.value;
 
         if (!authTokenCookie) {
