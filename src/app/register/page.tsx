@@ -42,7 +42,7 @@ const registerSchema = z
             .regex(/[a-z]/, "Password harus mengandung huruf kecil")
             .regex(/[0-9]/, "Password harus mengandung angka"),
         passwordConfirmation: z.string().min(1, "Konfirmasi Password harus diisi"),
-        department: z.string().min(1, "Jurusan harus dipilih"),
+        department: z.string().min(1, "Program Studi harus dipilih"),
         classYear: z.number().min(1959, "Tahun angkatan tidak valid").max(new Date().getFullYear(), "Tahun angkatan tidak valid"),
     })
     .refine((data) => data.password === data.passwordConfirmation, {
@@ -52,6 +52,21 @@ const registerSchema = z
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
+export const departmentOptions = [
+    { value: "TEP", label: "Teknik Pertanian (TEP)" },
+    { value: "TPN", label: "Teknologi Pangan (TPN)" },
+    { value: "TIN", label: "Teknologi Industri Pertanian (TIN)" },
+];
+
+const currentYear = new Date().getFullYear();
+const maxYear = currentYear - 3;
+const minYear = 1959;
+
+export const classYearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => {
+    const year = maxYear - i;
+    return { value: year, label: year.toString() };
+});
+
 export default function RegisterClient() {
     const { register, isLoading } = useAuth();
     const [agreedToPolicy, setAgreedToPolicy] = useState(false);
@@ -59,21 +74,6 @@ export default function RegisterClient() {
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isTransitioning, setIsTransitioning] = useState(false);
-
-    const departmentOptions = [
-        { value: "TEP", label: "Teknik Pertanian (TEP)" },
-        { value: "TPN", label: "Teknologi Pangan (TPN)" },
-        { value: "TIN", label: "Teknologi Industri Pertanian (TIN)" },
-    ];
-
-    const currentYear = new Date().getFullYear();
-    const maxYear = currentYear - 3;
-    const minYear = 1959;
-
-    const classYearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => {
-        const year = maxYear - i;
-        return { value: year, label: year.toString() };
-    });
 
     const form = useForm<RegisterFormValues>({
         resolver: zodResolver(registerSchema),
@@ -124,7 +124,14 @@ export default function RegisterClient() {
                                 }`}
                             >
                                 {/* Image */}
-                                <Image src={item.src} alt={item.tagline} fill className="object-cover" priority={index === 0} />
+                                <Image
+                                    src={item.src}
+                                    alt={item.tagline}
+                                    fill
+                                    sizes="(min-width: 1024px) 50vw, 100vw"
+                                    className="object-cover"
+                                    priority={index === 0}
+                                />
 
                                 {/* Overlay */}
                                 <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
@@ -224,12 +231,12 @@ export default function RegisterClient() {
                                         control={form.control}
                                         render={({ field, fieldState }) => (
                                             <FormItem>
-                                                <FormLabel>Jurusan</FormLabel>
+                                                <FormLabel>Program Studi</FormLabel>
                                                 <FormControl>
                                                     <ReactSelect
                                                         {...field}
                                                         options={departmentOptions}
-                                                        placeholder="Pilih jurusan"
+                                                        placeholder="Pilih program studi"
                                                         instanceId="google-department-select"
                                                         isSearchable={false}
                                                         value={departmentOptions.find((opt) => opt.value === field.value) ?? ""}

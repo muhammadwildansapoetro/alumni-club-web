@@ -25,7 +25,7 @@ const LoadingContent = ({ size, className }: LoadingContentProps) => {
         <div className={cn("flex items-center justify-center", className)}>
             {/* Logo with fade-in animation */}
             <div className={cn("relative flex animate-ping items-center justify-center", sizeClasses[size])}>
-                <Image src="/logo/logo-ika-ftip-unpad.png" alt="IKA FTIP Unpad Logo" width={50} height={50} className="object-contain" priority />
+                <Image src="/logo/logo-ika-ftip-unpad.png" alt="IKA FTIP Unpad Logo" width={50} height={50} className="object-contain" />
             </div>
         </div>
     );

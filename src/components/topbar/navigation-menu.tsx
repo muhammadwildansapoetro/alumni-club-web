@@ -53,6 +53,7 @@ export default function NavigationMenu() {
                         ) : (
                             <Link
                                 href={nav.href ?? "#"}
+                                onClick={() => setOpenDropdown(null)}
                                 className={cn(
                                     "hover:text-primary flex flex-col items-center justify-center py-1.5 text-xs transition",
                                     isActive ? "text-primary border-primary border-b-2" : "text-gray-700",
@@ -78,6 +79,7 @@ export default function NavigationMenu() {
                                         <div key={child.name} className="relative">
                                             <Link
                                                 href={child.href ?? "#"}
+                                                onClick={() => setOpenDropdown(null)}
                                                 className={cn(
                                                     "hover:bg-primary/10 flex items-center gap-3 px-4 py-2 text-sm",
                                                     childActive ? "text-primary bg-primary/10" : "text-gray-700",
@@ -98,6 +100,7 @@ export default function NavigationMenu() {
                                                         <Link
                                                             key={sub.name}
                                                             href={sub.href ?? "#"}
+                                                            onClick={() => setOpenDropdown(null)}
                                                             className={cn(
                                                                 "block rounded px-2 py-1 text-sm hover:bg-gray-100",
                                                                 sub.active.includes(pathname) ? "text-primary bg-primary/10" : "text-gray-600",

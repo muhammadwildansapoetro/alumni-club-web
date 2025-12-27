@@ -29,7 +29,7 @@ const industryLabels = {
 
 // Options for ReactSelect
 const majorOptions = [
-    { value: "all", label: "Semua Jurusan" },
+    { value: "all", label: "Semua Program Studi" },
     { value: "tep", label: "Teknik Pertanian" },
     { value: "tpn", label: "Teknologi Pangan" },
     { value: "tin", label: "Teknologi Industri Pertanian" },
@@ -68,7 +68,9 @@ export default function SearchAlumni() {
                     {/* Section Header */}
                     <div className="text-primary space-y-3 pb-10 text-center">
                         <h2 className="text-3xl font-bold md:text-4xl">Cari Alumni</h2>
-                        <p className="mx-auto max-w-2xl text-lg font-medium">Jelajahi jaringan alumni kami dari berbagai jurusan dan industri</p>
+                        <p className="mx-auto max-w-2xl text-lg font-medium">
+                            Jelajahi jaringan alumni kami dari berbagai program studi dan industri
+                        </p>
                     </div>
 
                     {/* Search and Filters */}
@@ -82,7 +84,7 @@ export default function SearchAlumni() {
                                 options={majorOptions}
                                 value={majorOptions.find((option) => option.value === selectedMajor)}
                                 onChange={(selectedOption) => setSelectedMajor(selectedOption?.value || "all")}
-                                placeholder="Semua Jurusan"
+                                placeholder="Semua Program Studi"
                                 instanceId="major-select"
                                 isSearchable={false}
                             />

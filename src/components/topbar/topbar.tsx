@@ -2,7 +2,7 @@
 
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { abbreviation, cn } from "@/lib/utils";
-import { LogOut, UserIcon } from "lucide-react";
+import { LogOut, SettingsIcon, UserIcon } from "lucide-react";
 import { useRouter as useNavigation } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useMobile } from "@/hooks/use-mobile";
@@ -12,14 +12,14 @@ import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Badge } from "../ui/badge";
 import dynamic from "next/dynamic";
 import MobileNavigationMenu from "./mobile-navigation-menu";
-import { TDepartment } from "@/types/alumni";
+import { TDepartment } from "@/types/user";
 const SearchInput = dynamic(() => import("../input/search-input"), { ssr: false });
 const NavigationMenu = dynamic(() => import("./navigation-menu"), { ssr: false });
 
 const Topbar = () => {
     const navigation = useNavigation();
     const isMobile = useMobile();
-    const { user, logout, isAuthenticated } = useAuth();
+    const { user, logout } = useAuth();
     const abbr = abbreviation(user?.name || "");
     const [scrollUp, setScrollUp] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -27,6 +27,7 @@ const Topbar = () => {
     const handleLogout = async () => {
         try {
             logout();
+            navigation.push("/login");
         } catch (error) {
             console.error(error);
         }
@@ -45,11 +46,6 @@ const Topbar = () => {
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, [lastScrollY]);
-
-    // Don't render if not authenticated
-    if (!isAuthenticated || !user) {
-        return null;
-    }
 
     return (
         <nav
@@ -88,26 +84,32 @@ const Topbar = () => {
 
                         <div className="flex flex-col items-start gap-0.5 hover:cursor-pointer">
                             <span className="line-clamp-1 max-w-24 text-left text-sm font-medium sm:max-w-fit">
-                                {user.profile?.fullName || user.name}
+                                {user?.profile?.fullName || user?.name}
                             </span>
                             <div className="flex items-center gap-2">
-                                {user.role === "ADMIN" && (
+                                {user?.role === "ADMIN" && (
                                     <Badge size="xs" variant={"admin"}>
                                         Admin
                                     </Badge>
                                 )}
                                 <Badge size="xs" variant={user?.profile?.department as keyof typeof TDepartment}>
-                                    {user?.profile?.department} - {user.profile?.classYear || "Alumni"}
+                                    {user?.profile?.department} - {user?.profile?.classYear || "Alumni"}
                                 </Badge>
                             </div>
                         </div>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-44">
                         <DropdownMenuItem
-                            onClick={() => navigation.push("/dashboard/alumni/profile")}
+                            onClick={() => navigation.push("/dashboard/profile")}
                             className="focus:bg-secondary-50 focus:text-primary hover:cursor-pointer"
                         >
                             <UserIcon className="focus:text-primary h-5 w-5" /> Profil
+                        </DropdownMenuItem>
+                        <DropdownMenuItem
+                            onClick={() => navigation.push("/dashboard/profile/setting")}
+                            className="focus:bg-secondary-50 focus:text-primary hover:cursor-pointer"
+                        >
+                            <SettingsIcon className="focus:text-primary h-5 w-5" /> Pengaturan
                         </DropdownMenuItem>
                         <DropdownMenuItem onClick={handleLogout} className="hover:cursor-pointer focus:bg-red-50 focus:text-red-500">
                             <LogOut className="focus:text-red-500" /> Log out

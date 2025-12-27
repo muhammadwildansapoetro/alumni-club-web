@@ -10,13 +10,13 @@ interface AdminProtectionProps {
 }
 
 export default function AdminProtection({ children }: AdminProtectionProps) {
-    const { user, isAuthenticated } = useAuthStore();
+    const { user } = useAuthStore();
     const router = useRouter();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const checkAdminAccess = () => {
-            if (!isAuthenticated || !user) {
+            if (!user) {
                 router.push("/login");
                 return;
             }
@@ -30,13 +30,13 @@ export default function AdminProtection({ children }: AdminProtectionProps) {
         };
 
         checkAdminAccess();
-    }, [isAuthenticated, user, router]);
+    }, [user, router]);
 
     if (isLoading) {
         return (
             <div className="flex min-h-screen items-center justify-center">
                 <div className="flex flex-col items-center gap-2">
-                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
+                    <Loader2 className="text-primary h-8 w-8 animate-spin" />
                     <p className="text-sm text-gray-600">Memeriksa hak akses...</p>
                 </div>
             </div>

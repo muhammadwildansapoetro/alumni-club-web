@@ -18,7 +18,7 @@ export default function HeroSection() {
                     {/* Headline */}
                     <h1 className="text-4xl leading-tight font-bold text-gray-900 md:text-6xl">
                         Bergabung dengan <br />
-                        <span className="from-primary bg-linear-to-r to-emerald-500 bg-clip-text text-transparent">FTIP Unpad Alumni Club</span>
+                        <span className="text-primary-gradient">FTIP Unpad Alumni Club</span>
                     </h1>
 
                     {/* Subtitle */}

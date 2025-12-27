@@ -1,39 +1,30 @@
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
-import { User } from '@/types/api';
+import { User } from "@/types/user";
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 interface AuthStore {
-  user: User | null;
-  token: string | null;
-  isAuthenticated: boolean;
-  isLoading: boolean;
-  error: string | null;
+    user: User | null;
+    isLoading: boolean;
 
-  // Actions
-  setUser: (user: User, token: string) => void;
-  setLoading: (loading: boolean) => void;
-  setError: (error: string | null) => void;
-  clearAuth: () => void;
+    setUser: (user: User) => void;
+    setLoading: (loading: boolean) => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
-  persist(
-    (set) => ({
-      user: null,
-      token: null,
-      isAuthenticated: false,
-      isLoading: false,
-      error: null,
+    persist(
+        (set) => ({
+            user: null,
 
-      setUser: (user, token) => set({ user, token, isAuthenticated: true, error: null }),
-      setLoading: (isLoading) => set({ isLoading }),
-      setError: (error) => set({ error }),
-      clearAuth: () => set({ user: null, token: null, isAuthenticated: false, error: null }),
-    }),
-    {
-      name: 'auth-storage',
-      storage: createJSONStorage(() => localStorage),
-      partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: state.isAuthenticated }),
-    }
-  )
+            isLoading: false,
+            error: null,
+
+            setUser: (user) => set({ user }),
+            setLoading: (isLoading) => set({ isLoading }),
+        }),
+        {
+            name: "auth-storage",
+            storage: createJSONStorage(() => localStorage),
+            partialize: (state) => ({ user: state.user }),
+        },
+    ),
 );

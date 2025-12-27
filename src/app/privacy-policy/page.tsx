@@ -69,7 +69,7 @@ export default function PrivacyPolicyPage() {
                                     <p className="mb-2 text-gray-700">Kami mengumpulkan informasi alumni detail termasuk:</p>
                                     <ul className="ml-4 list-inside list-disc space-y-1 text-gray-700">
                                         <li>
-                                            <strong>Informasi Akademik:</strong> Jurusan (TEP/TPN/TIN), tahun angkatan
+                                            <strong>Informasi Akademik:</strong> Program Studi (TEP/TPN/TIN), tahun angkatan
                                         </li>
                                         <li>
                                             <strong>Lokasi:</strong> Kota tempat tinggal
@@ -248,7 +248,7 @@ export default function PrivacyPolicyPage() {
                                     <p className="mb-2 text-gray-700">Informasi berikut terlihat oleh alumni lain yang terautentikasi:</p>
                                     <ul className="ml-4 list-inside list-disc space-y-1 text-gray-700">
                                         <li>
-                                            <strong>Profil Dasar:</strong> Nama, jurusan, tahun angkatan, kota
+                                            <strong>Profil Dasar:</strong> Nama, Program Studi, tahun angkatan, kota
                                         </li>
                                         <li>
                                             <strong>Informasi Profesional:</strong> Industri, tingkat pekerjaan, jabatan, perusahaan (jika disediakan)
@@ -274,7 +274,7 @@ export default function PrivacyPolicyPage() {
                                     <h3 className="mb-2 font-semibold text-gray-900">5.3 Layanan Pihak Ketiga</h3>
                                     <ul className="ml-4 list-inside list-disc space-y-1 text-gray-700">
                                         <li>
-                                            <strong>Google OAuth:</strong> Kami menggunakan layanan autentikasi Google untuk login yang aman
+                                            <strong>Google OAuth:</strong> Kami menggunakan layanan autentikasi Google untuk log in yang aman
                                         </li>
                                         <li>
                                             <strong>Supabase:</strong> Hosting dan manajemen database
@@ -346,7 +346,7 @@ export default function PrivacyPolicyPage() {
                                             <strong>Token JWT:</strong> Token autentikasi aman dengan masa kedaluwarsa 7 hari
                                         </li>
                                         <li>
-                                            <strong>Manajemen Sesi:</strong> Cookie untuk mempertahankan status login Anda
+                                            <strong>Manajemen Sesi:</strong> Cookie untuk mempertahankan status log in Anda
                                         </li>
                                     </ul>
                                 </div>

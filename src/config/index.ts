@@ -8,7 +8,8 @@ export const CONFIG = {
     // API Configuration
     API: {
         baseURL: {
-            auth: process.env.NEXT_PUBLIC_API_BASE_URL + "/auth",
+            auth: process.env.NEXT_PUBLIC_API_URL + "/auth",
+            users: process.env.NEXT_PUBLIC_API_URL + "/users",
         },
     },
 

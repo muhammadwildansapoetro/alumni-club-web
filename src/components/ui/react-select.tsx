@@ -139,6 +139,12 @@ const ReactSelect = <Option, IsMulti extends boolean = false, Group extends Grou
                             color: "#013738",
                         },
                     }),
+                    menuList: (base) => ({
+                        ...base,
+                        maxHeight: 150,
+                        overflowY: "auto",
+                    }),
+
                     ...(props.styles || {}),
                 }}
             />

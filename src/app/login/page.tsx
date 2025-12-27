@@ -37,14 +37,14 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 export default function LoginClient() {
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [isTransitioning, setIsTransitioning] = useState(false);
+    const [_isTransitioning, setIsTransitioning] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
     const { login, isLoading } = useAuth();
 
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
-        mode: "onChange",
+        mode: "onSubmit",
         defaultValues: {
             email: "",
             password: "",
@@ -138,7 +138,7 @@ export default function LoginClient() {
                                     ) : (
                                         <>
                                             <LogInIcon className="h-4 w-4" />
-                                            Login
+                                            Log in
                                         </>
                                     )}
                                 </Button>
@@ -186,7 +186,14 @@ export default function LoginClient() {
                                 }`}
                             >
                                 {/* Image */}
-                                <Image src={item.src} alt={item.tagline} fill className="object-cover" priority={index === 0} />
+                                <Image
+                                    src={item.src}
+                                    alt={item.tagline}
+                                    fill
+                                    sizes="(min-width: 1024px) 50vw, 100vw"
+                                    className="object-cover"
+                                    priority={index === 0}
+                                />
 
                                 {/* Overlay */}
                                 <div className="absolute inset-0 bg-linear-to-t from-black/70 via-black/30 to-transparent" />
