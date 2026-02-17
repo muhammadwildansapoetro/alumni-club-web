@@ -2,7 +2,6 @@
 
 import { createContext, useContext, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Loading } from "@/components/ui/loading";
 
 interface SearchParamsContextType {
     searchParams: URLSearchParams | null;
@@ -17,30 +16,16 @@ export function useSearchParamsSafe() {
     return context.searchParams || new URLSearchParams();
 }
 
-export function SearchParamsProvider({
-    children
-}: {
-    children: React.ReactNode
-}) {
+export function SearchParamsProvider({ children }: { children: React.ReactNode }) {
     return (
-        <Suspense fallback={<Loading size="md" />}>
-            <SearchParamsWrapper>
-                {children}
-            </SearchParamsWrapper>
+        <Suspense fallback={null}>
+            <SearchParamsWrapper>{children}</SearchParamsWrapper>
         </Suspense>
     );
 }
 
-function SearchParamsWrapper({
-    children
-}: {
-    children: React.ReactNode
-}) {
+function SearchParamsWrapper({ children }: { children: React.ReactNode }) {
     const searchParams = useSearchParams();
 
-    return (
-        <SearchParamsContext.Provider value={{ searchParams }}>
-            {children}
-        </SearchParamsContext.Provider>
-    );
+    return <SearchParamsContext.Provider value={{ searchParams }}>{children}</SearchParamsContext.Provider>;
 }

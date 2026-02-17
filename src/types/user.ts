@@ -21,7 +21,7 @@ export interface User {
         cityName: string | null;
         provinceId: string | null;
         provinceName: string | null;
-        countryId: string | null;
+        countryId?: number | null;
         countryName: string | null;
         linkedInUrl: string | null;
         status: "WORKING" | "STUDYING" | "WORKING_STUDYING" | "ENTREPRENEUR" | "NOT_WORKING" | null;

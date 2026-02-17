@@ -1,6 +1,7 @@
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useCallback, useMemo } from "react";
 import { encryptForUrl, decryptFromUrl, isEncryptionConfigured, validateUrlEncryptedData } from "@/lib/encryption";
+import { useSearchParamsSafe } from "@/components/search-params-provider";
 
 interface EncryptedQueryParams {
     [key: string]: string | undefined;
@@ -31,7 +32,7 @@ interface UseEncryptQueryReturn {
  */
 export function useEncryptQuery(): UseEncryptQueryReturn {
     const router = useRouter();
-    const searchParams = useSearchParams();
+    const searchParams = useSearchParamsSafe();
 
     const isEncryptionReady = isEncryptionConfigured();
 

@@ -22,7 +22,7 @@ export default function TopBar() {
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
                     <Image src="/logo/logo-ika-ftip-unpad.png" alt="Logo" width={45} height={45} />
-                    <span className="text-xl font-bold text-gray-900">FTIP Unpad Alumni Club</span>
+                    <span className="text-lg font-bold text-gray-900">FTIP Unpad Alumni Club</span>
                 </Link>
 
                 {/* Desktop Navigation */}

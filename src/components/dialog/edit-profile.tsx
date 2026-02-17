@@ -11,10 +11,12 @@ import { classYearOptions, departmentOptions } from "@/app/register/page";
 import { Button } from "../ui/button";
 import { Loader2Icon, SaveIcon } from "lucide-react";
 import { User } from "@/types/user";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { updateOwnProfile } from "@/services/profile.client";
 import { mutate } from "swr";
+import { fetchCountries } from "@/services/country.client";
+import AsyncReactSelect from "../ui/async-select";
 
 const profilFormSchema = z.object({
     fullname: z.string().min(1, "Nama lengkap harus diisi"),
@@ -25,6 +27,7 @@ const profilFormSchema = z.object({
     highestEducation: z.enum(["MASTER", "DOCTOR"]).nullable().optional(),
     status: z.enum(["WORKING", "STUDYING", "WORKING_STUDYING", "ENTREPRENEUR", "NOT_WORKING"], "Status harus dipilih"),
     linkedInUrl: z.url("URL LinkedIn tidak valid").optional(),
+    countryId: z.number().nullable().optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profilFormSchema>;
@@ -64,8 +67,19 @@ export default function EditProfileDialog({ user, onSuccess }: { user: User | nu
             highestEducation: undefined,
             status: undefined,
             linkedInUrl: "",
+            countryId: null,
         },
     });
+
+    console.log("form valus", form.getValues());
+
+    const [countryOptions, setCountryOptions] = useState<{ value: string; label: string }[]>([]);
+
+    const loadCountryOptions = async (inputValue: string) => {
+        const { options } = await fetchCountries(inputValue, 1, 100);
+        setCountryOptions(options);
+        return options;
+    };
 
     const updateProfil = async (values: ProfileFormValues) => {
         try {
@@ -269,6 +283,32 @@ export default function EditProfileDialog({ user, onSuccess }: { user: User | nu
                                     <FormLabel>Profil LinkedIn</FormLabel>
                                     <FormControl>
                                         <Input placeholder="https://www.linkedin.com/in/username" {...field} />
+                                    </FormControl>
+                                    <FormMessage className="text-xs" />
+                                </FormItem>
+                            )}
+                        />
+                        <FormField
+                            name="countryId"
+                            control={form.control}
+                            render={({ field, fieldState }) => (
+                                <FormItem>
+                                    <FormLabel>Negara</FormLabel>
+                                    <FormControl>
+                                        <AsyncReactSelect
+                                            name="countryId"
+                                            cacheOptions
+                                            defaultOptions
+                                            loadOptions={loadCountryOptions}
+                                            placeholder="Pilih negara"
+                                            instanceId="country-select"
+                                            isClearable={true}
+                                            fieldState={fieldState}
+                                            value={countryOptions.find((opt) => Number(opt.value) === field.value) ?? null}
+                                            onChange={(opt: any) => {
+                                                field.onChange(opt ? Number(opt.value) : null);
+                                            }}
+                                        />
                                     </FormControl>
                                     <FormMessage className="text-xs" />
                                 </FormItem>

@@ -10,6 +10,7 @@ export type UpdateProfilePayload = {
         highestEducation?: string | null;
         status?: string;
         linkedInUrl?: string;
+        countryId?: string | null;
     };
 };
 
