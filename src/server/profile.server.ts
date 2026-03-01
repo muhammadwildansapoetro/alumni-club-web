@@ -5,15 +5,15 @@ import { cookies } from "next/headers";
 
 export async function getOwnProfile() {
     const cookieStore = await cookies();
-    const accessToken = cookieStore.get("access_token")?.value;
+    const session = cookieStore.get("alumni_session")?.value;
 
-    if (!accessToken) {
+    if (!session) {
         return null;
     }
 
     const res = await fetch(CONFIG.API.baseURL.users + "/me", {
         headers: {
-            Cookie: `access_token=${accessToken}`,
+            Cookie: `alumni_session=${session}`,
         },
         cache: "no-store",
     });

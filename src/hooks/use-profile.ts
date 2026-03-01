@@ -1,9 +1,9 @@
 "use client";
 
 import useSWR from "swr";
-import { api } from "@/lib/axios";
+import { API } from "@/lib/axios";
 
-const fetcher = (url: string) => api.get(url).then((res) => res.data.data);
+const fetcher = (url: string) => API.get(url).then((res) => res.data.data);
 
 export function useProfile(initialData?: any) {
     return useSWR("/users/me", fetcher, {

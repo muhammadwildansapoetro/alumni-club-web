@@ -1,4 +1,4 @@
-import { api } from "@/lib/axios";
+import { API } from "@/lib/axios";
 import { CountriesResponse, CountryOption } from "@/types/country";
 
 /**
@@ -11,7 +11,7 @@ export const fetchCountries = async (
     limit: number = 50,
 ): Promise<{ options: CountryOption[]; hasMore: boolean }> => {
     try {
-        const res = await api.get<CountriesResponse>("/location/countries", {
+        const res = await API.get<CountriesResponse>("/location/countries", {
             params: { search, page, limit },
         });
 

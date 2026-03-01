@@ -8,6 +8,7 @@ interface AuthStore {
 
     setUser: (user: User) => void;
     setLoading: (loading: boolean) => void;
+    clearUser: () => void;
 }
 
 export const useAuthStore = create<AuthStore>()(
@@ -20,6 +21,7 @@ export const useAuthStore = create<AuthStore>()(
 
             setUser: (user) => set({ user }),
             setLoading: (isLoading) => set({ isLoading }),
+            clearUser: () => set({ user: null }),
         }),
         {
             name: "auth-storage",

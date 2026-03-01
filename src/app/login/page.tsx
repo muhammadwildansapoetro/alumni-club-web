@@ -11,6 +11,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/use-auth";
+import { useRouter } from "next/navigation";
 
 const photoCards = [
     {
@@ -40,7 +41,14 @@ export default function LoginClient() {
     const [_isTransitioning, setIsTransitioning] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
-    const { login, isLoading } = useAuth();
+    const { user, login, isLoading } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (user) {
+            router.replace("/dashboard");
+        }
+    }, [user, router]);
 
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
@@ -83,7 +91,7 @@ export default function LoginClient() {
                     {/* Form */}
                     <div className="w-full">
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit((data) => login(data))} className="space-y-3">
+                            <form onSubmit={form.handleSubmit((data) => login(data, form.setError))} className="space-y-3">
                                 <FormField
                                     control={form.control}
                                     name="email"

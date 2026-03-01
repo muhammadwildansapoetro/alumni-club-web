@@ -1,9 +1,5 @@
-import { api } from "@/lib/axios";
-
-export const refreshSession = async () => {
-    return api.post("/auth/refresh");
-};
+import { API } from "@/lib/axios";
 
 export const logout = async () => {
-    return api.post("/auth/logout");
+    return API.post("/auth/logout");
 };

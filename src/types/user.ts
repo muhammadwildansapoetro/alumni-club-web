@@ -3,7 +3,7 @@ export interface User {
     email: string;
     name: string;
     role: string;
-    authProvider: string;
+    authMethod: "EMAIL" | "GOOGLE" | "BOTH";
     profile: {
         id: string;
         fullName: string;

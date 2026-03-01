@@ -1,4 +1,4 @@
-import { api } from "@/lib/axios";
+import { API } from "@/lib/axios";
 
 export type UpdateProfilePayload = {
     profile: {
@@ -15,6 +15,6 @@ export type UpdateProfilePayload = {
 };
 
 export const updateOwnProfile = async (payload: UpdateProfilePayload) => {
-    const res = await api.patch("/users/profile", payload);
+    const res = await API.patch("/users/profile", payload);
     return res.data;
 };

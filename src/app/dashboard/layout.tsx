@@ -1,9 +1,24 @@
 "use client";
 
 import Topbar from "@/components/topbar/topbar";
-import React from "react";
+import { useAuthStore } from "@/stores/auth.store";
+import { useRouter } from "next/navigation";
+import React, { useEffect } from "react";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
+    const router = useRouter();
+    const user = useAuthStore((state) => state.user);
+
+    useEffect(() => {
+        if (!user) {
+            router.replace("/login");
+        }
+    }, [user, router]);
+
+    if (!user) {
+        return null;
+    }
+
     return (
         <div>
             <Topbar />
