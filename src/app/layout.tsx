@@ -3,6 +3,7 @@ import { Roboto, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
 import { Providers } from "@/components/providers";
+import { VERSION_TAG } from "@/config";
 
 const roboto = Roboto({
     variable: "--font-roboto",
@@ -44,6 +45,10 @@ export default function RootLayout({
                         },
                     }}
                 />
+
+                <span className="fixed bottom-2 right-2 z-40 select-none text-xs text-muted-foreground">
+                    v{VERSION_TAG}
+                </span>
             </body>
         </html>
     );
