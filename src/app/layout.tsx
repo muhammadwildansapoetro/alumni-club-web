@@ -46,9 +46,7 @@ export default function RootLayout({
                     }}
                 />
 
-                <span className="fixed bottom-2 right-2 z-40 select-none text-xs text-muted-foreground">
-                    v{VERSION_TAG}
-                </span>
+                <span className="fixed right-0 bottom-0 z-40 rounded-tl-md bg-white px-2 text-xs select-none">v{VERSION_TAG}</span>
             </body>
         </html>
     );

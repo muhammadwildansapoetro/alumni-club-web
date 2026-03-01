@@ -181,6 +181,8 @@ export default function LoginClient() {
                             }}
                             text="signin_with"
                             width={400}
+                            theme="filled_blue"
+                            shape="circle"
                         />
                     </div>
                 </div>

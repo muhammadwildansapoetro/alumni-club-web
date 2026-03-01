@@ -11,7 +11,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
 
     useEffect(() => {
         if (!user) {
-            router.replace("/login");
+            router.replace("/");
         }
     }, [user, router]);
 

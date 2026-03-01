@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Menu } from "lucide-react";
+import { LogInIcon, Menu, UserPlusIcon } from "lucide-react";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import Image from "next/image";
@@ -18,7 +18,7 @@ export default function TopBar() {
 
     return (
         <header className="sticky top-0 z-50 w-full bg-white/95 shadow backdrop-blur supports-backdrop-filter:bg-white/60">
-            <div className="container flex h-16 items-center justify-between px-4">
+            <div className="container mx-auto flex h-16 items-center justify-between px-4">
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
                     <Image src="/logo/logo-ika-ftip-unpad.png" alt="Logo" width={45} height={45} />
@@ -40,18 +40,18 @@ export default function TopBar() {
 
                 {/* Desktop CTA Buttons */}
                 <div className="hidden items-center space-x-3 md:flex">
-                    <Link href="/login" className={buttonVariants({ variant: "outline" })}>
-                        Log in
+                    <Link href="/login" className={buttonVariants({ variant: "outline", size: "sm" })}>
+                        <LogInIcon /> Log in
                     </Link>
 
-                    <Link href="/register" className={buttonVariants()}>
-                        Daftar
+                    <Link href="/register" className={buttonVariants({ size: "sm" })}>
+                        <UserPlusIcon /> Daftar
                     </Link>
                 </div>
 
                 {/* Mobile Navigation */}
                 <Sheet open={isOpen} onOpenChange={setIsOpen}>
-                    <SheetTrigger asChild className="md:hidden">
+                    <SheetTrigger asChild className="hover:bg-primary-50 md:hidden">
                         <Button variant="ghost" size="icon">
                             <Menu className="size-5" />
                             <span className="sr-only">Buka menu</span>
@@ -60,9 +60,9 @@ export default function TopBar() {
                     <SheetContent side="right" className="w-75 sm:w-100">
                         <SheetHeader>
                             <SheetTitle>Menu</SheetTitle>
-                            <SheetDescription>Navigasi FTIP Alumni Club</SheetDescription>
+                            <SheetDescription></SheetDescription>
                         </SheetHeader>
-                        <nav className="mt-6 flex flex-col space-y-4">
+                        <nav className="flex flex-col space-y-4 px-4">
                             {navigation.map((item) => (
                                 <Link
                                     key={item.name}
@@ -76,12 +76,13 @@ export default function TopBar() {
                             <div className="flex flex-col space-y-2 border-t pt-4">
                                 <Button variant="outline" size="sm" asChild>
                                     <Link href="/login" onClick={() => setIsOpen(false)}>
-                                        Masuk
+                                        <LogInIcon /> Masuk
                                     </Link>
                                 </Button>
+
                                 <Button size="sm" className="bg-primary hover:bg-primary" asChild>
                                     <Link href="/register" onClick={() => setIsOpen(false)}>
-                                        Daftar
+                                        <UserPlusIcon /> Daftar
                                     </Link>
                                 </Button>
                             </div>

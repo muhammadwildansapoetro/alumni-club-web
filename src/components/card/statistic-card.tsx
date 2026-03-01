@@ -3,15 +3,9 @@
 import { AppleIcon, ArrowRightIcon, TractorIcon, UsersIcon, WarehouseIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { buttonVariants } from "../ui/button";
-import { AlumniDataDummy } from "@/data/dummy/alumni";
 import Link from "next/link";
 
 export default function StatisticCard() {
-    const total = AlumniDataDummy?.length;
-    const tep = AlumniDataDummy?.filter((a) => a.major === "tep").length;
-    const tpn = AlumniDataDummy?.filter((a) => a.major === "tpn").length;
-    const tin = AlumniDataDummy?.filter((a) => a.major === "tin").length;
-
     return (
         <div className="space-y-1">
             <h2 className="text-lg font-bold">Statistik Alumni</h2>
@@ -24,7 +18,7 @@ export default function StatisticCard() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-xl font-bold">{total}</p>
+                        <p className="text-xl font-bold">0</p>
                     </CardContent>
                 </Card>
 
@@ -35,7 +29,7 @@ export default function StatisticCard() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="flex items-center justify-between">
-                        <p className="text-xl font-bold">{tep}</p>
+                        <p className="text-xl font-bold">0</p>
                         <Link
                             href={"/dashboard/alumni/agricultural-engineering"}
                             className={buttonVariants({ className: "h-6! text-xs", size: "sm", variant: "outline" })}
@@ -52,7 +46,7 @@ export default function StatisticCard() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="flex items-center justify-between">
-                        <p className="text-xl font-bold">{tpn}</p>
+                        <p className="text-xl font-bold">0</p>
                         <Link
                             href={"/dashboard/alumni/food-technology"}
                             className={buttonVariants({
@@ -73,7 +67,7 @@ export default function StatisticCard() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="flex items-center justify-between">
-                        <p className="text-xl font-bold">{tin}</p>
+                        <p className="text-xl font-bold">0</p>
                         <Link
                             href={"/dashboard/alumni/agricultural-industrial-technology"}
                             className={buttonVariants({

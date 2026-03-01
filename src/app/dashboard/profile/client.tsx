@@ -1,6 +1,7 @@
 "use client";
 
 import EditProfileDialog from "@/components/dialog/edit-profile";
+import FeatureUnderConstruction from "@/components/feature-under-construction";
 import { buttonVariants } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogTrigger } from "@/components/ui/dialog";
@@ -36,7 +37,9 @@ export default function ProfileClient({ initialProfile }: any) {
     const deptStyle = departmentBorderMap[user?.profile?.department as keyof typeof departmentBorderMap];
 
     return (
-        <div className="space-y-3">
+        <div className="space-y-4">
+            <FeatureUnderConstruction />
+
             {/* Profile */}
             <Card className={deptStyle?.firstCard}>
                 <CardHeader className={deptStyle?.header}>

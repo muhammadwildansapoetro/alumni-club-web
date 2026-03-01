@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { ArrowRight, Users, Globe, Briefcase, GlobeIcon } from "lucide-react";
+import { ArrowRight, GlobeIcon } from "lucide-react";
 
 export default function HeroSection() {
     return (
@@ -10,7 +10,7 @@ export default function HeroSection() {
             <div className="container mx-auto px-4">
                 <div className="mx-auto max-w-4xl space-y-5 text-center">
                     {/* Badge */}
-                    <div className="text-primary bg-primary/10 border-primary inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium">
+                    <div className="text-primary border-primary inline-flex items-center rounded-full border px-3 py-1 text-sm font-medium">
                         <GlobeIcon className="mr-2 h-4 w-4" />
                         FTIP Unpad Alumni Club
                     </div>
@@ -40,7 +40,7 @@ export default function HeroSection() {
                     </div>
 
                     {/* Feature Highlights */}
-                    <div className="grid grid-cols-1 gap-8 pt-5 md:grid-cols-3">
+                    {/* <div className="grid grid-cols-1 gap-8 pt-5 md:grid-cols-3">
                         <div className="flex flex-col items-center text-center">
                             <div className="flex h-16 w-16 items-center justify-center rounded-full bg-green-100">
                                 <Users className="text-primary h-8 w-8" />
@@ -62,7 +62,7 @@ export default function HeroSection() {
                             <h3 className="text-lg font-semibold text-gray-900">500+ Perusahaan</h3>
                             <p className="text-gray-600">Berkarir di perusahaan ternama</p>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             </div>
         </section>

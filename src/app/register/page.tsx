@@ -36,7 +36,7 @@ const photoCards = [
 const registerSchema = z
     .object({
         email: z.string().email("Email tidak valid"),
-        npm: z.string().min(1, "NPM harus diisi"),
+        npm: z.string().min(1, "NPM harus diisi").max(12, "NPM maksimal 12 digit").regex(/^\d+$/, "NPM hanya boleh berisi angka"),
         name: z.string().min(1, "Nama harus diisi"),
         password: z.string(),
         passwordConfirmation: z.string(),
@@ -123,7 +123,8 @@ export default function RegisterClient() {
         name: "passwordConfirmation",
     });
 
-    const passwordMismatchError = !isGoogleMode && password && passwordConfirmation && password !== passwordConfirmation ? "Password tidak cocok" : "";
+    const passwordMismatchError =
+        !isGoogleMode && password && passwordConfirmation && password !== passwordConfirmation ? "Password tidak cocok" : "";
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -264,7 +265,9 @@ export default function RegisterClient() {
                                         });
                                     }}
                                     text="signup_with"
-                                    width={400}
+                                    width={500}
+                                    theme="filled_blue"
+                                    shape="circle"
                                 />
                             </div>
 
@@ -308,7 +311,12 @@ export default function RegisterClient() {
                                         <FormItem>
                                             <FormLabel>Nama Lengkap</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Masukkan nama lengkap" {...field} readOnly={isGoogleMode} className={isGoogleMode ? "bg-muted" : ""} />
+                                                <Input
+                                                    placeholder="Masukkan nama lengkap"
+                                                    {...field}
+                                                    readOnly={isGoogleMode}
+                                                    className={isGoogleMode ? "bg-muted" : ""}
+                                                />
                                             </FormControl>
                                             <FormMessage className="text-xs" />
                                         </FormItem>
@@ -321,7 +329,13 @@ export default function RegisterClient() {
                                         <FormItem>
                                             <FormLabel>Email</FormLabel>
                                             <FormControl>
-                                                <Input type="email" placeholder="Masukkan email" {...field} readOnly={isGoogleMode} className={isGoogleMode ? "bg-muted" : ""} />
+                                                <Input
+                                                    type="email"
+                                                    placeholder="Masukkan email"
+                                                    {...field}
+                                                    readOnly={isGoogleMode}
+                                                    className={isGoogleMode ? "bg-muted" : ""}
+                                                />
                                             </FormControl>
                                             <FormMessage className="text-xs" />
                                         </FormItem>
@@ -334,7 +348,7 @@ export default function RegisterClient() {
                                         <FormItem>
                                             <FormLabel>NPM</FormLabel>
                                             <FormControl>
-                                                <Input type="number" placeholder="Masukkan NPM" {...field} />
+                                                <Input type="text" inputMode="numeric" maxLength={12} placeholder="Masukkan NPM" {...field} />
                                             </FormControl>
                                             <FormMessage className="text-xs" />
                                         </FormItem>
