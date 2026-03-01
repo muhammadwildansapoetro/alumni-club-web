@@ -1,4 +1,4 @@
-export const VERSION_TAG = "0.0.1";
+export const VERSION_TAG = "1.0.0";
 
 export type TypeConfig = {
     query_enc_key: string | undefined;
