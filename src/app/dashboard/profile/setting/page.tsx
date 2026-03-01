@@ -2,9 +2,11 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { useAuthStore } from "@/stores/auth.store";
+import { useAuth } from "@/hooks/use-auth";
 import { KeyIcon, MailIcon, SettingsIcon } from "lucide-react";
 import Image from "next/image";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { toast } from "sonner";
 
 const departmentBorderMap = {
     TEP: {
@@ -25,8 +27,9 @@ const departmentBorderMap = {
 } as const;
 
 export default function ProfileSettingPage() {
-    const { user } = useAuthStore();
+    const { user, linkGoogle } = useAuth();
     const deptStyle = departmentBorderMap[user?.profile?.department as keyof typeof departmentBorderMap];
+    const isGoogleLinked = user?.authMethod === "GOOGLE" || user?.authMethod === "BOTH";
 
     return (
         <div className="space-y-3">
@@ -50,10 +53,30 @@ export default function ProfileSettingPage() {
                             </div>
                             <div>
                                 <p className="text-xs">Log in dengan Google</p>
-                                <Button variant="outline" size="sm" className="mt-1 w-full sm:w-fit">
-                                    <Image src="/logo/google.svg" alt="Google Logo" width={15} height={15} />
-                                    Hubungkan
-                                </Button>
+                                {isGoogleLinked ? (
+                                    <Button variant="outline" size="sm" className="mt-1 w-full sm:w-fit" disabled>
+                                        <Image src="/logo/google.svg" alt="Google Logo" width={15} height={15} />
+                                        Sudah Terhubung
+                                    </Button>
+                                ) : (
+                                    <div className="mt-1">
+                                        <GoogleLogin
+                                            onSuccess={(response: CredentialResponse) => {
+                                                if (response.credential) {
+                                                    linkGoogle(response.credential);
+                                                }
+                                            }}
+                                            onError={() => {
+                                                toast.error("Gagal Menghubungkan Akun", {
+                                                    description: "Terjadi kesalahan saat menghubungkan akun Google.",
+                                                    duration: 5000,
+                                                });
+                                            }}
+                                            text="signin_with"
+                                            size="medium"
+                                        />
+                                    </div>
+                                )}
                             </div>
                             <div>
                                 <p className="text-xs">Ubah Password</p>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Roboto, Roboto_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "sonner";
-import { SearchParamsProvider } from "@/components/search-params-provider";
+import { Providers } from "@/components/providers";
 
 const roboto = Roboto({
     variable: "--font-roboto",
@@ -29,7 +29,7 @@ export default function RootLayout({
     return (
         <html lang="en">
             <body className={`${roboto.variable} ${robotoMono.variable} antialiased`}>
-                <SearchParamsProvider>{children}</SearchParamsProvider>
+                <Providers>{children}</Providers>
 
                 <Toaster
                     position="bottom-right"

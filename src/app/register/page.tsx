@@ -9,11 +9,14 @@ import Link from "next/link";
 import { useForm, useWatch } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useEffect, useState } from "react";
-import { EyeIcon, EyeOffIcon, InfoIcon, Loader2, UserPlusIcon } from "lucide-react";
+import { EyeIcon, EyeOffIcon, InfoIcon, Loader2, UserPlusIcon, XIcon } from "lucide-react";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useAuth } from "@/hooks/use-auth";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { jwtDecode } from "jwt-decode";
+import { toast } from "sonner";
 
 const photoCards = [
     {
@@ -35,19 +38,33 @@ const registerSchema = z
         email: z.string().email("Email tidak valid"),
         npm: z.string().min(1, "NPM harus diisi"),
         name: z.string().min(1, "Nama harus diisi"),
-        password: z
-            .string()
-            .min(8, "Password minimal 8 karakter")
-            .regex(/[A-Z]/, "Password harus mengandung huruf besar")
-            .regex(/[a-z]/, "Password harus mengandung huruf kecil")
-            .regex(/[0-9]/, "Password harus mengandung angka"),
-        passwordConfirmation: z.string().min(1, "Konfirmasi Password harus diisi"),
+        password: z.string(),
+        passwordConfirmation: z.string(),
         department: z.string().min(1, "Program Studi harus dipilih"),
         classYear: z.number().min(1959, "Tahun angkatan tidak valid").max(new Date().getFullYear(), "Tahun angkatan tidak valid"),
+        isGoogleMode: z.boolean(),
     })
-    .refine((data) => data.password === data.passwordConfirmation, {
-        message: "Password tidak cocok",
-        path: ["passwordConfirmation"],
+    .superRefine((data, ctx) => {
+        if (!data.isGoogleMode) {
+            if (!data.password || data.password.length < 8) {
+                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password minimal 8 karakter", path: ["password"] });
+            } else {
+                if (!/[A-Z]/.test(data.password)) {
+                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password harus mengandung huruf besar", path: ["password"] });
+                }
+                if (!/[a-z]/.test(data.password)) {
+                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password harus mengandung huruf kecil", path: ["password"] });
+                }
+                if (!/[0-9]/.test(data.password)) {
+                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password harus mengandung angka", path: ["password"] });
+                }
+            }
+            if (!data.passwordConfirmation) {
+                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Konfirmasi Password harus diisi", path: ["passwordConfirmation"] });
+            } else if (data.password !== data.passwordConfirmation) {
+                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password tidak cocok", path: ["passwordConfirmation"] });
+            }
+        }
     });
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -67,13 +84,22 @@ export const classYearOptions = Array.from({ length: maxYear - minYear + 1 }, (_
     return { value: year, label: year.toString() };
 });
 
+interface GoogleJwtPayload {
+    email: string;
+    name: string;
+    sub: string;
+}
+
 export default function RegisterClient() {
-    const { register, isLoading } = useAuth();
+    const { register, googleRegister, isLoading } = useAuth();
     const [agreedToPolicy, setAgreedToPolicy] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [isTransitioning, setIsTransitioning] = useState(false);
+    const [googleIdToken, setGoogleIdToken] = useState<string | null>(null);
+
+    const isGoogleMode = !!googleIdToken;
 
     const form = useForm<RegisterFormValues>({
         resolver: zodResolver(registerSchema),
@@ -87,6 +113,7 @@ export default function RegisterClient() {
             classYear: 0,
             password: "",
             passwordConfirmation: "",
+            isGoogleMode: false,
         },
     });
 
@@ -96,7 +123,7 @@ export default function RegisterClient() {
         name: "passwordConfirmation",
     });
 
-    const passwordMismatchError = password && passwordConfirmation && password !== passwordConfirmation ? "Password tidak cocok" : "";
+    const passwordMismatchError = !isGoogleMode && password && passwordConfirmation && password !== passwordConfirmation ? "Password tidak cocok" : "";
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -109,6 +136,49 @@ export default function RegisterClient() {
 
         return () => clearInterval(interval);
     }, []);
+
+    const handleGoogleSignIn = (response: CredentialResponse) => {
+        if (!response.credential) return;
+
+        try {
+            const decoded = jwtDecode<GoogleJwtPayload>(response.credential);
+            setGoogleIdToken(response.credential);
+            form.setValue("name", decoded.name || "");
+            form.setValue("email", decoded.email || "");
+            form.setValue("isGoogleMode", true);
+            form.clearErrors();
+        } catch {
+            toast.error("Gagal Memproses Akun Google", {
+                description: "Terjadi kesalahan saat memproses data Google.",
+                duration: 5000,
+            });
+        }
+    };
+
+    const handleCancelGoogle = () => {
+        setGoogleIdToken(null);
+        form.setValue("name", "");
+        form.setValue("email", "");
+        form.setValue("isGoogleMode", false);
+        form.clearErrors();
+    };
+
+    const onSubmit = (data: RegisterFormValues) => {
+        if (isGoogleMode && googleIdToken) {
+            googleRegister(
+                {
+                    idToken: googleIdToken,
+                    fullName: data.name,
+                    npm: data.npm,
+                    department: data.department,
+                    classYear: data.classYear,
+                },
+                agreedToPolicy,
+            );
+        } else {
+            register(data as any, agreedToPolicy);
+        }
+    };
 
     return (
         <div className="flex min-h-screen w-full">
@@ -181,10 +251,56 @@ export default function RegisterClient() {
                         </p>
                     </div>
 
+                    {/* Google Sign-In */}
+                    {!isGoogleMode && (
+                        <>
+                            <div className="flex w-full justify-center">
+                                <GoogleLogin
+                                    onSuccess={handleGoogleSignIn}
+                                    onError={() => {
+                                        toast.error("Gagal Masuk dengan Google", {
+                                            description: "Terjadi kesalahan saat masuk dengan Google.",
+                                            duration: 5000,
+                                        });
+                                    }}
+                                    text="signup_with"
+                                    width={400}
+                                />
+                            </div>
+
+                            <div className="relative w-full">
+                                <div className="absolute inset-0 flex items-center">
+                                    <span className="w-full border-t border-gray-300" />
+                                </div>
+                                <div className="relative flex justify-center text-sm">
+                                    <span className="bg-background text-muted-foreground px-2">Atau</span>
+                                </div>
+                            </div>
+                        </>
+                    )}
+
+                    {/* Google Mode Indicator */}
+                    {isGoogleMode && (
+                        <div className="flex items-center justify-between rounded-lg border border-green-200 bg-green-50 px-4 py-3">
+                            <div className="flex items-center gap-2">
+                                <Image src="/logo/google.svg" alt="Google Logo" width={16} height={16} />
+                                <span className="text-sm font-medium text-green-800">Mendaftar dengan Google</span>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={handleCancelGoogle}
+                                className="text-green-600 hover:text-green-800"
+                                aria-label="Batalkan pendaftaran Google"
+                            >
+                                <XIcon className="h-4 w-4" />
+                            </button>
+                        </div>
+                    )}
+
                     <div className="w-full">
                         {/* Registration Form */}
                         <Form {...form}>
-                            <form onSubmit={form.handleSubmit((data) => register(data, agreedToPolicy))} className="w-full space-y-3">
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="w-full space-y-3">
                                 <FormField
                                     control={form.control}
                                     name="name"
@@ -192,7 +308,7 @@ export default function RegisterClient() {
                                         <FormItem>
                                             <FormLabel>Nama Lengkap</FormLabel>
                                             <FormControl>
-                                                <Input placeholder="Masukkan nama lengkap" {...field} />
+                                                <Input placeholder="Masukkan nama lengkap" {...field} readOnly={isGoogleMode} className={isGoogleMode ? "bg-muted" : ""} />
                                             </FormControl>
                                             <FormMessage className="text-xs" />
                                         </FormItem>
@@ -205,7 +321,7 @@ export default function RegisterClient() {
                                         <FormItem>
                                             <FormLabel>Email</FormLabel>
                                             <FormControl>
-                                                <Input type="email" placeholder="Masukkan email" {...field} />
+                                                <Input type="email" placeholder="Masukkan email" {...field} readOnly={isGoogleMode} className={isGoogleMode ? "bg-muted" : ""} />
                                             </FormControl>
                                             <FormMessage className="text-xs" />
                                         </FormItem>
@@ -277,80 +393,83 @@ export default function RegisterClient() {
                                     />
                                 </div>
 
-                                <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2">
-                                    <FormField
-                                        control={form.control}
-                                        name="password"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel className="flex items-center gap-2">
-                                                    Password
-                                                    <TooltipProvider delayDuration={150}>
-                                                        <Tooltip>
-                                                            <TooltipTrigger asChild>
-                                                                <button
-                                                                    type="button"
-                                                                    className="text-muted-foreground hover:text-foreground"
-                                                                    aria-label="Password requirements"
-                                                                >
-                                                                    <InfoIcon className="h-4 w-4" />
-                                                                </button>
-                                                            </TooltipTrigger>
+                                {/* Password fields — hidden in Google mode */}
+                                {!isGoogleMode && (
+                                    <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2">
+                                        <FormField
+                                            control={form.control}
+                                            name="password"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel className="flex items-center gap-2">
+                                                        Password
+                                                        <TooltipProvider delayDuration={150}>
+                                                            <Tooltip>
+                                                                <TooltipTrigger asChild>
+                                                                    <button
+                                                                        type="button"
+                                                                        className="text-muted-foreground hover:text-foreground"
+                                                                        aria-label="Password requirements"
+                                                                    >
+                                                                        <InfoIcon className="h-4 w-4" />
+                                                                    </button>
+                                                                </TooltipTrigger>
 
-                                                            <TooltipContent side="right" className="max-w-xs border bg-white">
-                                                                <div className="space-y-1 text-sm">
-                                                                    <ul className="text-muted-foreground list-disc pl-4">
-                                                                        <li>Minimal 8 karakter</li>
-                                                                        <li>Mengandung huruf besar (A–Z)</li>
-                                                                        <li>Mengandung huruf kecil (a–z)</li>
-                                                                        <li>Mengandung angka (0–9)</li>
-                                                                    </ul>
-                                                                </div>
-                                                            </TooltipContent>
-                                                        </Tooltip>
-                                                    </TooltipProvider>
-                                                </FormLabel>
-                                                <FormControl>
-                                                    <div className="relative">
-                                                        <FormControl>
-                                                            <Input
-                                                                type={showPassword ? "text" : "password"}
-                                                                placeholder="Masukkan password"
-                                                                {...field}
-                                                                className="pr-10"
-                                                            />
-                                                        </FormControl>
+                                                                <TooltipContent side="right" className="max-w-xs border bg-white">
+                                                                    <div className="space-y-1 text-sm">
+                                                                        <ul className="text-muted-foreground list-disc pl-4">
+                                                                            <li>Minimal 8 karakter</li>
+                                                                            <li>Mengandung huruf besar (A–Z)</li>
+                                                                            <li>Mengandung huruf kecil (a–z)</li>
+                                                                            <li>Mengandung angka (0–9)</li>
+                                                                        </ul>
+                                                                    </div>
+                                                                </TooltipContent>
+                                                            </Tooltip>
+                                                        </TooltipProvider>
+                                                    </FormLabel>
+                                                    <FormControl>
+                                                        <div className="relative">
+                                                            <FormControl>
+                                                                <Input
+                                                                    type={showPassword ? "text" : "password"}
+                                                                    placeholder="Masukkan password"
+                                                                    {...field}
+                                                                    className="pr-10"
+                                                                />
+                                                            </FormControl>
 
-                                                        <button
-                                                            type="button"
-                                                            onClick={() => setShowPassword((v) => !v)}
-                                                            className="text-muted-foreground hover:text-foreground absolute inset-y-0 right-0 flex items-center pr-3 hover:cursor-pointer"
-                                                            aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
-                                                        >
-                                                            {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
-                                                        </button>
-                                                    </div>
-                                                </FormControl>
-                                                <FormMessage className="text-xs" />
-                                            </FormItem>
-                                        )}
-                                    />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setShowPassword((v) => !v)}
+                                                                className="text-muted-foreground hover:text-foreground absolute inset-y-0 right-0 flex items-center pr-3 hover:cursor-pointer"
+                                                                aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                                                            >
+                                                                {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+                                                            </button>
+                                                        </div>
+                                                    </FormControl>
+                                                    <FormMessage className="text-xs" />
+                                                </FormItem>
+                                            )}
+                                        />
 
-                                    <FormField
-                                        control={form.control}
-                                        name="passwordConfirmation"
-                                        render={({ field }) => (
-                                            <FormItem>
-                                                <FormLabel>Konfirmasi Password</FormLabel>
-                                                <FormControl>
-                                                    <Input type="password" placeholder="Masukkan konfirmasi password" {...field} />
-                                                </FormControl>
-                                                <FormMessage className="text-xs" />
-                                                {passwordMismatchError && <FormMessage className="text-xs">{passwordMismatchError}</FormMessage>}
-                                            </FormItem>
-                                        )}
-                                    />
-                                </div>
+                                        <FormField
+                                            control={form.control}
+                                            name="passwordConfirmation"
+                                            render={({ field }) => (
+                                                <FormItem>
+                                                    <FormLabel>Konfirmasi Password</FormLabel>
+                                                    <FormControl>
+                                                        <Input type="password" placeholder="Masukkan konfirmasi password" {...field} />
+                                                    </FormControl>
+                                                    <FormMessage className="text-xs" />
+                                                    {passwordMismatchError && <FormMessage className="text-xs">{passwordMismatchError}</FormMessage>}
+                                                </FormItem>
+                                            )}
+                                        />
+                                    </div>
+                                )}
 
                                 {/* Privacy Policy & Submit */}
                                 <div className="flex flex-col gap-3">
@@ -385,6 +504,11 @@ export default function RegisterClient() {
                                             <>
                                                 <Loader2 className="h-4 w-4 animate-spin" />
                                                 Memproses...
+                                            </>
+                                        ) : isGoogleMode ? (
+                                            <>
+                                                <Image src="/logo/google.svg" alt="Google Logo" width={15} height={15} />
+                                                Daftar dengan Google
                                             </>
                                         ) : (
                                             <>

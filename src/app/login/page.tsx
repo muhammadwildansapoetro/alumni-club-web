@@ -12,6 +12,8 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
+import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
+import { toast } from "sonner";
 
 const photoCards = [
     {
@@ -41,7 +43,7 @@ export default function LoginClient() {
     const [_isTransitioning, setIsTransitioning] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
 
-    const { user, login, isLoading } = useAuth();
+    const { user, login, googleLogin, isLoading } = useAuth();
     const router = useRouter();
 
     useEffect(() => {
@@ -164,20 +166,22 @@ export default function LoginClient() {
                     </div>
 
                     {/* Google Login */}
-                    <div className="w-full">
-                        <Button variant="outline" onClick={() => {}} className="w-full">
-                            {false ? (
-                                <>
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                    Memproses...
-                                </>
-                            ) : (
-                                <>
-                                    <Image src="/logo/google.svg" alt="Google Logo" width={15} height={15} className="mr-2" />
-                                    Masuk dengan Google
-                                </>
-                            )}
-                        </Button>
+                    <div className="flex w-full justify-center">
+                        <GoogleLogin
+                            onSuccess={(response: CredentialResponse) => {
+                                if (response.credential) {
+                                    googleLogin(response.credential);
+                                }
+                            }}
+                            onError={() => {
+                                toast.error("Log in Google Gagal", {
+                                    description: "Terjadi kesalahan saat masuk dengan Google.",
+                                    duration: 5000,
+                                });
+                            }}
+                            text="signin_with"
+                            width={400}
+                        />
                     </div>
                 </div>
             </div>

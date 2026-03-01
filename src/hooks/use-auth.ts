@@ -16,6 +16,14 @@ type RegisterFormValues = {
     classYear: number;
 };
 
+type GoogleRegisterData = {
+    idToken: string;
+    npm: string;
+    fullName: string;
+    department: string;
+    classYear: number;
+};
+
 export const useAuth = () => {
     const router = useRouter();
     const { user, isLoading, setUser, setLoading, clearUser } = useAuthStore();
@@ -151,6 +159,105 @@ export const useAuth = () => {
         [setLoading, router],
     );
 
+    const googleLogin = useCallback(
+        async (idToken: string) => {
+            setLoading(true);
+
+            try {
+                const response = await API.post("/auth/google/login", { idToken });
+
+                toast.success("Log in Berhasil", {
+                    description: "Selamat datang kembali!",
+                    duration: 3000,
+                });
+
+                setUser(response.data.data.user);
+                router.push("/dashboard");
+
+                return { success: true };
+            } catch (error: any) {
+                toast.error("Log in Google Gagal", {
+                    description: error.response?.data?.error || "Terjadi kesalahan, silakan coba lagi",
+                    duration: 5000,
+                });
+
+                return { success: false };
+            } finally {
+                setLoading(false);
+            }
+        },
+        [setUser, setLoading, router],
+    );
+
+    const googleRegister = useCallback(
+        async (data: GoogleRegisterData, agreedToPolicy: boolean) => {
+            if (!agreedToPolicy) {
+                toast.error("Persyaratan Diperlukan", {
+                    description: "Anda harus menyetujui Kebijakan Privasi untuk melanjutkan.",
+                    duration: 3000,
+                });
+                return { success: false };
+            }
+
+            setLoading(true);
+
+            try {
+                const response = await API.post("/auth/google/register", data);
+
+                toast.success("Registrasi Berhasil", {
+                    description: "Akun Anda telah dibuat. Selamat datang!",
+                    duration: 3000,
+                });
+
+                setUser(response.data.data.user);
+                router.push("/dashboard");
+
+                return { success: true };
+            } catch (error: any) {
+                toast.error("Registrasi Google Gagal", {
+                    description: error.response?.data?.error || "Terjadi kesalahan, silakan coba lagi",
+                    duration: 5000,
+                });
+
+                return { success: false };
+            } finally {
+                setLoading(false);
+            }
+        },
+        [setUser, setLoading, router],
+    );
+
+    const linkGoogle = useCallback(
+        async (idToken: string) => {
+            setLoading(true);
+
+            try {
+                await API.post("/auth/google/link", { idToken });
+
+                if (user) {
+                    setUser({ ...user, authMethod: "BOTH" });
+                }
+
+                toast.success("Akun Google Terhubung", {
+                    description: "Akun Google Anda berhasil dihubungkan.",
+                    duration: 3000,
+                });
+
+                return { success: true };
+            } catch (error: any) {
+                toast.error("Gagal Menghubungkan Akun", {
+                    description: error.response?.data?.error || error.response?.data?.message || "Terjadi kesalahan, silakan coba lagi",
+                    duration: 5000,
+                });
+
+                return { success: false };
+            } finally {
+                setLoading(false);
+            }
+        },
+        [user, setUser, setLoading],
+    );
+
     return {
         user,
         isLoading,
@@ -158,5 +265,8 @@ export const useAuth = () => {
         logout,
         verifyEmail,
         register,
+        googleLogin,
+        googleRegister,
+        linkGoogle,
     };
 };
