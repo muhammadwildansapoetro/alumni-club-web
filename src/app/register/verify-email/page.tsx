@@ -18,7 +18,7 @@ export default function VerifyEmailPage() {
             if (!token) {
                 toast.error("Token Tidak Ditemukan", {
                     description: "Tidak ada token verifikasi.",
-                    duration: 3000,
+                    duration: 10000,
                 });
                 // Redirect to login after showing error
                 setTimeout(() => {
@@ -36,8 +36,8 @@ export default function VerifyEmailPage() {
     return (
         <div className="to-primary-50 flex min-h-screen items-center justify-center bg-linear-to-t from-white">
             <div className="text-center">
-                <Loader2Icon className="h-12 w-12 animate-spin text-primary mx-auto" />
-                <p className="mt-4 text-lg font-medium text-muted-foreground">Memverifikasi email Anda...</p>
+                <Loader2Icon className="text-primary mx-auto h-12 w-12 animate-spin" />
+                <p className="text-muted-foreground mt-4 text-lg font-medium">Memverifikasi email Anda...</p>
             </div>
         </div>
     );

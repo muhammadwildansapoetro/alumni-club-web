@@ -1,33 +1,52 @@
 export interface User {
+    authMethod: "EMAIL" | "GOOGLE" | "BOTH";
     id: string;
     email: string;
     name: string;
     role: string;
-    authMethod: "EMAIL" | "GOOGLE" | "BOTH";
-    profile: {
-        id: string;
-        fullName: string;
-        npm: string;
-        department: "TEP" | "TPN" | "TIN";
-        classYear: number;
-        graduationYear: number | null;
-        employmentType: string | null;
-        jobLevel: string | null;
-        jobTitle: string | null;
-        companyName: string | null;
-        industry: string | null;
-        incomeRange: string | null;
-        cityId: string | null;
-        cityName: string | null;
-        provinceId: string | null;
-        provinceName: string | null;
-        countryId?: number | null;
-        countryName: string | null;
-        linkedInUrl: string | null;
-        status: "WORKING" | "STUDYING" | "WORKING_STUDYING" | "ENTREPRENEUR" | "NOT_WORKING" | null;
-        highestEducation: "MASTER" | "DOCTOR" | null;
-    };
-    createdAt: string;
+    profile: ProfileClass;
+    createdAt: Date;
+    updatedAt: Date;
+}
+
+export interface FurtherEducation {
+    degree: "MAGISTER" | "DOCTOR";
+    entryYear: number;
+    graduationYear?: number | null;
+    universityName: string;
+    fieldOfStudy: string;
+}
+
+export interface WorkExperience {
+    industry: EIndustry;
+    jobLevel: EmploymentLevel;
+    employmentType: EEmploymentType;
+    incomeRange?: EIncomeRange | null;
+    jobTitle: string;
+    companyName: string;
+    startYear: number;
+    endYear?: number | null;
+}
+
+export interface ProfileClass {
+    id: string;
+    fullName: string;
+    npm: string;
+    department: string;
+    entryYear: number;
+    graduationYear: number | null;
+    furtherEducations: FurtherEducation[] | null;
+    cityId: number | null;
+    cityName: string | null;
+    provinceId: number | null;
+    provinceName: string | null;
+    countryId: number | null;
+    countryName: string | null;
+    workExperiences: WorkExperience[] | null;
+    linkedInUrl: string | null;
+    status: EAlumniStatus | null;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export type UserRole = "USER" | "ADMIN";
@@ -171,3 +190,47 @@ export const TAlumniStatus = {
     [EAlumniStatus.ENTREPRENEUR]: "Wirausaha",
     [EAlumniStatus.NOT_WORKING]: "Belum Bekerja",
 };
+
+export enum EDegree {
+    MAGISTER = "MAGISTER",
+    DOCTOR = "DOCTOR",
+}
+
+export const TDegree = {
+    [EDegree.MAGISTER]: "Magister (S2)",
+    [EDegree.DOCTOR]: "Doktor (S3)",
+};
+
+export enum EIncomeRange {
+    BELOW_5M = "BELOW_5M",
+    RANGE_5_10M = "RANGE_5_10M",
+    RANGE_10_15M = "RANGE_10_15M",
+    ABOVE_15M = "ABOVE_15M",
+    UNKNOWN = "UNKNOWN",
+}
+
+export const TIncomeRange = {
+    [EIncomeRange.BELOW_5M]: "Di bawah Rp 5 juta",
+    [EIncomeRange.RANGE_5_10M]: "Rp 5–10 juta",
+    [EIncomeRange.RANGE_10_15M]: "Rp 10–15 juta",
+    [EIncomeRange.ABOVE_15M]: "Di atas Rp 15 juta",
+    [EIncomeRange.UNKNOWN]: "Tidak ingin menyebutkan",
+};
+
+export const departmentBorderMap = {
+    TEP: {
+        firstCard: "border-primary border-t-8",
+        card: "border-primary border-t",
+        header: "border-primary/50 border-b",
+    },
+    TPN: {
+        firstCard: "border-primary border-t-8",
+        card: "border-red-500 border-t",
+        header: "border-red-500/50 border-b",
+    },
+    TIN: {
+        firstCard: "border-primary border-t-8",
+        card: "border-orange-500 border-t",
+        header: "border-orange-500/50 border-b",
+    },
+} as const;

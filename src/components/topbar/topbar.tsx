@@ -93,7 +93,7 @@ const Topbar = () => {
                                     </Badge>
                                 )}
                                 <Badge size="xs" variant={user?.profile?.department as keyof typeof TDepartment}>
-                                    {user?.profile?.department} - {user?.profile?.classYear || "Alumni"}
+                                    {user?.profile?.department} - {user?.profile?.entryYear || "Alumni"}
                                 </Badge>
                             </div>
                         </div>

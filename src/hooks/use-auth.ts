@@ -13,7 +13,8 @@ type RegisterFormValues = {
     password: string;
     passwordConfirmation: string;
     department: string;
-    classYear: number;
+    entryYear: number;
+    graduationYear: number;
 };
 
 type GoogleRegisterData = {
@@ -21,7 +22,8 @@ type GoogleRegisterData = {
     npm: string;
     fullName: string;
     department: string;
-    classYear: number;
+    entryYear: number;
+    graduationYear: number;
 };
 
 export const useAuth = () => {
@@ -37,7 +39,7 @@ export const useAuth = () => {
 
                 toast.success("Log in Berhasil", {
                     description: "Selamat datang kembali!",
-                    duration: 3000,
+                    duration: 10000,
                 });
 
                 setUser(response.data.data.user);
@@ -52,9 +54,10 @@ export const useAuth = () => {
                         setError(field as keyof LoginRequest, { message });
                     });
                 } else {
+                    console.log("error", error);
                     toast.error("Log in Gagal", {
-                        description: error.response?.data?.error || "Terjadi kesalahan koneksi, silakan coba lagi",
-                        duration: 5000,
+                        description: error.response?.data?.message,
+                        duration: 10000,
                     });
                 }
 
@@ -72,12 +75,12 @@ export const useAuth = () => {
 
             toast.success("Log out Berhasil", {
                 description: "Anda telah keluar dari akun.",
-                duration: 3000,
+                duration: 10000,
             });
         } catch (error: any) {
             toast.error("Terjadi Kesalahan", {
-                description: error.response?.data?.error || "Log out gagal, silakan coba lagi.",
-                duration: 5000,
+                description: error.response?.data?.message,
+                duration: 10000,
             });
         } finally {
             clearUser();
@@ -94,7 +97,7 @@ export const useAuth = () => {
 
                 toast.success("Email Berhasil Diverifikasi", {
                     description: response.data.message || "Anda sudah bisa log in.",
-                    duration: 3000,
+                    duration: 10000,
                 });
 
                 setTimeout(() => router.push("/login"), 1000);
@@ -102,8 +105,8 @@ export const useAuth = () => {
                 return { success: true };
             } catch (error: any) {
                 toast.error("Terjadi Kesalahan", {
-                    description: error.response?.data?.error || "Silakan coba lagi.",
-                    duration: 5000,
+                    description: error.response?.data?.message,
+                    duration: 10000,
                 });
 
                 return { success: false };
@@ -119,7 +122,7 @@ export const useAuth = () => {
             if (!agreedToPolicy) {
                 toast.error("Persyaratan Diperlukan", {
                     description: "Anda harus menyetujui Kebijakan Privasi untuk melanjutkan.",
-                    duration: 3000,
+                    duration: 10000,
                 });
                 return { success: false };
             }
@@ -132,7 +135,8 @@ export const useAuth = () => {
                     npm: data.npm,
                     name: data.name,
                     department: data.department,
-                    classYear: data.classYear,
+                    entryYear: data.entryYear,
+                    graduationYear: data.graduationYear,
                     password: data.password,
                 };
 
@@ -140,15 +144,16 @@ export const useAuth = () => {
 
                 toast.success("Registrasi Berhasil", {
                     description: "Silakan cek email Anda untuk verifikasi akun.",
-                    duration: 5000,
+                    duration: 10000,
                 });
 
                 router.push("/login");
 
                 return { success: true };
             } catch (error: any) {
+                console.log("error", error);
                 toast.error("Terjadi Kesalahan", {
-                    description: error.response?.data?.error || "Registrasi gagal",
+                    description: error.response?.data?.message,
                 });
 
                 return { success: false };
@@ -168,7 +173,7 @@ export const useAuth = () => {
 
                 toast.success("Log in Berhasil", {
                     description: "Selamat datang kembali!",
-                    duration: 3000,
+                    duration: 10000,
                 });
 
                 setUser(response.data.data.user);
@@ -177,8 +182,8 @@ export const useAuth = () => {
                 return { success: true };
             } catch (error: any) {
                 toast.error("Log in Google Gagal", {
-                    description: error.response?.data?.error || "Terjadi kesalahan, silakan coba lagi",
-                    duration: 5000,
+                    description: error.response?.data?.message,
+                    duration: 10000,
                 });
 
                 return { success: false };
@@ -194,7 +199,7 @@ export const useAuth = () => {
             if (!agreedToPolicy) {
                 toast.error("Persyaratan Diperlukan", {
                     description: "Anda harus menyetujui Kebijakan Privasi untuk melanjutkan.",
-                    duration: 3000,
+                    duration: 10000,
                 });
                 return { success: false };
             }
@@ -206,7 +211,7 @@ export const useAuth = () => {
 
                 toast.success("Registrasi Berhasil", {
                     description: "Akun Anda telah dibuat. Selamat datang!",
-                    duration: 3000,
+                    duration: 10000,
                 });
 
                 setUser(response.data.data.user);
@@ -215,8 +220,8 @@ export const useAuth = () => {
                 return { success: true };
             } catch (error: any) {
                 toast.error("Registrasi Google Gagal", {
-                    description: error.response?.data?.error || "Terjadi kesalahan, silakan coba lagi",
-                    duration: 5000,
+                    description: error.response?.data?.message,
+                    duration: 10000,
                 });
 
                 return { success: false };
@@ -235,19 +240,19 @@ export const useAuth = () => {
                 await API.post("/auth/google/link", { idToken });
 
                 if (user) {
-                    setUser({ ...user, authMethod: "BOTH" });
+                    setUser({ ...user });
                 }
 
                 toast.success("Akun Google Terhubung", {
                     description: "Akun Google Anda berhasil dihubungkan.",
-                    duration: 3000,
+                    duration: 10000,
                 });
 
                 return { success: true };
             } catch (error: any) {
                 toast.error("Gagal Menghubungkan Akun", {
-                    description: error.response?.data?.error || error.response?.data?.message || "Terjadi kesalahan, silakan coba lagi",
-                    duration: 5000,
+                    description: error.response?.data?.message,
+                    duration: 10000,
                 });
 
                 return { success: false };

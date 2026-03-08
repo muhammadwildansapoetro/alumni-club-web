@@ -1,83 +1,152 @@
 "use client";
 
-import { useForm } from "react-hook-form";
-import { DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
+import { useForm, useWatch } from "react-hook-form";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import ReactSelect from "../ui/react-select";
-import { classYearOptions, departmentOptions } from "@/app/register/page";
 import { Button } from "../ui/button";
 import { Loader2Icon, SaveIcon } from "lucide-react";
 import { User } from "@/types/user";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { updateOwnProfile } from "@/services/profile.client";
-import { mutate } from "swr";
+import { useRouter } from "next/navigation";
 import { fetchCountries } from "@/services/country.client";
 import AsyncReactSelect from "../ui/async-select";
+import { useDialog } from "@/hooks/use-dialog";
+import { fetchProvinces, fetchCities } from "@/services/country.client";
+import { currentYear, entryYearOptions, graduationYearOptions } from "@/lib/option";
 
 const profilFormSchema = z.object({
-    fullname: z.string().min(1, "Nama lengkap harus diisi"),
-    npm: z.string().min(1, "NPM harus diisi"),
-    department: z.enum(["TEP", "TPN", "TIN"], "Program Studi harus dipilih"),
-    classYear: z.number().min(1959, "Tahun angkatan tidak valid").max(new Date().getFullYear(), "Tahun angkatan tidak valid"),
-    graduationYear: z.number().min(1959, "Tahun lulus tidak valid").max(new Date().getFullYear(), "Tahun lulus tidak valid"),
-    highestEducation: z.enum(["MASTER", "DOCTOR"]).nullable().optional(),
-    status: z.enum(["WORKING", "STUDYING", "WORKING_STUDYING", "ENTREPRENEUR", "NOT_WORKING"], "Status harus dipilih"),
-    linkedInUrl: z.url("URL LinkedIn tidak valid").optional(),
+    fullname: z.string().min(1, "Nama lengkap harus diisi").max(100, "Nama terlalu panjang"),
+    npm: z.string().min(1, "NPM harus diisi").max(12, "NPM maksimal 12 digit").regex(/^\d+$/, "NPM hanya boleh berisi angka"),
+    entryYear: z
+        .number()
+        .min(1959, "Tahun lulus tidak valid")
+        .max(currentYear - 3, "Tahun lulus tidak valid"),
+    graduationYear: z.number().min(1962, "Tahun lulus tidak valid").max(currentYear, "Tahun lulus tidak valid"),
+    linkedInUrl: z.string().url("URL LinkedIn tidak valid").or(z.literal("")).optional(),
     countryId: z.number().nullable().optional(),
+    countryName: z.string().optional(),
+    provinceId: z.number().nullable().optional(),
+    provinceName: z.string().optional().nullable(),
+    cityId: z.number().nullable().optional(),
+    cityName: z.string().optional().nullable(),
+    furtherEducations: z
+        .array(
+            z.object({
+                degree: z.enum(["MAGISTER", "DOCTOR"]),
+                entryYear: z
+                    .number()
+                    .min(1959)
+                    .max(currentYear + 5),
+                graduationYear: z
+                    .number()
+                    .min(1959)
+                    .max(currentYear + 10)
+                    .nullable()
+                    .optional(),
+                universityName: z.string().min(1, "Nama universitas harus diisi").max(200),
+                fieldOfStudy: z.string().min(1, "Bidang studi harus diisi").max(200),
+            }),
+        )
+        .nullable()
+        .optional(),
+    workExperiences: z
+        .array(
+            z.object({
+                industry: z.string().min(1, "Industri harus dipilih"),
+                jobLevel: z.string().min(1, "Level jabatan harus dipilih"),
+                employmentType: z.string().min(1, "Tipe pekerjaan harus dipilih"),
+                incomeRange: z.string().optional().nullable(),
+                jobTitle: z.string().min(1, "Judul pekerjaan harus diisi").max(100),
+                companyName: z.string().min(1, "Nama perusahaan harus diisi").max(100),
+                startYear: z
+                    .number()
+                    .min(1959)
+                    .max(currentYear + 5),
+                endYear: z
+                    .number()
+                    .min(1959)
+                    .max(currentYear + 5)
+                    .nullable()
+                    .optional(),
+            }),
+        )
+        .nullable()
+        .optional(),
 });
 
 type ProfileFormValues = z.infer<typeof profilFormSchema>;
 
-export default function EditProfileDialog({ user, onSuccess }: { user: User | null; onSuccess: () => void }) {
-    const currentYear = new Date().getFullYear();
+export default function EditProfileDialog() {
+    const { isOpen, data: user, onClose } = useDialog<User>("edit-profile");
 
-    const graduationYearOptions = Array.from({ length: currentYear - 1959 + 1 }, (_, i) => {
-        const year = 1959 + i;
-        return {
-            label: year.toString(),
-            value: year,
-        };
-    }).reverse();
+    return (
+        <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+            <DialogContent className="max-h-[90vh] max-w-3xl overflow-visible" onOpenAutoFocus={(e) => e.preventDefault()}>
+                <DialogHeader>
+                    <DialogTitle>Ubah Profil</DialogTitle>
+                    <DialogDescription></DialogDescription>
+                </DialogHeader>
 
-    const highestEducationOptions = [
-        { label: "Magister (S2)", value: "MASTER" },
-        { label: "Doktor (S3)", value: "DOCTOR" },
-    ];
+                <EditProfileForm user={user} onSuccess={onClose} />
+            </DialogContent>
+        </Dialog>
+    );
+}
 
-    const alumniStatusOptions = [
-        { label: "Bekerja", value: "WORKING" },
-        { label: "Melanjutkan Studi", value: "STUDYING" },
-        { label: "Bekerja & Studi", value: "WORKING_STUDYING" },
-        { label: "Wirausaha", value: "ENTREPRENEUR" },
-        { label: "Belum Bekerja", value: "NOT_WORKING" },
-    ];
+function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSuccess: () => void }) {
+    const router = useRouter();
+    const [countryOptions, setCountryOptions] = useState<{ value: string; label: string }[]>([]);
+    const [provinceOptions, setProvinceOptions] = useState<{ value: string; label: string }[]>(() =>
+        user?.profile?.provinceId && user?.profile?.provinceName
+            ? [{ value: user.profile.provinceId.toString(), label: user.profile.provinceName }]
+            : [],
+    );
+    const [cityOptions, setCityOptions] = useState<{ value: string; label: string }[]>(() =>
+        user?.profile?.cityId && user?.profile?.cityName ? [{ value: user.profile.cityId.toString(), label: user.profile.cityName }] : [],
+    );
 
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profilFormSchema),
         defaultValues: {
             fullname: "",
             npm: "",
-            department: undefined,
-            classYear: undefined,
+            entryYear: undefined,
             graduationYear: undefined,
-            highestEducation: undefined,
-            status: undefined,
             linkedInUrl: "",
-            countryId: null,
+            countryId: undefined,
+            countryName: undefined,
+            cityId: undefined,
+            cityName: undefined,
+            provinceId: undefined,
+            provinceName: undefined,
         },
     });
 
-    console.log("form valus", form.getValues());
-
-    const [countryOptions, setCountryOptions] = useState<{ value: string; label: string }[]>([]);
+    const watchedProvinceId = useWatch({ control: form.control, name: "provinceId" });
+    const watchedCountryId = useWatch({ control: form.control, name: "countryId" });
+    const isIndonesia = watchedCountryId === 77;
 
     const loadCountryOptions = async (inputValue: string) => {
-        const { options } = await fetchCountries(inputValue, 1, 100);
+        const options = await fetchCountries(inputValue);
         setCountryOptions(options);
+        return options;
+    };
+
+    const loadProvinceOptions = async (inputValue: string) => {
+        const { options } = await fetchProvinces(inputValue);
+        setProvinceOptions(options);
+        return options;
+    };
+
+    const loadCityOptions = async (inputValue: string) => {
+        const { options } = await fetchCities(inputValue, watchedProvinceId ?? undefined);
+        setCityOptions(options);
         return options;
     };
 
@@ -86,252 +155,246 @@ export default function EditProfileDialog({ user, onSuccess }: { user: User | nu
             const payload = {
                 profile: {
                     fullName: values.fullname,
-                    npm: values.npm,
-                    department: values.department,
-                    classYear: values.classYear,
+                    entryYear: values.entryYear,
                     graduationYear: values.graduationYear,
-                    highestEducation: values.highestEducation ?? null,
-                    status: values.status,
-                    linkedInUrl: values.linkedInUrl || undefined,
+                    linkedInUrl: values.linkedInUrl,
+                    countryId: values.countryId,
+                    countryName: values.countryName,
+                    provinceId: values.provinceId,
+                    provinceName: values.provinceName,
+                    cityId: values.cityId,
+                    cityName: values.cityName,
                 },
             };
 
+            console.log("payload", payload);
+
             await updateOwnProfile(payload);
-            await mutate("/users/me");
+            router.refresh();
 
             toast.success("Berhasil memperbarui profil");
             onSuccess();
         } catch (error: any) {
-            const message = error?.response?.data?.error || error?.message || "Gagal memperbarui profil";
-
+            console.log("error", error);
+            const message = error?.response?.data?.message;
             toast.error(message);
         }
     };
+
     useEffect(() => {
         if (!user) return;
 
         form.reset({
             fullname: user.profile?.fullName ?? "",
             npm: user.profile?.npm ?? "",
-            department: user.profile?.department ?? undefined,
-            classYear: user.profile?.classYear ?? undefined,
+            entryYear: user.profile?.entryYear ?? undefined,
             graduationYear: user.profile?.graduationYear ?? undefined,
-            highestEducation: user.profile?.highestEducation ?? undefined,
-            status: user.profile?.status ?? undefined,
             linkedInUrl: user.profile?.linkedInUrl ?? "",
+            countryId: user.profile?.countryId ?? null,
+            countryName: user.profile?.countryName ?? undefined,
+            provinceId: user.profile?.provinceId ?? null,
+            provinceName: user.profile?.provinceName ?? undefined,
+            cityId: user.profile?.cityId ?? null,
+            cityName: user.profile?.cityName ?? undefined,
         });
     }, [user, form]);
 
     return (
-        <DialogContent className="max-h-[90vh] max-w-3xl" onOpenAutoFocus={(e) => e.preventDefault()}>
-            <DialogHeader>
-                <DialogTitle>Ubah Profil</DialogTitle>
-                <DialogDescription></DialogDescription>
-            </DialogHeader>
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(updateProfil)} className="space-y-4">
+                <div className="grid grid-cols-2 items-start gap-4">
+                    <FormField
+                        name="fullname"
+                        control={form.control}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Nama Lengkap</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="Masukkan nama lengkap" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        name="npm"
+                        control={form.control}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Nomor Pokok Mahasiswa (NPM)</FormLabel>
+                                <FormControl>
+                                    <Input type="text" inputMode="numeric" maxLength={12} placeholder="Masukkan NPM" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        name="entryYear"
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                            <FormItem>
+                                <FormLabel>Tahun Masuk</FormLabel>
+                                <FormControl>
+                                    <ReactSelect
+                                        {...field}
+                                        options={entryYearOptions}
+                                        placeholder="Pilih tahun masuk"
+                                        instanceId="graduation-year-select"
+                                        value={entryYearOptions.find((opt) => opt.value === field.value) ?? null}
+                                        onChange={(opt: any) => field.onChange(opt?.value)}
+                                        fieldState={fieldState}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        name="graduationYear"
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                            <FormItem>
+                                <FormLabel>Tahun Lulus</FormLabel>
+                                <FormControl>
+                                    <ReactSelect
+                                        {...field}
+                                        options={graduationYearOptions}
+                                        placeholder="Pilih tahun kelulusan"
+                                        instanceId="graduation-year-select"
+                                        value={graduationYearOptions.find((option) => option.value === field.value) ?? null}
+                                        onChange={(opt: any) => field.onChange(opt?.value)}
+                                        fieldState={fieldState}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        name="linkedInUrl"
+                        control={form.control}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Link Profil LinkedIn</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="https://www.linkedin.com/in/username" {...field} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        name="countryId"
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                            <FormItem>
+                                <FormLabel>Negara</FormLabel>
+                                <FormControl>
+                                    <AsyncReactSelect
+                                        name="countryId"
+                                        cacheOptions
+                                        defaultOptions
+                                        loadOptions={loadCountryOptions}
+                                        placeholder="Pilih negara"
+                                        instanceId="country-select"
+                                        isClearable={true}
+                                        fieldState={fieldState}
+                                        value={countryOptions.find((opt) => Number(opt.value) === field.value) ?? null}
+                                        onChange={(opt: any) => {
+                                            const newId = opt ? Number(opt.value) : null;
+                                            field.onChange(newId);
+                                            form.setValue("countryName", opt?.label || undefined);
+                                            if (newId !== 77) {
+                                                form.setValue("provinceId", null);
+                                                form.setValue("provinceName", null);
+                                                form.setValue("cityId", null);
+                                                form.setValue("cityName", null);
+                                            }
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        name="provinceId"
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                            <FormItem>
+                                <FormLabel>Provinsi</FormLabel>
+                                <FormControl>
+                                    <AsyncReactSelect
+                                        name="provinceId"
+                                        cacheOptions
+                                        defaultOptions
+                                        loadOptions={loadProvinceOptions}
+                                        placeholder="Ketik untuk mencari provinsi"
+                                        instanceId="province-select"
+                                        isClearable={true}
+                                        isDisabled={!isIndonesia}
+                                        fieldState={fieldState}
+                                        value={provinceOptions.find((opt) => Number(opt.value) === field.value) ?? null}
+                                        onChange={(opt: any) => {
+                                            field.onChange(opt ? Number(opt.value) : null);
+                                            form.setValue("provinceName", opt?.label || undefined);
+                                            // Clear city when province changes
+                                            form.setValue("cityId", null);
+                                            form.setValue("cityName", undefined);
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        name="cityId"
+                        control={form.control}
+                        render={({ field, fieldState }) => (
+                            <FormItem>
+                                <FormLabel>Kota/Kabupaten</FormLabel>
+                                <FormControl>
+                                    <AsyncReactSelect
+                                        key={`${watchedCountryId}-${watchedProvinceId ?? "no-province"}`}
+                                        name="cityId"
+                                        cacheOptions
+                                        defaultOptions
+                                        loadOptions={loadCityOptions}
+                                        placeholder="Ketik untuk mencari kota"
+                                        instanceId="city-select"
+                                        isClearable={true}
+                                        isDisabled={!isIndonesia}
+                                        fieldState={fieldState}
+                                        value={cityOptions.find((opt) => Number(opt.value) === field.value) ?? null}
+                                        onChange={(opt: any) => {
+                                            field.onChange(opt ? Number(opt.value) : null);
+                                            form.setValue("cityName", opt?.label || undefined);
+                                        }}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                </div>
 
-            <Form {...form}>
-                <form onSubmit={form.handleSubmit(updateProfil)}>
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                        <FormField
-                            control={form.control}
-                            name="fullname"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Nama Lengkap</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="Masukkan nama lengkap" {...field} />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="npm"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>NPM</FormLabel>
-                                    <FormControl>
-                                        <Input type="number" placeholder="Masukkan NPM" {...field} />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name="department"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel>Program Studi</FormLabel>
-                                    <FormControl>
-                                        <ReactSelect
-                                            {...field}
-                                            options={departmentOptions}
-                                            placeholder="Pilih program studi"
-                                            instanceId="department-select"
-                                            isSearchable={false}
-                                            fieldState={fieldState}
-                                            value={departmentOptions.find((opt) => opt.value === field.value) ?? null}
-                                            onChange={(opt: any) => {
-                                                field.onChange(opt?.value);
-                                                form.setValue("classYear", null as any);
-                                            }}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name="classYear"
-                            control={form.control}
-                            render={({ field, fieldState }) => {
-                                return (
-                                    <FormItem>
-                                        <FormLabel>Tahun Angkatan</FormLabel>
-                                        <FormControl>
-                                            <ReactSelect
-                                                {...field}
-                                                options={classYearOptions}
-                                                placeholder="Pilih tahun angkatan"
-                                                instanceId="classyear-select"
-                                                value={classYearOptions.find((opt) => opt.value === field.value) ?? null}
-                                                onChange={(opt: any) => field.onChange(opt?.value)}
-                                                fieldState={fieldState}
-                                            />
-                                        </FormControl>
-                                        <FormMessage className="text-xs" />
-                                    </FormItem>
-                                );
-                            }}
-                        />
-                        <FormField
-                            name="graduationYear"
-                            control={form.control}
-                            render={({ field, fieldState }) => {
-                                return (
-                                    <FormItem>
-                                        <FormLabel>Tahun Kelulusan</FormLabel>
-                                        <FormControl>
-                                            <ReactSelect
-                                                {...field}
-                                                options={graduationYearOptions}
-                                                placeholder="Pilih tahun kelulusan"
-                                                instanceId="graduation-year-select"
-                                                value={graduationYearOptions.find((opt) => opt.value === field.value) ?? null}
-                                                onChange={(opt: any) => field.onChange(opt?.value)}
-                                                fieldState={fieldState}
-                                            />
-                                        </FormControl>
-                                        <FormMessage className="text-xs" />
-                                    </FormItem>
-                                );
-                            }}
-                        />
-                        <FormField
-                            name="highestEducation"
-                            control={form.control}
-                            render={({ field, fieldState }) => {
-                                return (
-                                    <FormItem>
-                                        <FormLabel>Pendidikan Tertinggi</FormLabel>
-                                        <FormControl>
-                                            <ReactSelect
-                                                {...field}
-                                                options={highestEducationOptions}
-                                                placeholder="Magister (S2) atau Doktor (S3)"
-                                                instanceId="highest-education-select"
-                                                value={highestEducationOptions.find((opt) => opt.value === field.value) ?? null}
-                                                onChange={(opt: any) => field.onChange(opt?.value)}
-                                                fieldState={fieldState}
-                                                isClearable
-                                            />
-                                        </FormControl>
-                                        <FormMessage className="text-xs" />
-                                    </FormItem>
-                                );
-                            }}
-                        />
-                        <FormField
-                            name="status"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel>Status Alumni</FormLabel>
-                                    <FormControl>
-                                        <ReactSelect
-                                            {...field}
-                                            options={alumniStatusOptions}
-                                            placeholder="Pilih status"
-                                            instanceId="status-select"
-                                            isSearchable={false}
-                                            fieldState={fieldState}
-                                            value={alumniStatusOptions.find((opt) => opt.value === field.value) ?? null}
-                                            onChange={(opt: any) => field.onChange(opt?.value)}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            control={form.control}
-                            name="linkedInUrl"
-                            render={({ field }) => (
-                                <FormItem>
-                                    <FormLabel>Profil LinkedIn</FormLabel>
-                                    <FormControl>
-                                        <Input placeholder="https://www.linkedin.com/in/username" {...field} />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
-                            )}
-                        />
-                        <FormField
-                            name="countryId"
-                            control={form.control}
-                            render={({ field, fieldState }) => (
-                                <FormItem>
-                                    <FormLabel>Negara</FormLabel>
-                                    <FormControl>
-                                        <AsyncReactSelect
-                                            name="countryId"
-                                            cacheOptions
-                                            defaultOptions
-                                            loadOptions={loadCountryOptions}
-                                            placeholder="Pilih negara"
-                                            instanceId="country-select"
-                                            isClearable={true}
-                                            fieldState={fieldState}
-                                            value={countryOptions.find((opt) => Number(opt.value) === field.value) ?? null}
-                                            onChange={(opt: any) => {
-                                                field.onChange(opt ? Number(opt.value) : null);
-                                            }}
-                                        />
-                                    </FormControl>
-                                    <FormMessage className="text-xs" />
-                                </FormItem>
-                            )}
-                        />
-                    </div>
-
-                    <div className="flex justify-end pt-3">
-                        <Button>
-                            {form.formState.isSubmitting ? (
-                                <>
-                                    <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
-                                    Menyimpan...
-                                </>
-                            ) : (
-                                <>
-                                    <SaveIcon /> Simpan
-                                </>
-                            )}
-                        </Button>
-                    </div>
-                </form>
-            </Form>
-        </DialogContent>
+                <div className="flex justify-end pt-3">
+                    <Button>
+                        {form.formState.isSubmitting ? (
+                            <>
+                                <Loader2Icon className="mr-2 h-4 w-4 animate-spin" />
+                                Menyimpan...
+                            </>
+                        ) : (
+                            <>
+                                <SaveIcon /> Simpan
+                            </>
+                        )}
+                    </Button>
+                </div>
+            </form>
+        </Form>
     );
 }

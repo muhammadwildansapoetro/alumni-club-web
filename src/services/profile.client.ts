@@ -1,16 +1,20 @@
 import { API } from "@/lib/axios";
+import { FurtherEducation, WorkExperience, EAlumniStatus } from "@/types/user";
 
 export type UpdateProfilePayload = {
     profile: {
         fullName?: string;
-        npm?: string;
-        department?: string;
-        classYear?: number;
-        graduationYear?: number;
-        highestEducation?: string | null;
-        status?: string;
+        cityId?: number | null;
+        cityName?: string | null;
+        provinceId?: number | null;
+        provinceName?: string | null;
+        countryId?: number | null;
+        countryName?: string;
         linkedInUrl?: string;
-        countryId?: string | null;
+        graduationYear?: number;
+        status?: EAlumniStatus | null;
+        furtherEducations?: FurtherEducation[] | null;
+        workExperiences?: WorkExperience[] | null;
     };
 };
 

@@ -1,34 +1,21 @@
-"use client";
+import StoreInitializer from "@/components/store-initializer";
+import { getOwnProfile } from "@/server/profile.server";
+import { redirect } from "next/navigation";
+import React from "react";
+import DashboardClientLayout from "./client-layout";
 
-import Topbar from "@/components/topbar/topbar";
-import { useAuthStore } from "@/stores/auth.store";
-import { useRouter } from "next/navigation";
-import React, { useEffect } from "react";
-
-const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
-    const router = useRouter();
-    const user = useAuthStore((state) => state.user);
-
-    useEffect(() => {
-        if (!user) {
-            router.replace("/");
-        }
-    }, [user, router]);
+const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
+    const user = await getOwnProfile();
 
     if (!user) {
-        return null;
+        redirect("/login");
     }
 
     return (
-        <div>
-            <Topbar />
-
-            <div className="container mx-auto min-h-screen px-5 py-20 transition-all duration-300">
-                <main>{children}</main>
-            </div>
-
-            <p className="bg-primary py-0.5 text-center text-xs text-white">Dikelola oleh Pengurus Ikatan Alumni FTIP Unpad 2025-2029</p>
-        </div>
+        <>
+            <StoreInitializer user={user} />
+            <DashboardClientLayout>{children}</DashboardClientLayout>
+        </>
     );
 };
 

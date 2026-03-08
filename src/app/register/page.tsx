@@ -17,6 +17,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "sonner";
+import { departmentOptions, entryYearOptions, graduationYearOptions } from "@/lib/option";
 
 const photoCards = [
     {
@@ -41,7 +42,8 @@ const registerSchema = z
         password: z.string(),
         passwordConfirmation: z.string(),
         department: z.string().min(1, "Program Studi harus dipilih"),
-        classYear: z.number().min(1959, "Tahun angkatan tidak valid").max(new Date().getFullYear(), "Tahun angkatan tidak valid"),
+        entryYear: z.number().min(1959, "Tahun masuk tidak valid").max(new Date().getFullYear(), "Tahun masuk tidak valid"),
+        graduationYear: z.number().min(1959, "Tahun lulus tidak valid").max(new Date().getFullYear(), "Tahun lulus tidak valid"),
         isGoogleMode: z.boolean(),
     })
     .superRefine((data, ctx) => {
@@ -69,21 +71,6 @@ const registerSchema = z
 
 type RegisterFormValues = z.infer<typeof registerSchema>;
 
-export const departmentOptions = [
-    { value: "TEP", label: "Teknik Pertanian (TEP)" },
-    { value: "TPN", label: "Teknologi Pangan (TPN)" },
-    { value: "TIN", label: "Teknologi Industri Pertanian (TIN)" },
-];
-
-const currentYear = new Date().getFullYear();
-const maxYear = currentYear - 3;
-const minYear = 1959;
-
-export const classYearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => {
-    const year = maxYear - i;
-    return { value: year, label: year.toString() };
-});
-
 interface GoogleJwtPayload {
     email: string;
     name: string;
@@ -95,10 +82,7 @@ export default function RegisterClient() {
     const [agreedToPolicy, setAgreedToPolicy] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const [isTransitioning, setIsTransitioning] = useState(false);
     const [googleIdToken, setGoogleIdToken] = useState<string | null>(null);
-
     const isGoogleMode = !!googleIdToken;
 
     const form = useForm<RegisterFormValues>({
@@ -110,7 +94,8 @@ export default function RegisterClient() {
             npm: "",
             name: "",
             department: "",
-            classYear: 0,
+            entryYear: 0,
+            graduationYear: 0,
             password: "",
             passwordConfirmation: "",
             isGoogleMode: false,
@@ -126,18 +111,6 @@ export default function RegisterClient() {
     const passwordMismatchError =
         !isGoogleMode && password && passwordConfirmation && password !== passwordConfirmation ? "Password tidak cocok" : "";
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setIsTransitioning(true);
-            setTimeout(() => {
-                setCurrentPhotoIndex((prevIndex) => (prevIndex === photoCards.length - 1 ? 0 : prevIndex + 1));
-                setIsTransitioning(false);
-            }, 150);
-        }, 3000);
-
-        return () => clearInterval(interval);
-    }, []);
-
     const handleGoogleSignIn = (response: CredentialResponse) => {
         if (!response.credential) return;
 
@@ -151,7 +124,7 @@ export default function RegisterClient() {
         } catch {
             toast.error("Gagal Memproses Akun Google", {
                 description: "Terjadi kesalahan saat memproses data Google.",
-                duration: 5000,
+                duration: 10000,
             });
         }
     };
@@ -172,7 +145,8 @@ export default function RegisterClient() {
                     fullName: data.name,
                     npm: data.npm,
                     department: data.department,
-                    classYear: data.classYear,
+                    entryYear: data.entryYear,
+                    graduationYear: data.graduationYear,
                 },
                 agreedToPolicy,
             );
@@ -180,6 +154,16 @@ export default function RegisterClient() {
             register(data as any, agreedToPolicy);
         }
     };
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            setTimeout(() => {
+                setCurrentPhotoIndex((prevIndex) => (prevIndex === photoCards.length - 1 ? 0 : prevIndex + 1));
+            }, 150);
+        }, 3000);
+
+        return () => clearInterval(interval);
+    }, []);
 
     return (
         <div className="flex min-h-screen w-full">
@@ -225,10 +209,8 @@ export default function RegisterClient() {
                                     index === currentPhotoIndex ? "w-8 bg-white" : "bg-white/50"
                                 }`}
                                 onClick={() => {
-                                    setIsTransitioning(true);
                                     setTimeout(() => {
                                         setCurrentPhotoIndex(index);
-                                        setIsTransitioning(false);
                                     }, 150);
                                 }}
                             />
@@ -239,17 +221,11 @@ export default function RegisterClient() {
 
             {/* RIGHT SIDE — Registration Form */}
             <div className="flex w-full flex-col items-center justify-center p-5 lg:w-1/2">
-                <div className="flex w-full flex-col justify-center gap-5 md:max-w-md lg:max-w-md xl:max-w-lg">
+                <div className="flex w-full flex-col justify-center gap-4 md:max-w-md lg:max-w-md xl:max-w-lg">
                     {/* Heading */}
                     <div className="w-full">
-                        <h1 className="text-2xl font-semibold lg:text-3xl">Daftar Akun</h1>
-                        <h1 className="text-primary-gradient text-3xl font-bold lg:text-4xl">FTIP Unpad Alumni Club</h1>
-                        <p className="text-muted-foreground pt-2 text-sm">
-                            Sudah memiliki akun? Silakan{" "}
-                            <Link href="/login" className="text-primary font-bold hover:underline">
-                                Masuk
-                            </Link>
-                        </p>
+                        <h1 className="text-xl font-semibold lg:text-2xl">Daftar Akun</h1>
+                        <h1 className="text-primary-gradient text-2xl font-bold lg:text-3xl">FTIP Unpad Alumni Club</h1>
                     </div>
 
                     {/* Google Sign-In */}
@@ -261,7 +237,7 @@ export default function RegisterClient() {
                                     onError={() => {
                                         toast.error("Gagal Masuk dengan Google", {
                                             description: "Terjadi kesalahan saat masuk dengan Google.",
-                                            duration: 5000,
+                                            duration: 10000,
                                         });
                                     }}
                                     text="signup_with"
@@ -341,21 +317,21 @@ export default function RegisterClient() {
                                         </FormItem>
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
-                                    name="npm"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>NPM</FormLabel>
-                                            <FormControl>
-                                                <Input type="text" inputMode="numeric" maxLength={12} placeholder="Masukkan NPM" {...field} />
-                                            </FormControl>
-                                            <FormMessage className="text-xs" />
-                                        </FormItem>
-                                    )}
-                                />
 
                                 <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2">
+                                    <FormField
+                                        control={form.control}
+                                        name="npm"
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Nomor Pokok Mahasiswa (NPM)</FormLabel>
+                                                <FormControl>
+                                                    <Input type="text" inputMode="numeric" maxLength={12} placeholder="Masukkan NPM" {...field} />
+                                                </FormControl>
+                                                <FormMessage className="text-xs" />
+                                            </FormItem>
+                                        )}
+                                    />
                                     <FormField
                                         name="department"
                                         control={form.control}
@@ -372,7 +348,7 @@ export default function RegisterClient() {
                                                         value={departmentOptions.find((opt) => opt.value === field.value) ?? ""}
                                                         onChange={(opt: any) => {
                                                             field.onChange(opt?.value);
-                                                            form.setValue("classYear", null as any);
+                                                            form.setValue("entryYear", null as any);
                                                         }}
                                                         fieldState={fieldState}
                                                     />
@@ -383,19 +359,43 @@ export default function RegisterClient() {
                                     />
 
                                     <FormField
-                                        name="classYear"
+                                        name="entryYear"
                                         control={form.control}
                                         render={({ field, fieldState }) => {
                                             return (
                                                 <FormItem>
-                                                    <FormLabel>Tahun Angkatan</FormLabel>
+                                                    <FormLabel>Tahun Masuk</FormLabel>
                                                     <FormControl>
                                                         <ReactSelect
                                                             {...field}
-                                                            options={classYearOptions}
-                                                            placeholder="Pilih tahun angkatan"
-                                                            instanceId="google-classyear-select"
-                                                            value={classYearOptions.find((opt) => opt.value === field.value) ?? 0}
+                                                            options={entryYearOptions}
+                                                            placeholder="Pilih tahun masuk"
+                                                            instanceId="entryYear"
+                                                            value={entryYearOptions.find((opt) => opt.value === field.value) ?? 0}
+                                                            onChange={(opt: any) => field.onChange(opt?.value)}
+                                                            fieldState={fieldState}
+                                                        />
+                                                    </FormControl>
+                                                    <FormMessage className="text-xs" />
+                                                </FormItem>
+                                            );
+                                        }}
+                                    />
+
+                                    <FormField
+                                        name="graduationYear"
+                                        control={form.control}
+                                        render={({ field, fieldState }) => {
+                                            return (
+                                                <FormItem>
+                                                    <FormLabel>Tahun Lulus</FormLabel>
+                                                    <FormControl>
+                                                        <ReactSelect
+                                                            {...field}
+                                                            options={graduationYearOptions}
+                                                            placeholder="Pilih tahun lulus"
+                                                            instanceId="graduationYear"
+                                                            value={graduationYearOptions.find((opt) => opt.value === field.value) ?? 0}
                                                             onChange={(opt: any) => field.onChange(opt?.value)}
                                                             fieldState={fieldState}
                                                         />
@@ -486,8 +486,8 @@ export default function RegisterClient() {
                                 )}
 
                                 {/* Privacy Policy & Submit */}
-                                <div className="flex flex-col gap-3">
-                                    <div className="flex items-center space-x-2 pt-3">
+                                <div className="mt-4 flex flex-col gap-4">
+                                    <div className="flex items-center space-x-2">
                                         <Checkbox
                                             id="google-privacy-policy"
                                             checked={agreedToPolicy}
@@ -531,6 +531,13 @@ export default function RegisterClient() {
                                         )}
                                     </Button>
                                 </div>
+
+                                <p className="text-muted-foreground pt-2 text-sm">
+                                    Sudah memiliki akun? Silakan{" "}
+                                    <Link href="/login" className="text-primary font-bold hover:underline">
+                                        Masuk
+                                    </Link>
+                                </p>
                             </form>
                         </Form>
                     </div>

@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//Users/muhammadwildansapoetro/Projects/IKA\\\\ FTIP/alumni-club-web/src/server/**)",
+      "Read(//Users/muhammadwildansapoetro/Projects/IKA\\\\ FTIP/alumni-club-web/src/lib/**)",
+      "Read(//Users/muhammadwildansapoetro/Projects/IKA\\\\ FTIP/alumni-club-web/src/app/dashboard/profile/**)",
+      "Read(//Users/muhammadwildansapoetro/Projects/IKA\\\\ FTIP/alumni-club-web/**)"
+    ]
+  }
+}

@@ -77,17 +77,11 @@ export default function LoginClient() {
         <div className="flex min-h-screen w-full">
             {/* Left Side - Login Form */}
             <div className="flex w-full flex-col items-center justify-center p-5 lg:w-1/2 lg:p-10">
-                <div className="flex w-full flex-col items-start justify-center gap-5 sm:w-fit">
+                <div className="flex w-full flex-col items-start justify-center gap-4 sm:w-fit">
                     {/* Heading */}
                     <div className="w-full">
-                        <h1 className="text-2xl font-semibold lg:text-3xl">Login Dashboard</h1>
-                        <h1 className="text-primary-gradient text-3xl font-bold lg:text-4xl">FTIP Unpad Alumni Club</h1>
-                        <p className="text-muted-foreground pt-2 text-sm">
-                            Belum memiliki akun? Silakan{" "}
-                            <Link href="/register" className="text-primary font-bold hover:underline">
-                                Daftar
-                            </Link>
-                        </p>
+                        <h1 className="text-xl font-semibold lg:text-2xl">Login Dashboard</h1>
+                        <h1 className="text-primary-gradient text-2xl font-bold lg:text-3xl">FTIP Unpad Alumni Club</h1>
                     </div>
 
                     {/* Form */}
@@ -139,7 +133,7 @@ export default function LoginClient() {
                                     )}
                                 />
 
-                                <Button type="submit" variant={"default"} className="w-full" disabled={isLoading}>
+                                <Button type="submit" variant={"default"} className="mt-4 w-full rounded-full" disabled={isLoading}>
                                     {isLoading ? (
                                         <>
                                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -176,7 +170,7 @@ export default function LoginClient() {
                             onError={() => {
                                 toast.error("Log in Google Gagal", {
                                     description: "Terjadi kesalahan saat masuk dengan Google.",
-                                    duration: 5000,
+                                    duration: 10000,
                                 });
                             }}
                             text="signin_with"
@@ -184,6 +178,15 @@ export default function LoginClient() {
                             theme="filled_blue"
                             shape="circle"
                         />
+                    </div>
+
+                    <div className="mt-3 flex w-full items-center justify-center">
+                        <p className="text-sm text-gray-500">
+                            Belum memiliki akun? Silakan{" "}
+                            <Link href="/register" className="text-primary font-bold hover:underline">
+                                Daftar
+                            </Link>
+                        </p>
                     </div>
                 </div>
             </div>
