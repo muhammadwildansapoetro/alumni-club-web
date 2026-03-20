@@ -1,17 +1,18 @@
 import Footer from "./_components/_footer";
 import HeroSection from "./_components/_hero-section";
+import MembershipTiers from "./_components/_membership-tiers";
+import FeaturesSection from "./_components/_features-section";
+import OrgStructure from "./_components/_org-structure";
 import TopBar from "./_components/_topbar";
 
-export default async function Home() {
-    await new Promise((r) => setTimeout(r, 2000));
-
+export default function Home() {
     return (
         <div>
             <TopBar />
             <HeroSection />
-            {/* <SearchAlumni /> */}
-            {/* <Statistic /> */}
-            {/* <AlumniStory /> */}
+            <MembershipTiers />
+            <FeaturesSection />
+            <OrgStructure />
             <Footer />
         </div>
     );

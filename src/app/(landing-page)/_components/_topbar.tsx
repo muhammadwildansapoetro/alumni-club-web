@@ -8,9 +8,9 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import Image from "next/image";
 
 const navigation = [
-    { name: "Cari Alumni", href: "#search-alumni" },
-    { name: "Statistik", href: "#statistics" },
-    { name: "Cerita Alumni", href: "#alumni-story" },
+    { name: "Keanggotaan", href: "#membership" },
+    { name: "Fitur", href: "#features" },
+    { name: "Organisasi", href: "#organization" },
 ];
 
 export default function TopBar() {
