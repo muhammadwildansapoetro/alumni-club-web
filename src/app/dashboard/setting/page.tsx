@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { useDialog } from "@/hooks/use-dialog";
-import { KeyIcon, LockIcon, RotateCcwIcon, SettingsIcon, SquarePenIcon } from "lucide-react";
+import { SettingsIcon, SquarePenIcon } from "lucide-react";
 import Image from "next/image";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { toast } from "sonner";
@@ -12,7 +12,6 @@ import { departmentBorderMap } from "@/types/user";
 
 export default function ProfileSettingPage() {
     const { user, linkGoogle } = useAuth();
-    console.log("user", user);
     const { onOpen } = useDialog();
     const deptStyle = departmentBorderMap[user?.profile?.department as keyof typeof departmentBorderMap];
     const isGoogleLinked = user?.authMethod === "GOOGLE" || user?.authMethod === "BOTH";
@@ -64,17 +63,10 @@ export default function ProfileSettingPage() {
                         {/* change password */}
                         <div>
                             <p className="text-xs">Ubah Kata Sandi</p>
-                            <Button
-                                variant="outline"
-                                size="sm"
-                                className="mt-1 w-full sm:w-fit"
-                                disabled={isGoogleOnly}
-                                onClick={() => onOpen("change-password")}
-                            >
+                            <Button variant="outline" size="sm" className="mt-1 w-full sm:w-fit" onClick={() => onOpen("change-password")}>
                                 <SquarePenIcon />
                                 Ubah
                             </Button>
-                            {isGoogleOnly && <p className="text-muted-foreground mt-1 text-xs">Akun Google tidak dapat mengubah password.</p>}
                         </div>
                     </div>
                 </CardContent>

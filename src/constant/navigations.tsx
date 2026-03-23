@@ -1,12 +1,9 @@
 import {
-    AppleIcon,
     BriefcaseBusinessIcon,
     ChartColumnBigIcon,
     HandshakeIcon,
-    TractorIcon,
     UserCheckIcon,
     UsersIcon,
-    WarehouseIcon,
 } from "lucide-react";
 
 export interface INavigation {
@@ -33,42 +30,14 @@ export const NAVIGATIONS: INavigation[] = [
         icon: UsersIcon,
         href: "/dashboard/alumni",
         roles: [],
-        active: [
-            "/dashboard/alumni/administrator",
-            "/dashboard/alumni/agricultural-engineering",
-            "/dashboard/alumni/food-technology",
-            "/dashboard/alumni/agricultural-industrial-technology",
-        ],
-        children: [
-            {
-                name: "Teknik Pertanian",
-                icon: TractorIcon,
-                href: "/dashboard/alumni/agricultural-engineering",
-                roles: [],
-                active: ["/dashboard/alumni/agricultural-engineering"],
-            },
-            {
-                name: "Teknologi Pangan",
-                icon: AppleIcon,
-                href: "/dashboard/alumni/food-technology",
-                roles: [],
-                active: ["/dashboard/alumni/food-technology"],
-            },
-            {
-                name: "Teknologi Industri Pertanian",
-                icon: WarehouseIcon,
-                href: "/dashboard/alumni/agricultural-industrial-technology",
-                roles: [],
-                active: ["/dashboard/alumni/agricultural-industrial-technology"],
-            },
-            {
-                name: "Pengurus Ikatan Alumni",
-                icon: UserCheckIcon,
-                href: "/dashboard/alumni/administrator",
-                roles: ["ADMIN"],
-                active: ["/dashboard/alumni/administrator"],
-            },
-        ],
+        active: ["/dashboard/alumni"],
+    },
+    {
+        name: "Pengurus",
+        icon: UserCheckIcon,
+        href: "/dashboard/alumni/administrator",
+        roles: ["ADMIN"],
+        active: ["/dashboard/alumni/administrator"],
     },
     {
         name: "Pekerjaan",
