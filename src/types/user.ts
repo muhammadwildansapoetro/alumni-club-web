@@ -1,3 +1,22 @@
+export interface AlumniProfile {
+    id: number;
+    fullName: string | null;
+    department: "TEP" | "TPN" | "TIN";
+    entryYear: number;
+    cityName: string | null;
+}
+
+export interface AlumniUser {
+    id: string;
+    email: string;
+    name: string;
+    role: "USER" | "ADMIN";
+    authMethod: string;
+    profile: AlumniProfile | null;
+    createdAt: string;
+    updatedAt: string;
+}
+
 export interface User {
     authMethod: "EMAIL" | "GOOGLE" | "BOTH";
     id: string;

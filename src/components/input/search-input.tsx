@@ -15,6 +15,8 @@ interface SearchInputProps {
     onSearch?: (value: string) => void;
     debounceMs?: number;
     inputClassName?: string;
+    containerClassName?: string;
+    variant?: "default" | "dashboard";
 }
 
 export default function SearchInput({
@@ -25,7 +27,9 @@ export default function SearchInput({
     fetchData,
     onSearch,
     debounceMs = 300,
-    inputClassName
+    inputClassName,
+    containerClassName,
+    variant = "default",
 }: SearchInputProps) {
     const [internalValue, setInternalValue] = useState(controlledValue || "");
 
@@ -64,15 +68,17 @@ export default function SearchInput({
         };
     }, [debouncedSearch]);
 
+    const isDashboard = variant === "dashboard";
+
     return (
-        <div className="relative w-full lg:w-64">
-            <SearchIcon className="absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2" />
+        <div className={`relative w-full ${isDashboard ? "" : "lg:w-64"} ${containerClassName || ""}`}>
+            <SearchIcon className={`absolute top-1/2 h-4 w-4 -translate-y-1/2 ${isDashboard ? "text-muted-foreground left-3" : "left-2"}`} />
             <Input
                 value={value}
                 placeholder={placeholder}
                 onChange={handleChange}
                 onFocus={() => onSelect?.(value)}
-                className={`rounded-full border-black/50 pl-8 ${inputClassName || ''}`}
+                className={isDashboard ? `bg-background w-full pl-9 ${inputClassName || ""}` : `rounded-full border-black/50 pl-8 ${inputClassName || ""}`}
             />
         </div>
     );

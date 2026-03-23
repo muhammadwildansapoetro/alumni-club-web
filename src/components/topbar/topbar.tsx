@@ -24,6 +24,12 @@ const Topbar = () => {
     const [scrollUp, setScrollUp] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
+    const handleSearch = (value: string) => {
+        const params = new URLSearchParams();
+        if (value) params.set("search", value);
+        navigation.push(`/dashboard/alumni${params.size ? `?${params.toString()}` : ""}`);
+    };
+
     const handleLogout = async () => {
         try {
             logout();
@@ -67,7 +73,11 @@ const Topbar = () => {
             {!isMobile && (
                 <div className="flex items-center gap-3">
                     <LogoTitle />
-                    <SearchInput />
+                    <SearchInput
+                        placeholder="Cari nama alumni"
+                        onSearch={handleSearch}
+                        debounceMs={500}
+                    />
                 </div>
             )}
 
