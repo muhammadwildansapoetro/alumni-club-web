@@ -5,7 +5,7 @@ export function proxy(request: NextRequest) {
     const session = request.cookies.get("alumni_session");
 
     if (!session) {
-        return NextResponse.redirect(new URL("/login", request.url));
+        return NextResponse.redirect(new URL("/signin", request.url));
     }
 
     return NextResponse.next();

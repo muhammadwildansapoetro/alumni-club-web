@@ -27,7 +27,7 @@ const Topbar = () => {
     const handleLogout = async () => {
         try {
             logout();
-            navigation.push("/login");
+            navigation.push("/signin");
         } catch (error) {
             console.error(error);
         }
@@ -106,7 +106,7 @@ const Topbar = () => {
                             <UserIcon className="focus:text-primary h-5 w-5" /> Profil
                         </DropdownMenuItem>
                         <DropdownMenuItem
-                            onClick={() => navigation.push("/dashboard/profile/setting")}
+                            onClick={() => navigation.push("/dashboard/setting")}
                             className="focus:bg-secondary-50 focus:text-primary hover:cursor-pointer"
                         >
                             <SettingsIcon className="focus:text-primary h-5 w-5" /> Pengaturan

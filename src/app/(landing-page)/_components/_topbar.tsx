@@ -40,8 +40,8 @@ export default function TopBar() {
 
                 {/* Desktop CTA Buttons */}
                 <div className="hidden items-center space-x-3 md:flex">
-                    <Link href="/login" className={buttonVariants({ variant: "outline", size: "sm" })}>
-                        <LogInIcon /> Log in
+                    <Link href="/signin" className={buttonVariants({ variant: "outline", size: "sm" })}>
+                        <LogInIcon /> Masuk
                     </Link>
 
                     <Link href="/register" className={buttonVariants({ size: "sm" })}>
@@ -75,7 +75,7 @@ export default function TopBar() {
                             ))}
                             <div className="flex flex-col space-y-2 border-t pt-4">
                                 <Button variant="outline" size="sm" asChild>
-                                    <Link href="/login" onClick={() => setIsOpen(false)}>
+                                    <Link href="/signin" onClick={() => setIsOpen(false)}>
                                         <LogInIcon /> Masuk
                                     </Link>
                                 </Button>

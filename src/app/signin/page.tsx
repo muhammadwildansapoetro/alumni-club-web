@@ -14,6 +14,8 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { toast } from "sonner";
+import { useDialog } from "@/hooks/use-dialog";
+import ForgotPasswordDialog from "@/components/dialog/forgot-password-dialog";
 
 const photoCards = [
     {
@@ -32,25 +34,18 @@ const photoCards = [
 
 const loginSchema = z.object({
     email: z.email({ message: "Email tidak valid" }),
-    password: z.string().min(1, "Password harus diisi"),
+    password: z.string().min(1, "Kata sandi harus diisi"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginClient() {
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [_isTransitioning, setIsTransitioning] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
-
     const { user, login, googleLogin, isLoading } = useAuth();
     const router = useRouter();
-
-    useEffect(() => {
-        if (user) {
-            router.replace("/dashboard");
-        }
-    }, [user, router]);
+    const { onOpen: onOpenForgotPassword } = useDialog("forgot-password");
 
     const form = useForm<LoginFormValues>({
         resolver: zodResolver(loginSchema),
@@ -73,6 +68,12 @@ export default function LoginClient() {
         return () => clearInterval(interval);
     }, []);
 
+    useEffect(() => {
+        if (user) {
+            router.replace("/dashboard");
+        }
+    }, [user, router]);
+
     return (
         <div className="flex min-h-screen w-full">
             {/* Left Side - Login Form */}
@@ -80,7 +81,7 @@ export default function LoginClient() {
                 <div className="flex w-full flex-col items-start justify-center gap-4 sm:w-fit">
                     {/* Heading */}
                     <div className="w-full">
-                        <h1 className="text-xl font-semibold lg:text-2xl">Login Dashboard</h1>
+                        <h1 className="text-xl font-semibold lg:text-2xl">Masuk Dashboard</h1>
                         <h1 className="text-primary-gradient text-2xl font-bold lg:text-3xl">FTIP Unpad Alumni Club</h1>
                     </div>
 
@@ -89,8 +90,8 @@ export default function LoginClient() {
                         <Form {...form}>
                             <form onSubmit={form.handleSubmit((data) => login(data, form.setError))} className="space-y-3">
                                 <FormField
-                                    control={form.control}
                                     name="email"
+                                    control={form.control}
                                     render={({ field }) => (
                                         <FormItem>
                                             <FormLabel>Email</FormLabel>
@@ -101,39 +102,51 @@ export default function LoginClient() {
                                         </FormItem>
                                     )}
                                 />
-                                <FormField
-                                    control={form.control}
-                                    name="password"
-                                    render={({ field }) => (
-                                        <FormItem>
-                                            <FormLabel>Password</FormLabel>
-                                            <FormControl>
-                                                <div className="relative">
-                                                    <FormControl>
-                                                        <Input
-                                                            type={showPassword ? "text" : "password"}
-                                                            placeholder="Masukkan password"
-                                                            {...field}
-                                                            className="pr-10"
-                                                        />
-                                                    </FormControl>
 
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setShowPassword((v) => !v)}
-                                                        className="text-muted-foreground hover:text-foreground absolute inset-y-0 right-0 flex items-center pr-3 hover:cursor-pointer"
-                                                        aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
-                                                    >
-                                                        {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
-                                                    </button>
-                                                </div>
-                                            </FormControl>
-                                            <FormMessage />
-                                        </FormItem>
-                                    )}
-                                />
+                                <div>
+                                    <FormField
+                                        name="password"
+                                        control={form.control}
+                                        render={({ field }) => (
+                                            <FormItem>
+                                                <FormLabel>Kata Sandi</FormLabel>
+                                                <FormControl>
+                                                    <div className="relative">
+                                                        <FormControl>
+                                                            <Input
+                                                                type={showPassword ? "text" : "password"}
+                                                                placeholder="Masukkan kata sandi"
+                                                                {...field}
+                                                                className="pr-10"
+                                                            />
+                                                        </FormControl>
 
-                                <Button type="submit" variant={"default"} className="mt-4 w-full rounded-full" disabled={isLoading}>
+                                                        <button
+                                                            type="button"
+                                                            onClick={() => setShowPassword((v) => !v)}
+                                                            className="text-muted-foreground hover:text-foreground absolute inset-y-0 right-0 flex items-center pr-3 hover:cursor-pointer"
+                                                            aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
+                                                        >
+                                                            {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+                                                        </button>
+                                                    </div>
+                                                </FormControl>
+                                                <FormMessage />
+                                            </FormItem>
+                                        )}
+                                    />
+
+                                    <Button
+                                        type="button"
+                                        variant="link"
+                                        className="h-auto px-0 py-0 text-xs font-normal"
+                                        onClick={() => onOpenForgotPassword()}
+                                    >
+                                        Lupa kata sandi?
+                                    </Button>
+                                </div>
+
+                                <Button type="submit" variant={"default"} className="mt-2 w-full rounded-full" disabled={isLoading}>
                                     {isLoading ? (
                                         <>
                                             <Loader2 className="h-4 w-4 animate-spin" />
@@ -142,7 +155,7 @@ export default function LoginClient() {
                                     ) : (
                                         <>
                                             <LogInIcon className="h-4 w-4" />
-                                            Log in
+                                            Masuk
                                         </>
                                     )}
                                 </Button>
@@ -168,7 +181,7 @@ export default function LoginClient() {
                                 }
                             }}
                             onError={() => {
-                                toast.error("Log in Google Gagal", {
+                                toast.error("Gagal Masuk dengan Google", {
                                     description: "Terjadi kesalahan saat masuk dengan Google.",
                                     duration: 10000,
                                 });
@@ -244,6 +257,8 @@ export default function LoginClient() {
                     </div>
                 </div>
             </div>
+
+            <ForgotPasswordDialog />
         </div>
     );
 }

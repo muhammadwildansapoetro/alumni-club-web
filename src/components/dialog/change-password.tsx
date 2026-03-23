@@ -7,24 +7,43 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { Loader2Icon, SaveIcon } from "lucide-react";
+import { Loader2Icon, SaveIcon, EyeIcon, EyeOffIcon } from "lucide-react";
 import { toast } from "sonner";
 import { changePassword } from "@/services/auth.client";
 import { useDialog } from "@/hooks/use-dialog";
+import { forwardRef, useState } from "react";
+
+const PasswordInput = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement>>((props, ref) => {
+    const [showPassword, setShowPassword] = useState(false);
+    return (
+        <div className="relative">
+            <Input type={showPassword ? "text" : "password"} className="pr-10" ref={ref} {...props} />
+            <button
+                type="button"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                onClick={() => setShowPassword(!showPassword)}
+                tabIndex={-1}
+            >
+                {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
+            </button>
+        </div>
+    );
+});
+PasswordInput.displayName = "PasswordInput";
 
 const changePasswordSchema = z
     .object({
-        currentPassword: z.string().min(1, "Password saat ini harus diisi"),
+        currentPassword: z.string().min(1, "Kata sandi saat ini harus diisi"),
         newPassword: z
             .string()
-            .min(8, "Password minimal 8 karakter")
+            .min(8, "Kata sandi minimal 8 karakter")
             .regex(/[A-Z]/, "Harus mengandung huruf kapital")
             .regex(/[a-z]/, "Harus mengandung huruf kecil")
             .regex(/[0-9]/, "Harus mengandung angka"),
-        confirmPassword: z.string().min(1, "Konfirmasi password harus diisi"),
+        confirmPassword: z.string().min(1, "Konfirmasi kata sandi harus diisi"),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
-        message: "Konfirmasi password tidak cocok",
+        message: "Konfirmasi kata sandi tidak cocok",
         path: ["confirmPassword"],
     });
 
@@ -42,7 +61,7 @@ export default function ChangePasswordDialog() {
         >
             <DialogContent className="max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
-                    <DialogTitle>Ubah Password</DialogTitle>
+                    <DialogTitle>Ubah Kata Sandi</DialogTitle>
                     <DialogDescription></DialogDescription>
                 </DialogHeader>
 
@@ -71,7 +90,7 @@ function ChangePasswordForm({ onSuccess }: { onSuccess: () => void }) {
                 return;
             }
 
-            toast.success(data.message ?? "Password berhasil diubah");
+            toast.success(data.message ?? "Kata sandi berhasil diubah. Silakan masuk kembali dengan kata sandi baru.");
             form.reset();
             onSuccess();
         } catch (error: any) {
@@ -88,9 +107,9 @@ function ChangePasswordForm({ onSuccess }: { onSuccess: () => void }) {
                     name="currentPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Password Saat Ini</FormLabel>
+                            <FormLabel>Kata Sandi Saat Ini</FormLabel>
                             <FormControl>
-                                <Input type="password" placeholder="Masukkan password saat ini" {...field} />
+                                <PasswordInput placeholder="Masukkan kata sandi saat ini" {...field} />
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>
@@ -102,9 +121,9 @@ function ChangePasswordForm({ onSuccess }: { onSuccess: () => void }) {
                     name="newPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Password Baru</FormLabel>
+                            <FormLabel>Kata Sandi Baru</FormLabel>
                             <FormControl>
-                                <Input type="password" placeholder="Masukkan password baru" {...field} />
+                                <PasswordInput placeholder="Masukkan kata sandi baru" {...field} />
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>
@@ -116,16 +135,18 @@ function ChangePasswordForm({ onSuccess }: { onSuccess: () => void }) {
                     name="confirmPassword"
                     render={({ field }) => (
                         <FormItem>
-                            <FormLabel>Konfirmasi Password Baru</FormLabel>
+                            <FormLabel>Konfirmasi Kata Sandi Baru</FormLabel>
                             <FormControl>
-                                <Input type="password" placeholder="Ulangi password baru" {...field} />
+                                <PasswordInput placeholder="Ulangi password baru" {...field} />
                             </FormControl>
                             <FormMessage className="text-xs" />
                         </FormItem>
                     )}
                 />
 
-                <p className="text-muted-foreground text-xs">Password harus minimal 8 karakter, mengandung huruf kapital, huruf kecil, dan angka.</p>
+                <p className="text-muted-foreground text-xs">
+                    Kata sandi harus minimal 8 karakter, mengandung huruf kapital, huruf kecil, dan angka.
+                </p>
 
                 <div className="flex justify-end pt-2">
                     <Button>

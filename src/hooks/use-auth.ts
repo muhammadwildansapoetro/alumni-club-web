@@ -37,7 +37,7 @@ export const useAuth = () => {
             try {
                 const response = await API.post("/auth/login", data);
 
-                toast.success("Log in Berhasil", {
+                toast.success("Berhasil Masuk", {
                     description: "Selamat datang kembali!",
                     duration: 10000,
                 });
@@ -54,8 +54,7 @@ export const useAuth = () => {
                         setError(field as keyof LoginRequest, { message });
                     });
                 } else {
-                    console.log("error", error);
-                    toast.error("Log in Gagal", {
+                    toast.error("Gagal Masuk", {
                         description: error.response?.data?.message,
                         duration: 10000,
                     });
@@ -84,7 +83,7 @@ export const useAuth = () => {
             });
         } finally {
             clearUser();
-            router.push("/login");
+            router.push("/signin");
         }
     }, [clearUser, router]);
 
@@ -96,11 +95,11 @@ export const useAuth = () => {
                 const response = await API.get(`/auth/verify-email/${token}`);
 
                 toast.success("Email Berhasil Diverifikasi", {
-                    description: response.data.message || "Anda sudah bisa log in.",
+                    description: response.data.message || "Anda sudah bisa masuk",
                     duration: 10000,
                 });
 
-                setTimeout(() => router.push("/login"), 1000);
+                setTimeout(() => router.push("/signin"), 1000);
 
                 return { success: true };
             } catch (error: any) {
@@ -147,11 +146,10 @@ export const useAuth = () => {
                     duration: 10000,
                 });
 
-                router.push("/login");
+                router.push("/signin");
 
                 return { success: true };
             } catch (error: any) {
-                console.log("error", error);
                 toast.error("Terjadi Kesalahan", {
                     description: error.response?.data?.message,
                 });
@@ -171,7 +169,7 @@ export const useAuth = () => {
             try {
                 const response = await API.post("/auth/google/login", { idToken });
 
-                toast.success("Log in Berhasil", {
+                toast.success("Berhasil Masuk", {
                     description: "Selamat datang kembali!",
                     duration: 10000,
                 });
@@ -181,9 +179,9 @@ export const useAuth = () => {
 
                 return { success: true };
             } catch (error: any) {
-                toast.error("Log in Google Gagal", {
-                    description: error.response?.data?.message,
-                    duration: 10000,
+                toast.error("Gagal Masuk dengan Google", {
+                    description: error.response?.data?.error,
+                    duration: 15000,
                 });
 
                 return { success: false };

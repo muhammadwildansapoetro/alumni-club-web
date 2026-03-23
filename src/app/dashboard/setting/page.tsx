@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuth } from "@/hooks/use-auth";
 import { useDialog } from "@/hooks/use-dialog";
-import { KeyIcon, SettingsIcon } from "lucide-react";
+import { KeyIcon, LockIcon, RotateCcwIcon, SettingsIcon, SquarePenIcon } from "lucide-react";
 import Image from "next/image";
 import { GoogleLogin, CredentialResponse } from "@react-oauth/google";
 import { toast } from "sonner";
@@ -12,6 +12,7 @@ import { departmentBorderMap } from "@/types/user";
 
 export default function ProfileSettingPage() {
     const { user, linkGoogle } = useAuth();
+    console.log("user", user);
     const { onOpen } = useDialog();
     const deptStyle = departmentBorderMap[user?.profile?.department as keyof typeof departmentBorderMap];
     const isGoogleLinked = user?.authMethod === "GOOGLE" || user?.authMethod === "BOTH";
@@ -28,16 +29,17 @@ export default function ProfileSettingPage() {
                 </CardHeader>
 
                 <CardContent>
-                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                        {/* google */}
                         <div>
-                            <p className="text-xs">Log in dengan Google</p>
+                            <p className="text-xs">Hubungkan dengan Google</p>
                             {isGoogleLinked ? (
                                 <Button variant="outline" size="sm" className="mt-1 w-full sm:w-fit" disabled>
                                     <Image src="/logo/google.svg" alt="Google Logo" width={15} height={15} />
                                     Sudah Terhubung
                                 </Button>
                             ) : (
-                                <div className="mt-1">
+                                <div className="mt-1 w-full sm:w-fit">
                                     <GoogleLogin
                                         onSuccess={(response: CredentialResponse) => {
                                             if (response.credential) {
@@ -59,8 +61,9 @@ export default function ProfileSettingPage() {
                             )}
                         </div>
 
+                        {/* change password */}
                         <div>
-                            <p className="text-xs">Ubah Password</p>
+                            <p className="text-xs">Ubah Kata Sandi</p>
                             <Button
                                 variant="outline"
                                 size="sm"
@@ -68,10 +71,10 @@ export default function ProfileSettingPage() {
                                 disabled={isGoogleOnly}
                                 onClick={() => onOpen("change-password")}
                             >
-                                <KeyIcon />
-                                Ubah Password
+                                <SquarePenIcon />
+                                Ubah
                             </Button>
-                            {isGoogleOnly && <p className="mt-1 text-xs text-muted-foreground">Akun Google tidak dapat mengubah password.</p>}
+                            {isGoogleOnly && <p className="text-muted-foreground mt-1 text-xs">Akun Google tidak dapat mengubah password.</p>}
                         </div>
                     </div>
                 </CardContent>

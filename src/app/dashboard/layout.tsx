@@ -8,7 +8,7 @@ const DashboardLayout = async ({ children }: { children: React.ReactNode }) => {
     const user = await getOwnProfile();
 
     if (!user) {
-        redirect("/login");
+        redirect("/signin");
     }
 
     return (

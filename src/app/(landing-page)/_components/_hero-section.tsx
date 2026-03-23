@@ -2,27 +2,27 @@
 
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { ArrowRight, LogIn, Sparkles } from "lucide-react";
+import { ArrowRight, LogIn, LogInIcon, Sparkles } from "lucide-react";
 
 export default function HeroSection() {
     return (
         <section
             id="home"
-            className="relative flex min-h-[85vh] items-center justify-center overflow-hidden bg-linear-to-br from-primary-50 via-white to-primary-100"
+            className="from-primary-50 to-primary-100 relative flex min-h-[85vh] items-center justify-center overflow-hidden bg-linear-to-br via-white"
         >
             {/* Decorative floating shapes */}
             <div className="pointer-events-none absolute inset-0">
-                <div className="absolute top-20 left-10 h-72 w-72 animate-pulse rounded-full bg-primary-200/30 blur-3xl" />
-                <div className="absolute right-10 bottom-20 h-96 w-96 animate-pulse rounded-full bg-primary-300/20 blur-3xl [animation-delay:1s]" />
-                <div className="absolute top-1/2 left-1/3 h-48 w-48 animate-pulse rounded-full bg-accent-200/20 blur-3xl [animation-delay:2s]" />
+                <div className="bg-primary-200/30 absolute top-20 left-10 h-72 w-72 animate-pulse rounded-full blur-3xl" />
+                <div className="bg-primary-300/20 absolute right-10 bottom-20 h-96 w-96 animate-pulse rounded-full blur-3xl [animation-delay:1s]" />
+                <div className="bg-accent-200/20 absolute top-1/2 left-1/3 h-48 w-48 animate-pulse rounded-full blur-3xl [animation-delay:2s]" />
             </div>
 
-            <div className="container relative z-10 mx-auto px-4 py-20">
+            <div className="relative z-10 container mx-auto px-4 py-20">
                 <div className="mx-auto max-w-4xl space-y-8 text-center">
                     {/* Vision Badge */}
-                    <div className="inline-flex items-center gap-2 rounded-full border border-primary-300 bg-white/80 px-4 py-2 shadow-sm backdrop-blur">
-                        <Sparkles className="h-4 w-4 text-primary-500" />
-                        <span className="text-sm font-semibold tracking-wide text-primary-700">
+                    <div className="border-primary-300 inline-flex items-center gap-2 rounded-full border bg-white/80 px-4 py-2 shadow-sm backdrop-blur">
+                        <Sparkles className="text-primary-500 h-4 w-4" />
+                        <span className="text-primary-700 text-sm font-semibold tracking-wide">
                             Insan Abdi Masyarakat • Insan Pembina Nusa Bangsa
                         </span>
                     </div>
@@ -42,14 +42,14 @@ export default function HeroSection() {
                     {/* CTA Buttons */}
                     <div className="flex flex-col justify-center gap-4 pt-2 sm:flex-row">
                         <Link
-                            href="/login"
+                            href="/signin"
                             className={buttonVariants({
                                 size: "lg",
-                                className: "text-base! gap-2 px-8 shadow-lg shadow-primary-500/25",
+                                className: "shadow-primary-500/25 gap-2 px-8 text-base! shadow-lg",
                             })}
                         >
-                            <LogIn className="h-5 w-5" />
-                            Login ke Dashboard Alumni
+                            <LogInIcon className="h-5 w-5" />
+                            Masuk ke Dashboard
                         </Link>
 
                         <Link
@@ -57,7 +57,7 @@ export default function HeroSection() {
                             className={buttonVariants({
                                 size: "lg",
                                 variant: "outline",
-                                className: "text-base! gap-2 px-8",
+                                className: "gap-2 px-8 text-base!",
                             })}
                         >
                             Pelajari Lebih Lanjut
@@ -68,17 +68,17 @@ export default function HeroSection() {
                     {/* Stats row */}
                     <div className="mx-auto flex max-w-md items-center justify-center gap-8 pt-8 md:max-w-lg md:gap-12">
                         <div className="text-center">
-                            <p className="text-2xl font-bold text-primary-600 md:text-3xl">1960</p>
+                            <p className="text-primary-600 text-2xl font-bold md:text-3xl">1960</p>
                             <p className="text-sm text-gray-500">Tahun Berdiri</p>
                         </div>
                         <div className="h-10 w-px bg-gray-300" />
                         <div className="text-center">
-                            <p className="text-2xl font-bold text-primary-600 md:text-3xl">3</p>
+                            <p className="text-primary-600 text-2xl font-bold md:text-3xl">3</p>
                             <p className="text-sm text-gray-500">Tier Keanggotaan</p>
                         </div>
                         <div className="h-10 w-px bg-gray-300" />
                         <div className="text-center">
-                            <p className="text-2xl font-bold text-primary-600 md:text-3xl">2</p>
+                            <p className="text-primary-600 text-2xl font-bold md:text-3xl">2</p>
                             <p className="text-sm text-gray-500">Kantor Wilayah</p>
                         </div>
                     </div>

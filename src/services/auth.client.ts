@@ -7,3 +7,11 @@ export const logout = async () => {
 export const changePassword = async (currentPassword: string, newPassword: string) => {
     return API.post("/auth/change-password", { currentPassword, newPassword });
 };
+
+export const forgotPassword = async (email: string) => {
+    return API.post("/auth/forgot-password", { email });
+};
+
+export const resetPassword = async (token: string, password: string) => {
+    return API.post("/auth/reset-password", { token, password });
+};

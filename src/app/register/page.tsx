@@ -49,22 +49,22 @@ const registerSchema = z
     .superRefine((data, ctx) => {
         if (!data.isGoogleMode) {
             if (!data.password || data.password.length < 8) {
-                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password minimal 8 karakter", path: ["password"] });
+                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi minimal 8 karakter", path: ["password"] });
             } else {
                 if (!/[A-Z]/.test(data.password)) {
-                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password harus mengandung huruf besar", path: ["password"] });
+                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi harus mengandung huruf besar", path: ["password"] });
                 }
                 if (!/[a-z]/.test(data.password)) {
-                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password harus mengandung huruf kecil", path: ["password"] });
+                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi harus mengandung huruf kecil", path: ["password"] });
                 }
                 if (!/[0-9]/.test(data.password)) {
-                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password harus mengandung angka", path: ["password"] });
+                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi harus mengandung angka", path: ["password"] });
                 }
             }
             if (!data.passwordConfirmation) {
-                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Konfirmasi Password harus diisi", path: ["passwordConfirmation"] });
+                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Konfirmasi Kata sandi harus diisi", path: ["passwordConfirmation"] });
             } else if (data.password !== data.passwordConfirmation) {
-                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Password tidak cocok", path: ["passwordConfirmation"] });
+                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi tidak cocok", path: ["passwordConfirmation"] });
             }
         }
     });
@@ -416,7 +416,7 @@ export default function RegisterClient() {
                                             render={({ field }) => (
                                                 <FormItem>
                                                     <FormLabel className="flex items-center gap-2">
-                                                        Password
+                                                        Kata Sandi
                                                         <TooltipProvider delayDuration={150}>
                                                             <Tooltip>
                                                                 <TooltipTrigger asChild>
@@ -447,7 +447,7 @@ export default function RegisterClient() {
                                                             <FormControl>
                                                                 <Input
                                                                     type={showPassword ? "text" : "password"}
-                                                                    placeholder="Masukkan password"
+                                                                    placeholder="Masukkan kata sandi"
                                                                     {...field}
                                                                     className="pr-10"
                                                                 />
@@ -457,7 +457,7 @@ export default function RegisterClient() {
                                                                 type="button"
                                                                 onClick={() => setShowPassword((v) => !v)}
                                                                 className="text-muted-foreground hover:text-foreground absolute inset-y-0 right-0 flex items-center pr-3 hover:cursor-pointer"
-                                                                aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                                                                aria-label={showPassword ? "Sembunyikan kata sandi" : "Tampilkan kata sandi"}
                                                             >
                                                                 {showPassword ? <EyeOffIcon className="h-4 w-4" /> : <EyeIcon className="h-4 w-4" />}
                                                             </button>
@@ -473,9 +473,9 @@ export default function RegisterClient() {
                                             name="passwordConfirmation"
                                             render={({ field }) => (
                                                 <FormItem>
-                                                    <FormLabel>Konfirmasi Password</FormLabel>
+                                                    <FormLabel>Konfirmasi Kata Sandi</FormLabel>
                                                     <FormControl>
-                                                        <Input type="password" placeholder="Masukkan konfirmasi password" {...field} />
+                                                        <Input type="password" placeholder="Konfirmasi kata sandi" {...field} />
                                                     </FormControl>
                                                     <FormMessage className="text-xs" />
                                                     {passwordMismatchError && <FormMessage className="text-xs">{passwordMismatchError}</FormMessage>}
@@ -534,7 +534,7 @@ export default function RegisterClient() {
 
                                 <p className="text-muted-foreground pt-2 text-sm">
                                     Sudah memiliki akun? Silakan{" "}
-                                    <Link href="/login" className="text-primary font-bold hover:underline">
+                                    <Link href="/signin" className="text-primary font-bold hover:underline">
                                         Masuk
                                     </Link>
                                 </p>

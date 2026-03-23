@@ -132,7 +132,7 @@ export default function SearchAlumni() {
 
                     {/* View All CTA */}
                     <div className="mt-5 text-center">
-                        <Link href="/login" className={buttonVariants({ variant: "outline" })}>
+                        <Link href="/signin" className={buttonVariants({ variant: "outline" })}>
                             Lihat Semua Alumni
                             <ArrowRight className="ml-2 h-5 w-5" />
                         </Link>

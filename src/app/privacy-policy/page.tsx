@@ -274,7 +274,7 @@ export default function PrivacyPolicyPage() {
                                     <h3 className="mb-2 font-semibold text-gray-900">5.3 Layanan Pihak Ketiga</h3>
                                     <ul className="ml-4 list-inside list-disc space-y-1 text-gray-700">
                                         <li>
-                                            <strong>Google OAuth:</strong> Kami menggunakan layanan autentikasi Google untuk log in yang aman
+                                            <strong>Google OAuth:</strong> Kami menggunakan layanan autentikasi Google untuk masuk yang aman
                                         </li>
                                         <li>
                                             <strong>Supabase:</strong> Hosting dan manajemen database
@@ -346,7 +346,7 @@ export default function PrivacyPolicyPage() {
                                             <strong>Token JWT:</strong> Token autentikasi aman dengan masa kedaluwarsa 7 hari
                                         </li>
                                         <li>
-                                            <strong>Manajemen Sesi:</strong> Cookie untuk mempertahankan status log in Anda
+                                            <strong>Manajemen Sesi:</strong> Cookie untuk mempertahankan status sesi Anda
                                         </li>
                                     </ul>
                                 </div>
