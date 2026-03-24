@@ -37,7 +37,7 @@ export interface CountriesResponse {
 export interface CountriesAllResponse {
     success: boolean;
     message: string;
-    data: Country[];
+    data: { items: Country[] };
 }
 
 export interface ProvincesResponse {

@@ -1,5 +1,5 @@
 import { API } from "@/lib/axios";
-import { CountriesAllResponse, CitiesResponse, CityOption, CountryOption, ProvincesResponse, ProvinceOption } from "@/types/country";
+import { CountriesAllResponse, CitiesResponse, CityOption, CountryOption, ProvincesResponse, ProvinceOption, Country } from "@/types/country";
 
 /**
  * Fetches all countries at once (paginate=false) with optional search.
@@ -10,7 +10,7 @@ export const fetchCountries = async (search: string = ""): Promise<CountryOption
             params: { search, paginate: false },
         });
 
-        return res.data.data.map((country) => ({
+        return res.data.data.items.map((country: Country) => ({
             value: country.id.toString(),
             label: country.name,
         }));
