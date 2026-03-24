@@ -41,7 +41,6 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginClient() {
     const [currentPhotoIndex, setCurrentPhotoIndex] = useState(0);
-    const [_isTransitioning, setIsTransitioning] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const { user, login, googleLogin, isLoading } = useAuth();
     const router = useRouter();
@@ -58,10 +57,8 @@ export default function LoginClient() {
 
     useEffect(() => {
         const interval = setInterval(() => {
-            setIsTransitioning(true);
             setTimeout(() => {
                 setCurrentPhotoIndex((prevIndex) => (prevIndex === photoCards.length - 1 ? 0 : prevIndex + 1));
-                setIsTransitioning(false);
             }, 150);
         }, 3000);
 
@@ -246,10 +243,8 @@ export default function LoginClient() {
                                     index === currentPhotoIndex ? "w-8 bg-white" : "bg-white/50"
                                 }`}
                                 onClick={() => {
-                                    setIsTransitioning(true);
                                     setTimeout(() => {
                                         setCurrentPhotoIndex(index);
-                                        setIsTransitioning(false);
                                     }, 150);
                                 }}
                             />

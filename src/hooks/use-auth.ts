@@ -44,7 +44,7 @@ export const useAuth = () => {
 
                 setUser(response.data.data.user);
 
-                router.push("/dashboard");
+                window.location.href = "/dashboard";
 
                 return { success: true };
             } catch (error: any) {
@@ -65,7 +65,7 @@ export const useAuth = () => {
                 setLoading(false);
             }
         },
-        [setUser, setLoading, router],
+        [setUser, setLoading],
     );
 
     const logout = useCallback(async () => {
@@ -175,7 +175,7 @@ export const useAuth = () => {
                 });
 
                 setUser(response.data.data.user);
-                router.push("/dashboard");
+                window.location.href = "/dashboard";
 
                 return { success: true };
             } catch (error: any) {
@@ -189,7 +189,7 @@ export const useAuth = () => {
                 setLoading(false);
             }
         },
-        [setUser, setLoading, router],
+        [setUser, setLoading],
     );
 
     const googleRegister = useCallback(
@@ -213,7 +213,7 @@ export const useAuth = () => {
                 });
 
                 setUser(response.data.data.user);
-                router.push("/dashboard");
+                window.location.href = "/dashboard";
 
                 return { success: true };
             } catch (error: any) {
@@ -227,7 +227,7 @@ export const useAuth = () => {
                 setLoading(false);
             }
         },
-        [setUser, setLoading, router],
+        [setUser, setLoading],
     );
 
     const linkGoogle = useCallback(
