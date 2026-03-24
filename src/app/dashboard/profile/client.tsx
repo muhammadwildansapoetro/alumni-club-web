@@ -7,7 +7,6 @@ import { InfoGrid } from "@/components/ui/info-grid";
 import { InfoItem } from "@/components/ui/info-item";
 import { useDialog } from "@/hooks/use-dialog";
 import {
-    departmentBorderMap,
     FurtherEducation,
     TDegree,
     TDepartment,
@@ -29,8 +28,6 @@ import { toast } from "sonner";
 export default function ProfileClient({ user }: { user: User }) {
     const { onOpen } = useDialog();
     const router = useRouter();
-    const deptStyle = departmentBorderMap[user?.profile?.department as keyof typeof departmentBorderMap];
-    console.log("deptStyle", deptStyle);
 
     const handleDeleteWorkExperience = async (index: number) => {
         try {
@@ -95,19 +92,10 @@ export default function ProfileClient({ user }: { user: User }) {
             header: "Aksi",
             cell: ({ row }) => (
                 <div className="flex gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onOpen("work-experience-management", { user, index: row.index })}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => onOpen("work-experience-management", { user, index: row.index })}>
                         <SquarePenIcon className="h-4 w-4" />
                     </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => handleDeleteWorkExperience(row.index)}
-                    >
+                    <Button variant="destructive" size="sm" onClick={() => handleDeleteWorkExperience(row.index)}>
                         <Trash2Icon className="h-4 w-4" />
                     </Button>
                 </div>
@@ -139,19 +127,10 @@ export default function ProfileClient({ user }: { user: User }) {
             header: "Aksi",
             cell: ({ row }) => (
                 <div className="flex gap-2">
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => onOpen("further-education-management", { user, index: row.index })}
-                    >
+                    <Button variant="outline" size="sm" onClick={() => onOpen("further-education-management", { user, index: row.index })}>
                         <SquarePenIcon className="h-4 w-4" />
                     </Button>
-                    <Button
-                        variant="outline"
-                        size="sm"
-                        className="text-destructive hover:text-destructive"
-                        onClick={() => handleDeleteFurtherEducation(row.index)}
-                    >
+                    <Button variant="destructive" size="sm" onClick={() => handleDeleteFurtherEducation(row.index)}>
                         <Trash2Icon className="h-4 w-4" />
                     </Button>
                 </div>
@@ -169,7 +148,7 @@ export default function ProfileClient({ user }: { user: User }) {
                     </CardTitle>
 
                     <CardAction>
-                        <Button className={buttonVariants({ variant: "outline" })} onClick={() => onOpen("edit-profile", user)}>
+                        <Button className={buttonVariants({ variant: "default" })} onClick={() => onOpen("edit-profile", user)}>
                             <SquarePenIcon className="h-5 w-5 shrink-0" />
                             Ubah
                         </Button>
@@ -213,7 +192,7 @@ export default function ProfileClient({ user }: { user: User }) {
                         <BriefcaseBusinessIcon className="h-5 w-5 shrink-0" /> Pengalaman Bekerja
                     </CardTitle>
                     <CardAction>
-                        <Button variant="outline" onClick={() => onOpen("work-experience-management", { user })}>
+                        <Button variant="default" onClick={() => onOpen("work-experience-management", { user })}>
                             <PlusIcon className="h-5 w-5 shrink-0" />
                             Tambah
                         </Button>
@@ -232,7 +211,7 @@ export default function ProfileClient({ user }: { user: User }) {
                         <GraduationCapIcon className="h-5 w-5 shrink-0" /> Pendidikan Lanjutan
                     </CardTitle>
                     <CardAction>
-                        <Button variant="outline" onClick={() => onOpen("further-education-management", { user })}>
+                        <Button variant="default" onClick={() => onOpen("further-education-management", { user })}>
                             <PlusIcon className="h-5 w-5 shrink-0" />
                             Tambah
                         </Button>

@@ -10,7 +10,7 @@ import ReactSelect from "../ui/react-select";
 import { Button } from "../ui/button";
 import { Loader2Icon, SaveIcon } from "lucide-react";
 import { User } from "@/types/user";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { updateOwnProfile } from "@/services/profile.client";
 import { useRouter } from "next/navigation";
@@ -20,65 +20,71 @@ import { useDialog } from "@/hooks/use-dialog";
 import { fetchProvinces, fetchCities } from "@/services/country.client";
 import { currentYear, entryYearOptions, graduationYearOptions } from "@/lib/option";
 
-const profilFormSchema = z.object({
-    fullname: z.string().min(1, "Nama lengkap harus diisi").max(100, "Nama terlalu panjang"),
-    npm: z.string().min(1, "NPM harus diisi").max(12, "NPM maksimal 12 digit").regex(/^\d+$/, "NPM hanya boleh berisi angka"),
-    entryYear: z
-        .number()
-        .min(1959, "Tahun lulus tidak valid")
-        .max(currentYear - 3, "Tahun lulus tidak valid"),
-    graduationYear: z.number().min(1962, "Tahun lulus tidak valid").max(currentYear, "Tahun lulus tidak valid"),
-    linkedInUrl: z.string().url("URL LinkedIn tidak valid").or(z.literal("")).optional(),
-    countryId: z.number().nullable().optional(),
-    countryName: z.string().optional(),
-    provinceId: z.number().nullable().optional(),
-    provinceName: z.string().optional().nullable(),
-    cityId: z.number().nullable().optional(),
-    cityName: z.string().optional().nullable(),
-    furtherEducations: z
-        .array(
-            z.object({
-                degree: z.enum(["MAGISTER", "DOCTOR"]),
-                entryYear: z
-                    .number()
-                    .min(1959)
-                    .max(currentYear + 5),
-                graduationYear: z
-                    .number()
-                    .min(1959)
-                    .max(currentYear + 10)
-                    .nullable()
-                    .optional(),
-                universityName: z.string().min(1, "Nama universitas harus diisi").max(200),
-                fieldOfStudy: z.string().min(1, "Bidang studi harus diisi").max(200),
-            }),
-        )
-        .nullable()
-        .optional(),
-    workExperiences: z
-        .array(
-            z.object({
-                industry: z.string().min(1, "Industri harus dipilih"),
-                jobLevel: z.string().min(1, "Level jabatan harus dipilih"),
-                employmentType: z.string().min(1, "Tipe pekerjaan harus dipilih"),
-                incomeRange: z.string().optional().nullable(),
-                jobTitle: z.string().min(1, "Judul pekerjaan harus diisi").max(100),
-                companyName: z.string().min(1, "Nama perusahaan harus diisi").max(100),
-                startYear: z
-                    .number()
-                    .min(1959)
-                    .max(currentYear + 5),
-                endYear: z
-                    .number()
-                    .min(1959)
-                    .max(currentYear + 5)
-                    .nullable()
-                    .optional(),
-            }),
-        )
-        .nullable()
-        .optional(),
-});
+const profilFormSchema = z
+    .object({
+        fullname: z.string().min(1, "Nama lengkap harus diisi").max(100, "Nama terlalu panjang"),
+        npm: z.string().min(1, "NPM harus diisi").max(12, "NPM maksimal 12 digit").regex(/^\d+$/, "NPM hanya boleh berisi angka"),
+        entryYear: z
+            .number()
+            .min(1959, "Tahun lulus tidak valid")
+            .max(currentYear - 3, "Tahun lulus tidak valid"),
+        graduationYear: z.number().min(1962, "Tahun lulus tidak valid").max(currentYear, "Tahun lulus tidak valid"),
+        linkedInUrl: z.string().url("URL LinkedIn tidak valid").or(z.literal("")).optional(),
+        countryId: z.number().nullable().optional(),
+        countryName: z.string().optional(),
+        provinceId: z.number().nullable().optional(),
+        provinceName: z.string().optional().nullable(),
+        cityId: z.number().nullable().optional(),
+        cityName: z.string().optional().nullable(),
+        furtherEducations: z
+            .array(
+                z.object({
+                    degree: z.enum(["MAGISTER", "DOCTOR"]),
+                    entryYear: z
+                        .number()
+                        .min(1959)
+                        .max(currentYear + 5),
+                    graduationYear: z
+                        .number()
+                        .min(1959)
+                        .max(currentYear + 10)
+                        .nullable()
+                        .optional(),
+                    universityName: z.string().min(1, "Nama universitas harus diisi").max(200),
+                    fieldOfStudy: z.string().min(1, "Bidang studi harus diisi").max(200),
+                }),
+            )
+            .nullable()
+            .optional(),
+        workExperiences: z
+            .array(
+                z.object({
+                    industry: z.string().min(1, "Industri harus dipilih"),
+                    jobLevel: z.string().min(1, "Level jabatan harus dipilih"),
+                    employmentType: z.string().min(1, "Tipe pekerjaan harus dipilih"),
+                    incomeRange: z.string().optional().nullable(),
+                    jobTitle: z.string().min(1, "Judul pekerjaan harus diisi").max(100),
+                    companyName: z.string().min(1, "Nama perusahaan harus diisi").max(100),
+                    startYear: z
+                        .number()
+                        .min(1959)
+                        .max(currentYear + 5),
+                    endYear: z
+                        .number()
+                        .min(1959)
+                        .max(currentYear + 5)
+                        .nullable()
+                        .optional(),
+                }),
+            )
+            .nullable()
+            .optional(),
+    })
+    .superRefine((data, ctx) => {
+        if (data.entryYear && data.graduationYear && data.graduationYear < data.entryYear) {
+            ctx.addIssue({ code: "custom", message: "Tahun lulus tidak boleh sebelum tahun masuk", path: ["graduationYear"] });
+        }
+    });
 
 type ProfileFormValues = z.infer<typeof profilFormSchema>;
 
@@ -102,14 +108,28 @@ export default function EditProfileDialog() {
 function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSuccess: () => void }) {
     const router = useRouter();
     const [countryOptions, setCountryOptions] = useState<{ value: string; label: string }[]>([]);
-    const [provinceOptions, setProvinceOptions] = useState<{ value: string; label: string }[]>(() =>
-        user?.profile?.provinceId && user?.profile?.provinceName
-            ? [{ value: user.profile.provinceId.toString(), label: user.profile.provinceName }]
-            : [],
-    );
-    const [cityOptions, setCityOptions] = useState<{ value: string; label: string }[]>(() =>
-        user?.profile?.cityId && user?.profile?.cityName ? [{ value: user.profile.cityId.toString(), label: user.profile.cityName }] : [],
-    );
+    const [extraProvinceOptions, setExtraProvinceOptions] = useState<{ value: string; label: string }[]>([]);
+    const [extraCityOptions, setExtraCityOptions] = useState<{ value: string; label: string }[]>([]);
+
+    const provinceOptions = useMemo(() => {
+        const seed =
+            user?.profile?.provinceId && user?.profile?.provinceName
+                ? [{ value: user.profile.provinceId.toString(), label: user.profile.provinceName }]
+                : [];
+        const merged = [...seed, ...extraProvinceOptions];
+        const seen = new Set<string>();
+        return merged.filter((o) => (seen.has(o.value) ? false : seen.add(o.value) && true));
+    }, [user, extraProvinceOptions]);
+
+    const cityOptions = useMemo(() => {
+        const seed =
+            user?.profile?.cityId && user?.profile?.cityName
+                ? [{ value: user.profile.cityId.toString(), label: user.profile.cityName }]
+                : [];
+        const merged = [...seed, ...extraCityOptions];
+        const seen = new Set<string>();
+        return merged.filter((o) => (seen.has(o.value) ? false : seen.add(o.value) && true));
+    }, [user, extraCityOptions]);
 
     const form = useForm<ProfileFormValues>({
         resolver: zodResolver(profilFormSchema),
@@ -131,6 +151,8 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
     const watchedProvinceId = useWatch({ control: form.control, name: "provinceId" });
     const watchedCountryId = useWatch({ control: form.control, name: "countryId" });
     const isIndonesia = watchedCountryId === 77;
+    const watchedEntryYear = useWatch({ control: form.control, name: "entryYear" });
+    const filteredGraduationYearOptions = graduationYearOptions.filter((opt) => !watchedEntryYear || opt.value >= watchedEntryYear);
 
     const loadCountryOptions = async (inputValue: string) => {
         const options = await fetchCountries(inputValue);
@@ -140,13 +162,13 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
 
     const loadProvinceOptions = async (inputValue: string) => {
         const { options } = await fetchProvinces(inputValue);
-        setProvinceOptions(options);
+        setExtraProvinceOptions(options);
         return options;
     };
 
     const loadCityOptions = async (inputValue: string) => {
         const { options } = await fetchCities(inputValue, watchedProvinceId ?? undefined);
-        setCityOptions(options);
+        setExtraCityOptions(options);
         return options;
     };
 
@@ -237,9 +259,12 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
                                         {...field}
                                         options={entryYearOptions}
                                         placeholder="Pilih tahun masuk"
-                                        instanceId="graduation-year-select"
+                                        instanceId="entry-year-select"
                                         value={entryYearOptions.find((opt) => opt.value === field.value) ?? null}
-                                        onChange={(opt: any) => field.onChange(opt?.value)}
+                                        onChange={(opt: any) => {
+                                            field.onChange(opt?.value);
+                                            form.setValue("graduationYear", undefined as any);
+                                        }}
                                         fieldState={fieldState}
                                     />
                                 </FormControl>
@@ -256,10 +281,11 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
                                 <FormControl>
                                     <ReactSelect
                                         {...field}
-                                        options={graduationYearOptions}
+                                        isDisabled={!watchedEntryYear}
+                                        options={filteredGraduationYearOptions}
                                         placeholder="Pilih tahun kelulusan"
                                         instanceId="graduation-year-select"
-                                        value={graduationYearOptions.find((option) => option.value === field.value) ?? null}
+                                        value={filteredGraduationYearOptions.find((option) => option.value === field.value) ?? null}
                                         onChange={(opt: any) => field.onChange(opt?.value)}
                                         fieldState={fieldState}
                                     />

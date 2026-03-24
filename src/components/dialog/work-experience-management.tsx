@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import z from "zod";
@@ -23,16 +23,22 @@ const workStartYearOptions = Array.from({ length: currentYear - 1956 + 1 }, (_, 
 
 const endYearOptions = [{ value: null as number | null, label: "Sampai sekarang" }, ...workStartYearOptions];
 
-const addWorkExperienceSchema = z.object({
-    jobTitle: z.string().min(1, "Judul pekerjaan harus diisi").max(100),
-    companyName: z.string().min(1, "Nama perusahaan harus diisi").max(100),
-    industry: z.string().min(1, "Industri harus dipilih"),
-    jobLevel: z.string().min(1, "Level jabatan harus dipilih"),
-    employmentType: z.string().min(1, "Tipe pekerjaan harus dipilih"),
-    incomeRange: z.string().nullable().optional(),
-    startYear: z.number({ error: "Tahun mulai harus diisi" }),
-    endYear: z.number().nullable().optional(),
-});
+const addWorkExperienceSchema = z
+    .object({
+        jobTitle: z.string().min(1, "Judul pekerjaan harus diisi").max(100),
+        companyName: z.string().min(1, "Nama perusahaan harus diisi").max(100),
+        industry: z.string().min(1, "Industri harus dipilih"),
+        jobLevel: z.string().min(1, "Level jabatan harus dipilih"),
+        employmentType: z.string().min(1, "Tipe pekerjaan harus dipilih"),
+        incomeRange: z.string().nullable().optional(),
+        startYear: z.number({ error: "Tahun mulai harus diisi" }),
+        endYear: z.number().nullable().optional(),
+    })
+    .superRefine((data, ctx) => {
+        if (data.startYear && data.endYear && data.endYear < data.startYear) {
+            ctx.addIssue({ code: "custom", message: "Tahun selesai tidak boleh sebelum tahun mulai", path: ["endYear"] });
+        }
+    });
 
 type AddWorkExperienceFormValues = z.infer<typeof addWorkExperienceSchema>;
 
@@ -76,6 +82,12 @@ function WorkExperienceForm({ data, onSuccess }: { data: WorkExperienceManagemen
             endYear: editItem?.endYear ?? null,
         },
     });
+
+    const watchedStartYear = useWatch({ control: form.control, name: "startYear" });
+    const filteredEndYearOptions = [
+        endYearOptions[0],
+        ...workStartYearOptions.filter((opt) => !watchedStartYear || opt.value >= watchedStartYear),
+    ];
 
     const onSubmit = async (values: AddWorkExperienceFormValues) => {
         try {
@@ -237,7 +249,10 @@ function WorkExperienceForm({ data, onSuccess }: { data: WorkExperienceManagemen
                                         placeholder="Pilih tahun mulai"
                                         instanceId="start-year-select"
                                         value={workStartYearOptions.find((opt) => opt.value === field.value) ?? null}
-                                        onChange={(opt: any) => field.onChange(opt?.value ?? null)}
+                                        onChange={(opt: any) => {
+                                            field.onChange(opt?.value ?? null);
+                                            form.setValue("endYear", null);
+                                        }}
                                         fieldState={fieldState}
                                     />
                                 </FormControl>
@@ -254,11 +269,12 @@ function WorkExperienceForm({ data, onSuccess }: { data: WorkExperienceManagemen
                                 <FormControl>
                                     <ReactSelect
                                         {...field}
-                                        options={endYearOptions}
+                                        isDisabled={!watchedStartYear}
+                                        options={filteredEndYearOptions}
                                         placeholder="Pilih tahun selesai"
                                         instanceId="end-year-select"
                                         getOptionValue={(opt: any) => opt.value?.toString() ?? "current"}
-                                        value={endYearOptions.find((opt) => opt.value === field.value) ?? endYearOptions[0]}
+                                        value={filteredEndYearOptions.find((opt) => opt.value === field.value) ?? filteredEndYearOptions[0]}
                                         onChange={(opt: any) => field.onChange(opt?.value ?? null)}
                                         fieldState={fieldState}
                                     />

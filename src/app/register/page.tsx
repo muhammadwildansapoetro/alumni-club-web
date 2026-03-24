@@ -47,6 +47,9 @@ const registerSchema = z
         isGoogleMode: z.boolean(),
     })
     .superRefine((data, ctx) => {
+        if (data.entryYear && data.graduationYear && data.graduationYear < data.entryYear) {
+            ctx.addIssue({ code: "custom", message: "Tahun lulus tidak boleh sebelum tahun masuk", path: ["graduationYear"] });
+        }
         if (!data.isGoogleMode) {
             if (!data.password || data.password.length < 8) {
                 ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi minimal 8 karakter", path: ["password"] });
@@ -107,6 +110,8 @@ export default function RegisterClient() {
         control: form.control,
         name: "passwordConfirmation",
     });
+    const watchedEntryYear = useWatch({ control: form.control, name: "entryYear" });
+    const filteredGraduationYearOptions = graduationYearOptions.filter((opt) => !watchedEntryYear || opt.value >= watchedEntryYear);
 
     const passwordMismatchError =
         !isGoogleMode && password && passwordConfirmation && password !== passwordConfirmation ? "Password tidak cocok" : "";
@@ -372,7 +377,10 @@ export default function RegisterClient() {
                                                             placeholder="Pilih tahun masuk"
                                                             instanceId="entryYear"
                                                             value={entryYearOptions.find((opt) => opt.value === field.value) ?? 0}
-                                                            onChange={(opt: any) => field.onChange(opt?.value)}
+                                                            onChange={(opt: any) => {
+                                                                field.onChange(opt?.value);
+                                                                form.setValue("graduationYear", 0);
+                                                            }}
                                                             fieldState={fieldState}
                                                         />
                                                     </FormControl>
@@ -392,10 +400,11 @@ export default function RegisterClient() {
                                                     <FormControl>
                                                         <ReactSelect
                                                             {...field}
-                                                            options={graduationYearOptions}
+                                                            isDisabled={!watchedEntryYear}
+                                                            options={filteredGraduationYearOptions}
                                                             placeholder="Pilih tahun lulus"
                                                             instanceId="graduationYear"
-                                                            value={graduationYearOptions.find((opt) => opt.value === field.value) ?? 0}
+                                                            value={filteredGraduationYearOptions.find((opt) => opt.value === field.value) ?? 0}
                                                             onChange={(opt: any) => field.onChange(opt?.value)}
                                                             fieldState={fieldState}
                                                         />

@@ -1,6 +1,6 @@
 "use client";
 
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "../ui/form";
 import z from "zod";
@@ -18,13 +18,19 @@ import { degreeOptions, entryYearFurtherEducationOptions, graduationYearFurtherE
 
 const gradYearWithCurrent = [{ value: null as number | null, label: "Belum lulus" }, ...graduationYearFurtherEducationOptions];
 
-const addFurtherEducationSchema = z.object({
-    universityName: z.string().min(1, "Nama universitas harus diisi").max(200),
-    fieldOfStudy: z.string().min(1, "Bidang studi harus diisi").max(200),
-    degree: z.string().min(1, "Gelar harus dipilih"),
-    entryYear: z.number({ error: "Tahun masuk harus diisi" }),
-    graduationYear: z.number().nullable().optional(),
-});
+const addFurtherEducationSchema = z
+    .object({
+        universityName: z.string().min(1, "Nama universitas harus diisi").max(200),
+        fieldOfStudy: z.string().min(1, "Bidang studi harus diisi").max(200),
+        degree: z.string().min(1, "Gelar harus dipilih"),
+        entryYear: z.number({ error: "Tahun masuk harus diisi" }),
+        graduationYear: z.number().nullable().optional(),
+    })
+    .superRefine((data, ctx) => {
+        if (data.entryYear && data.graduationYear && data.graduationYear < data.entryYear) {
+            ctx.addIssue({ code: "custom", message: "Tahun lulus tidak boleh sebelum tahun masuk", path: ["graduationYear"] });
+        }
+    });
 
 type AddFurtherEducationFormValues = z.infer<typeof addFurtherEducationSchema>;
 
@@ -65,6 +71,12 @@ function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManag
             graduationYear: editItem?.graduationYear ?? null,
         },
     });
+
+    const watchedEntryYear = useWatch({ control: form.control, name: "entryYear" });
+    const filteredGradYearOptions = [
+        gradYearWithCurrent[0],
+        ...graduationYearFurtherEducationOptions.filter((opt) => !watchedEntryYear || opt.value >= watchedEntryYear),
+    ];
 
     const onSubmit = async (values: AddFurtherEducationFormValues) => {
         try {
@@ -162,7 +174,10 @@ function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManag
                                         placeholder="Pilih tahun masuk"
                                         instanceId="further-entry-year-select"
                                         value={entryYearFurtherEducationOptions.find((opt) => opt.value === field.value) ?? null}
-                                        onChange={(opt: any) => field.onChange(opt?.value ?? null)}
+                                        onChange={(opt: any) => {
+                                            field.onChange(opt?.value ?? null);
+                                            form.setValue("graduationYear", null);
+                                        }}
                                         fieldState={fieldState}
                                     />
                                 </FormControl>
@@ -179,11 +194,12 @@ function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManag
                                 <FormControl>
                                     <ReactSelect
                                         {...field}
-                                        options={gradYearWithCurrent}
+                                        isDisabled={!watchedEntryYear}
+                                        options={filteredGradYearOptions}
                                         placeholder="Pilih tahun lulus"
                                         instanceId="further-graduation-year-select"
                                         getOptionValue={(opt: any) => opt.value?.toString() ?? "current"}
-                                        value={gradYearWithCurrent.find((opt) => opt.value === field.value) ?? gradYearWithCurrent[0]}
+                                        value={filteredGradYearOptions.find((opt) => opt.value === field.value) ?? filteredGradYearOptions[0]}
                                         onChange={(opt: any) => field.onChange(opt?.value ?? null)}
                                         fieldState={fieldState}
                                     />
