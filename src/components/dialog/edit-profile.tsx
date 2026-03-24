@@ -199,7 +199,7 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(updateProfil)} className="space-y-4">
-                <div className="grid grid-cols-2 items-start gap-4">
+                <div className="grid items-start gap-4 sm:grid-cols-2">
                     <FormField
                         name="fullname"
                         control={form.control}
