@@ -130,7 +130,7 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
 
     const watchedProvinceId = useWatch({ control: form.control, name: "provinceId" });
     const watchedCountryId = useWatch({ control: form.control, name: "countryId" });
-    const isIndonesia = watchedCountryId === 62;
+    const isIndonesia = watchedCountryId === 77;
 
     const loadCountryOptions = async (inputValue: string) => {
         const options = await fetchCountries(inputValue);
@@ -302,7 +302,7 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
                                             const newId = opt ? Number(opt.value) : null;
                                             field.onChange(newId);
                                             form.setValue("countryName", opt?.label || undefined);
-                                            if (newId !== 62) {
+                                            if (newId !== 77) {
                                                 form.setValue("provinceId", null);
                                                 form.setValue("provinceName", null);
                                                 form.setValue("cityId", null);

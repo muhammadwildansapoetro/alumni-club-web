@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 const API_URL = process.env.NEXT_PUBLIC_API_URL!;
 
 async function proxyRequest(request: NextRequest, path: string) {
-    const url = `${API_URL}/${path}`;
+    const url = `${API_URL}/${path}${request.nextUrl.search}`;
 
     const headers = new Headers();
     headers.set("Content-Type", "application/json");
