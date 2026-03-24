@@ -1,12 +1,21 @@
 import { API } from "@/lib/axios";
-import { AllCountriesResponse, CitiesResponse, CityOption, CountryOption, ProvincesResponse, ProvinceOption, Country } from "@/types/country";
+import { AllCountriesResponse, CountriesResponse, CitiesResponse, CityOption, CountryOption, ProvincesResponse, ProvinceOption, Country } from "@/types/country";
 
 export const fetchCountries = async (search: string = ""): Promise<CountryOption[]> => {
     try {
-        const res = await API.get<AllCountriesResponse>("/location/countries", {
-            params: { search, paginate: false },
-        });
+        if (search) {
+            const res = await API.get<CountriesResponse>("/location/countries", {
+                params: { search, page: 1, limit: 100 },
+            });
+            return res.data.data.items.map((country: Country) => ({
+                value: country.id.toString(),
+                label: country.name,
+            }));
+        }
 
+        const res = await API.get<AllCountriesResponse>("/location/countries", {
+            params: { paginate: false },
+        });
         return res.data.data.map((country: Country) => ({
             value: country.id.toString(),
             label: country.name,
