@@ -7,14 +7,14 @@ export interface Country {
 export interface Province {
     id: number;
     name: string;
-    code: string | null;
-    countryId: number | null;
+    code: string;
+    countryId: number;
 }
 
 export interface City {
     id: number;
     name: string;
-    code: string | null;
+    code: string;
     provinceId: number;
 }
 
@@ -34,10 +34,10 @@ export interface CountriesResponse {
     };
 }
 
-export interface CountriesAllResponse {
+export interface AllCountriesResponse {
     success: boolean;
     message: string;
-    data: { items: Country[] };
+    data: Country[];
 }
 
 export interface ProvincesResponse {
