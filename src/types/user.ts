@@ -1,9 +1,18 @@
 export interface AlumniProfile {
-    id: number;
+    id: string;
     fullName: string | null;
     department: "TEP" | "TPN" | "TIN";
     entryYear: number;
+    graduationYear: number | null;
+    furtherEducations: FurtherEducation[] | null;
+    cityId: number | null;
     cityName: string | null;
+    provinceId: number | null;
+    provinceName: string | null;
+    countryId: number | null;
+    countryName: string | null;
+    workExperiences: WorkExperience[] | null;
+    linkedInUrl: string | null;
 }
 
 export interface AlumniUser {
@@ -84,6 +93,15 @@ export const TDepartment = {
 
 export enum EIndustry {
     AGRICULTURE = "AGRICULTURE",
+    FOOD_TECH = "FOOD_TECH",
+    BIOTECH = "BIOTECH",
+    RESEARCH = "RESEARCH",
+    EDUCATION = "EDUCATION",
+    ENGINEERING = "ENGINEERING",
+    BUSINESS = "BUSINESS",
+    MARKETING = "MARKETING",
+    FINANCE = "FINANCE",
+    GOVERNMENT = "GOVERNMENT",
     HORTICULTURE = "HORTICULTURE",
     PLANTATION = "PLANTATION",
     LIVESTOCK = "LIVESTOCK",
@@ -103,47 +121,56 @@ export enum EIndustry {
     HOSPITALITY = "HOSPITALITY",
     RETAIL = "RETAIL",
     REAL_ESTATE = "REAL_ESTATE",
+    CONSULTING = "CONSULTING",
+    LEGAL = "LEGAL",
     MEDIA = "MEDIA",
     ENTERTAINMENT = "ENTERTAINMENT",
     INFORMATION_TECHNOLOGY = "INFORMATION_TECHNOLOGY",
     E_COMMERCE = "E_COMMERCE",
     BANKING = "BANKING",
     INSURANCE = "INSURANCE",
-    GOVERNMENT = "GOVERNMENT",
-    EDUCATION = "EDUCATION",
     OTHER = "OTHER",
 }
 
 export const TIndustryField: Record<EIndustry, string> = {
-    [EIndustry.AGRICULTURE]: "Agriculture (General)",
-    [EIndustry.HORTICULTURE]: "Horticulture",
-    [EIndustry.PLANTATION]: "Plantation",
-    [EIndustry.LIVESTOCK]: "Livestock",
-    [EIndustry.FISHERIES]: "Fisheries",
-    [EIndustry.FOOD_PROCESSING]: "Food Processing",
-    [EIndustry.AGRI_CHEMICAL]: "Agrochemical",
-    [EIndustry.AGRI_MACHINERY]: "Agricultural Machinery",
-    [EIndustry.IRRIGATION]: "Irrigation & Water Management",
-    [EIndustry.MANUFACTURING]: "Manufacturing",
-    [EIndustry.CONSTRUCTION]: "Construction",
-    [EIndustry.MINING]: "Mining",
-    [EIndustry.ENERGY]: "Energy",
-    [EIndustry.TELECOMMUNICATION]: "Telecommunication",
-    [EIndustry.TRANSPORTATION]: "Transportation",
-    [EIndustry.LOGISTICS]: "Logistics & Supply Chain",
-    [EIndustry.HEALTHCARE]: "Healthcare",
-    [EIndustry.HOSPITALITY]: "Hospitality & Tourism",
-    [EIndustry.RETAIL]: "Retail",
-    [EIndustry.REAL_ESTATE]: "Real Estate",
+    [EIndustry.AGRICULTURE]: "Pertanian",
+    [EIndustry.FOOD_TECH]: "Teknologi Pangan",
+    [EIndustry.BIOTECH]: "Bioteknologi",
+    [EIndustry.RESEARCH]: "Penelitian",
+    [EIndustry.EDUCATION]: "Pendidikan",
+    [EIndustry.ENGINEERING]: "Teknik",
+    [EIndustry.BUSINESS]: "Bisnis",
+    [EIndustry.MARKETING]: "Pemasaran",
+    [EIndustry.FINANCE]: "Keuangan",
+    [EIndustry.GOVERNMENT]: "Pemerintahan",
+    [EIndustry.HORTICULTURE]: "Hortikultura",
+    [EIndustry.PLANTATION]: "Perkebunan",
+    [EIndustry.LIVESTOCK]: "Peternakan",
+    [EIndustry.FISHERIES]: "Perikanan",
+    [EIndustry.FOOD_PROCESSING]: "Pengolahan Pangan",
+    [EIndustry.AGRI_CHEMICAL]: "Agrokimia",
+    [EIndustry.AGRI_MACHINERY]: "Alat & Mesin Pertanian",
+    [EIndustry.IRRIGATION]: "Irigasi",
+    [EIndustry.MANUFACTURING]: "Manufaktur",
+    [EIndustry.CONSTRUCTION]: "Konstruksi",
+    [EIndustry.MINING]: "Pertambangan",
+    [EIndustry.ENERGY]: "Energi",
+    [EIndustry.TELECOMMUNICATION]: "Telekomunikasi",
+    [EIndustry.TRANSPORTATION]: "Transportasi",
+    [EIndustry.LOGISTICS]: "Logistik",
+    [EIndustry.HEALTHCARE]: "Kesehatan",
+    [EIndustry.HOSPITALITY]: "Perhotelan",
+    [EIndustry.RETAIL]: "Ritel",
+    [EIndustry.REAL_ESTATE]: "Properti",
+    [EIndustry.CONSULTING]: "Konsultan",
+    [EIndustry.LEGAL]: "Hukum",
     [EIndustry.MEDIA]: "Media",
-    [EIndustry.ENTERTAINMENT]: "Entertainment",
-    [EIndustry.INFORMATION_TECHNOLOGY]: "Information Technology (IT)",
+    [EIndustry.ENTERTAINMENT]: "Hiburan",
+    [EIndustry.INFORMATION_TECHNOLOGY]: "Teknologi Informasi",
     [EIndustry.E_COMMERCE]: "E-Commerce",
-    [EIndustry.BANKING]: "Banking",
-    [EIndustry.INSURANCE]: "Insurance",
-    [EIndustry.GOVERNMENT]: "Government / Public Sector",
-    [EIndustry.EDUCATION]: "Education",
-    [EIndustry.OTHER]: "Other",
+    [EIndustry.BANKING]: "Perbankan",
+    [EIndustry.INSURANCE]: "Asuransi",
+    [EIndustry.OTHER]: "Lainnya",
 };
 
 export enum EEmploymentType {
@@ -243,12 +270,12 @@ export const departmentBorderMap = {
         header: "border-primary/50 border-b",
     },
     TPN: {
-        firstCard: "border-primary border-t-8",
+        firstCard: "border-red-500 border-t-8",
         card: "border-red-500 border-t",
         header: "border-red-500/50 border-b",
     },
     TIN: {
-        firstCard: "border-primary border-t-8",
+        firstCard: "border-orange-500 border-t-8",
         card: "border-orange-500 border-t",
         header: "border-orange-500/50 border-b",
     },

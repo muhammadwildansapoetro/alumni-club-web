@@ -5,7 +5,6 @@ import AlumniClient from "./client";
 export default async function AlumniPage(props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
     const cookieStore = await cookies();
     const session = cookieStore.get("alumni_session")?.value;
-
     const searchParams = props.searchParams ? await props.searchParams : {};
     const params = new URLSearchParams();
 
@@ -18,7 +17,7 @@ export default async function AlumniPage(props: { searchParams?: Promise<{ [key:
     if (searchParams.provinceId) params.append("provinceId", String(searchParams.provinceId));
     if (searchParams.countryId) params.append("countryId", String(searchParams.countryId));
 
-    let initialData = null;
+    let alumni = null;
     let error = null;
 
     try {
@@ -37,15 +36,10 @@ export default async function AlumniPage(props: { searchParams?: Promise<{ [key:
             throw new Error(json.error || json.message || "Gagal mengambil data alumni");
         }
 
-        initialData = json.data;
+        alumni = json.data;
     } catch (e: any) {
         error = e.message;
     }
 
-    return (
-        <div className="space-y-4">
-            <h1 className="text-2xl font-bold tracking-tight">Daftar Alumni</h1>
-            <AlumniClient initialData={initialData} error={error} />
-        </div>
-    );
+    return <AlumniClient alumni={alumni} error={error} />;
 }

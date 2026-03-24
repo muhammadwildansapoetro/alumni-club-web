@@ -14,9 +14,9 @@ import { toast } from "sonner";
 import { updateOwnProfile } from "@/services/profile.client";
 import { useRouter } from "next/navigation";
 import { useDialog } from "@/hooks/use-dialog";
-import { degreeOptions, entryYearFurtherEducationOptions,  graduationYearOptions } from "@/lib/option";
+import { degreeOptions, entryYearFurtherEducationOptions, graduationYearFurtherEducationOptions } from "@/lib/option";
 
-const gradYearWithCurrent = [{ value: null as number | null, label: "Belum lulus" }, ...graduationYearOptions];
+const gradYearWithCurrent = [{ value: null as number | null, label: "Belum lulus" }, ...graduationYearFurtherEducationOptions];
 
 const addFurtherEducationSchema = z.object({
     universityName: z.string().min(1, "Nama universitas harus diisi").max(200),
@@ -28,56 +28,65 @@ const addFurtherEducationSchema = z.object({
 
 type AddFurtherEducationFormValues = z.infer<typeof addFurtherEducationSchema>;
 
+export type FurtherEducationManagementDialogData = { user: User; index?: number };
+
 export default function FurtherEducationManagementDialog() {
-    const { isOpen, data: user, onClose } = useDialog<User>("further-education-management");
+    const { isOpen, data, onClose } = useDialog<FurtherEducationManagementDialogData>("further-education-management");
+
+    const isEdit = data?.index !== undefined;
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
-                    <DialogTitle>Tambah Pendidikan Lanjutan</DialogTitle>
+                    <DialogTitle>{isEdit ? "Edit Pendidikan Lanjutan" : "Tambah Pendidikan Lanjutan"}</DialogTitle>
                     <DialogDescription></DialogDescription>
                 </DialogHeader>
 
-                <AddFurtherEducationForm user={user} onSuccess={onClose} />
+                <FurtherEducationForm key={`${data?.index ?? "new"}`} data={data} onSuccess={onClose} />
             </DialogContent>
         </Dialog>
     );
 }
 
-function AddFurtherEducationForm({ user, onSuccess }: { user: User | undefined; onSuccess: () => void }) {
+function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManagementDialogData | undefined; onSuccess: () => void }) {
     const router = useRouter();
+    const user = data?.user;
+    const editIndex = data?.index;
+    const editItem = editIndex !== undefined ? user?.profile?.furtherEducations?.[editIndex] : undefined;
 
     const form = useForm<AddFurtherEducationFormValues>({
         resolver: zodResolver(addFurtherEducationSchema),
         defaultValues: {
-            universityName: "",
-            fieldOfStudy: "",
-            degree: undefined,
-            entryYear: undefined,
-            graduationYear: null,
+            universityName: editItem?.universityName ?? "",
+            fieldOfStudy: editItem?.fieldOfStudy ?? "",
+            degree: editItem?.degree ?? undefined,
+            entryYear: editItem?.entryYear ?? undefined,
+            graduationYear: editItem?.graduationYear ?? null,
         },
     });
 
     const onSubmit = async (values: AddFurtherEducationFormValues) => {
         try {
             const existing = user?.profile?.furtherEducations ?? [];
+            const newItem = {
+                universityName: values.universityName,
+                fieldOfStudy: values.fieldOfStudy,
+                degree: values.degree as EDegree,
+                entryYear: values.entryYear,
+                graduationYear: values.graduationYear ?? null,
+            };
+
+            const updated =
+                editIndex !== undefined
+                    ? existing.map((item, i) => (i === editIndex ? newItem : item))
+                    : [...existing, newItem];
+
             await updateOwnProfile({
-                profile: {
-                    furtherEducations: [
-                        ...existing,
-                        {
-                            universityName: values.universityName,
-                            fieldOfStudy: values.fieldOfStudy,
-                            degree: values.degree as EDegree,
-                            entryYear: values.entryYear,
-                            graduationYear: values.graduationYear ?? null,
-                        },
-                    ],
-                },
+                profile: { furtherEducations: updated },
             });
 
-            toast.success("Pendidikan lanjutan berhasil ditambahkan");
+            toast.success(editIndex !== undefined ? "Pendidikan lanjutan berhasil diperbarui" : "Pendidikan lanjutan berhasil ditambahkan");
             form.reset();
             router.refresh();
             onSuccess();
@@ -89,7 +98,7 @@ function AddFurtherEducationForm({ user, onSuccess }: { user: User | undefined; 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 items-start gap-4">
+                <div className="grid items-start gap-4 sm:grid-cols-2">
                     <FormField
                         control={form.control}
                         name="universityName"
@@ -116,11 +125,14 @@ function AddFurtherEducationForm({ user, onSuccess }: { user: User | undefined; 
                             </FormItem>
                         )}
                     />
+                </div>
+
+                <div className="grid gap-4 sm:grid-cols-3">
                     <FormField
-                        control={form.control}
                         name="degree"
+                        control={form.control}
                         render={({ field, fieldState }) => (
-                            <FormItem className="col-span-2">
+                            <FormItem>
                                 <FormLabel>Gelar</FormLabel>
                                 <FormControl>
                                     <ReactSelect
@@ -138,8 +150,8 @@ function AddFurtherEducationForm({ user, onSuccess }: { user: User | undefined; 
                         )}
                     />
                     <FormField
-                        control={form.control}
                         name="entryYear"
+                        control={form.control}
                         render={({ field, fieldState }) => (
                             <FormItem>
                                 <FormLabel>Tahun Masuk</FormLabel>
@@ -159,8 +171,8 @@ function AddFurtherEducationForm({ user, onSuccess }: { user: User | undefined; 
                         )}
                     />
                     <FormField
-                        control={form.control}
                         name="graduationYear"
+                        control={form.control}
                         render={({ field, fieldState }) => (
                             <FormItem>
                                 <FormLabel>Tahun Lulus</FormLabel>

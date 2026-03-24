@@ -26,7 +26,12 @@ export const entryYearOptions = Array.from({ length: maxYear - minYear + 1 }, (_
     return { value: year, label: year.toString() };
 });
 
-export const entryYearFurtherEducationOptions = Array.from({ length: currentYear - minYear + 1 }, (_, i) => {
+export const entryYearFurtherEducationOptions = Array.from({ length: maxYear - 1959 }, (_, i) => {
+    const year = maxYear - i;
+    return { value: year, label: year.toString() };
+});
+
+export const graduationYearFurtherEducationOptions = Array.from({ length: currentYear - 1959 }, (_, i) => {
     const year = currentYear - i;
     return { value: year, label: year.toString() };
 });

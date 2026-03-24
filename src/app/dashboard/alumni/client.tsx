@@ -4,26 +4,27 @@ import React, { useState, useEffect, useTransition } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useDebounce } from "use-debounce";
 import { ColumnDef } from "@tanstack/react-table";
-import { Button } from "@/components/ui/button";
+import { Button, buttonVariants } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/ui/data-table";
 import { Pagination } from "@/components/ui/pagination";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { FilterIcon, RefreshCcwIcon } from "lucide-react";
 import SearchInput from "@/components/input/search-input";
-import { Card, CardContent } from "@/components/ui/card";
 import ReactSelect from "@/components/ui/react-select";
 import { departmentOptions, entryYearOptions } from "@/lib/option";
 import { AlumniUser, TDepartment } from "@/types/user";
+import Link from "next/link";
+import Image from "next/image";
 
 const columns: ColumnDef<AlumniUser>[] = [
     {
         accessorKey: "profile.fullName",
-        header: "Nama",
+        header: "Nama & Email",
         cell: ({ row }) => (
             <div>
-                <p className="text-sm font-medium">{row.original.profile?.fullName || row.original.name}</p>
-                <p className="text-muted-foreground text-xs">{row.original.email}</p>
+                <p className="font-medium">{row.original.profile?.fullName || row.original.name}</p>
+                <p className="text-xs text-gray-500">{row.original.email}</p>
             </div>
         ),
     },
@@ -32,7 +33,7 @@ const columns: ColumnDef<AlumniUser>[] = [
         header: "Program Studi",
         cell: ({ row }) =>
             row.original.profile?.department ? (
-                <Badge variant={row.original.profile?.department} size={"xs"} className="text-xs font-normal">
+                <Badge variant={row.original.profile?.department} size={"xs"}>
                     {TDepartment[row.original.profile.department as keyof typeof TDepartment]}
                 </Badge>
             ) : (
@@ -42,50 +43,59 @@ const columns: ColumnDef<AlumniUser>[] = [
     {
         accessorKey: "profile.entryYear",
         header: "Angkatan",
-        cell: ({ row }) => <span className="text-sm">{row.original.profile?.entryYear || "-"}</span>,
+        cell: ({ row }) => <span>{row.original.profile?.entryYear || "-"}</span>,
     },
     {
         accessorKey: "profile.cityName",
         header: "Domisili",
-        cell: ({ row }) => <span className="text-sm">{row.original.profile?.cityName || "-"}</span>,
+        cell: ({ row }) => (
+            <div className="flex flex-col">
+                {row.original.profile?.countryId == 77 ? (
+                    <>
+                        <span>{row.original.profile?.cityName || ""}</span>
+                        <span className="text-xs">
+                            {row.original.profile?.provinceName || ""}, {row.original.profile?.countryName || ""}
+                        </span>
+                    </>
+                ) : (
+                    <>
+                        <span>{row.original.profile?.countryName || "-"}</span>
+                    </>
+                )}
+            </div>
+        ),
+    },
+    {
+        accessorKey: "profile.linkedInUrl",
+        header: "LinkedIn",
+        cell: ({ row }) =>
+            row.original.profile?.linkedInUrl ? (
+                <Link
+                    href={row.original?.profile?.linkedInUrl}
+                    target="_blank"
+                    className={buttonVariants({ variant: "outline_linkedin", size: "sm" })}
+                >
+                    <Image src="/logo/linkedin.svg" alt="LinkedIn Logo" width={15} height={15} />
+                    LinkedIn
+                </Link>
+            ) : (
+                "-"
+            ),
     },
 ];
 
-export default function AlumniClient({ initialData, error }: { initialData: any; error: string | null }) {
+export default function AlumniClient({ alumni, error }: { alumni: any; error: string | null }) {
     const router = useRouter();
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const [isPending, startTransition] = useTransition();
-
     const [search, setSearch] = useState(searchParams.get("search") || "");
     const [debouncedSearch] = useDebounce(search, 500);
-
     const department = searchParams.get("department") || "";
     const entryYear = searchParams.get("entryYear") || "";
-
     const [filterDepartment, setFilterDepartment] = useState(department);
     const [filterEntryYear, setFilterEntryYear] = useState(entryYear);
-
     const [popoverOpen, setPopoverOpen] = useState(false);
-
-    // Handle debounce search execution
-    useEffect(() => {
-        const params = new URLSearchParams(searchParams);
-        const currentSearch = params.get("search") || "";
-
-        if (debouncedSearch !== currentSearch) {
-            if (debouncedSearch) {
-                params.set("search", debouncedSearch);
-            } else {
-                params.delete("search");
-            }
-            params.set("page", "1"); // Reset page on new search
-
-            startTransition(() => {
-                router.push(`${pathname}?${params.toString()}`);
-            });
-        }
-    }, [debouncedSearch, pathname, router, searchParams]);
 
     const applyFilters = (newDepartment: string, newEntryYear: string) => {
         const params = new URLSearchParams(searchParams);
@@ -119,17 +129,32 @@ export default function AlumniClient({ initialData, error }: { initialData: any;
         });
     };
 
+    // Handle debounce search execution
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams);
+        const currentSearch = params.get("search") || "";
+
+        if (debouncedSearch !== currentSearch) {
+            if (debouncedSearch) {
+                params.set("search", debouncedSearch);
+            } else {
+                params.delete("search");
+            }
+            params.set("page", "1"); // Reset page on new search
+
+            startTransition(() => {
+                router.push(`${pathname}?${params.toString()}`);
+            });
+        }
+    }, [debouncedSearch, pathname, router, searchParams]);
+
     return (
-        <Card className="border shadow-none">
-            <CardContent className="space-y-4 p-4 sm:p-6">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                    <SearchInput
-                        variant="dashboard"
-                        containerClassName="sm:max-w-xs"
-                        placeholder="Cari nama alumni"
-                        value={search}
-                        onChange={(value) => setSearch(value)}
-                    />
+        <div className="space-y-4">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <h1 className="text-2xl font-bold tracking-tight">Daftar Alumni</h1>
+
+                <div className="flex w-sm items-center gap-4">
+                    <SearchInput variant="dashboard" placeholder="Cari nama alumni" value={search} onChange={(value) => setSearch(value)} />
 
                     <div className="flex justify-end gap-2">
                         <Popover
@@ -212,21 +237,19 @@ export default function AlumniClient({ initialData, error }: { initialData: any;
                         </Popover>
                     </div>
                 </div>
+            </div>
 
-                <div className="rounded-md border-0 sm:border">
-                    <DataTable columns={columns} data={initialData?.items || []} loading={isPending} error={error} />
+            <DataTable columns={columns} data={alumni?.items || []} loading={isPending} error={error} />
+
+            {alumni?.pagination && alumni.pagination.totalPages > 0 && (
+                <div className="pt-2">
+                    <Pagination
+                        currentPage={Number(alumni.pagination.page)}
+                        totalPages={Number(alumni.pagination.totalPages)}
+                        onPageChange={handlePageChange}
+                    />
                 </div>
-
-                {initialData?.pagination && initialData.pagination.totalPages > 0 && (
-                    <div className="pt-2">
-                        <Pagination
-                            currentPage={Number(initialData.pagination.page)}
-                            totalPages={Number(initialData.pagination.totalPages)}
-                            onPageChange={handlePageChange}
-                        />
-                    </div>
-                )}
-            </CardContent>
-        </Card>
+            )}
+        </div>
     );
 }

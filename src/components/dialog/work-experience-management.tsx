@@ -36,62 +36,71 @@ const addWorkExperienceSchema = z.object({
 
 type AddWorkExperienceFormValues = z.infer<typeof addWorkExperienceSchema>;
 
+export type WorkExperienceManagementDialogData = { user: User; index?: number };
+
 export default function WorkExperienceManagementDialog() {
-    const { isOpen, data: user, onClose } = useDialog<User>("work-experience-management");
+    const { isOpen, data, onClose } = useDialog<WorkExperienceManagementDialogData>("work-experience-management");
+
+    const isEdit = data?.index !== undefined;
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
             <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
-                    <DialogTitle>Tambah Pengalaman Bekerja</DialogTitle>
+                    <DialogTitle>{isEdit ? "Edit Pengalaman Bekerja" : "Tambah Pengalaman Bekerja"}</DialogTitle>
                     <DialogDescription></DialogDescription>
                 </DialogHeader>
 
-                <AddWorkExperienceForm user={user} onSuccess={onClose} />
+                <WorkExperienceForm key={`${data?.index ?? "new"}`} data={data} onSuccess={onClose} />
             </DialogContent>
         </Dialog>
     );
 }
 
-function AddWorkExperienceForm({ user, onSuccess }: { user: User | undefined; onSuccess: () => void }) {
+function WorkExperienceForm({ data, onSuccess }: { data: WorkExperienceManagementDialogData | undefined; onSuccess: () => void }) {
     const router = useRouter();
+    const user = data?.user;
+    const editIndex = data?.index;
+    const editItem = editIndex !== undefined ? user?.profile?.workExperiences?.[editIndex] : undefined;
 
     const form = useForm<AddWorkExperienceFormValues>({
         resolver: zodResolver(addWorkExperienceSchema),
         defaultValues: {
-            jobTitle: "",
-            companyName: "",
-            industry: undefined,
-            jobLevel: undefined,
-            employmentType: undefined,
-            incomeRange: null,
-            startYear: undefined,
-            endYear: null,
+            jobTitle: editItem?.jobTitle ?? "",
+            companyName: editItem?.companyName ?? "",
+            industry: editItem?.industry ?? undefined,
+            jobLevel: editItem?.jobLevel ?? undefined,
+            employmentType: editItem?.employmentType ?? undefined,
+            incomeRange: editItem?.incomeRange ?? null,
+            startYear: editItem?.startYear ?? undefined,
+            endYear: editItem?.endYear ?? null,
         },
     });
 
     const onSubmit = async (values: AddWorkExperienceFormValues) => {
         try {
             const existing = user?.profile?.workExperiences ?? [];
+            const newItem = {
+                jobTitle: values.jobTitle,
+                companyName: values.companyName,
+                industry: values.industry as EIndustry,
+                jobLevel: values.jobLevel as EmploymentLevel,
+                employmentType: values.employmentType as EEmploymentType,
+                incomeRange: (values.incomeRange as EIncomeRange) ?? null,
+                startYear: values.startYear,
+                endYear: values.endYear ?? null,
+            };
+
+            const updated =
+                editIndex !== undefined
+                    ? existing.map((item, i) => (i === editIndex ? newItem : item))
+                    : [...existing, newItem];
+
             await updateOwnProfile({
-                profile: {
-                    workExperiences: [
-                        ...existing,
-                        {
-                            jobTitle: values.jobTitle,
-                            companyName: values.companyName,
-                            industry: values.industry as EIndustry,
-                            jobLevel: values.jobLevel as EmploymentLevel,
-                            employmentType: values.employmentType as EEmploymentType,
-                            incomeRange: (values.incomeRange as EIncomeRange) ?? null,
-                            startYear: values.startYear,
-                            endYear: values.endYear ?? null,
-                        },
-                    ],
-                },
+                profile: { workExperiences: updated },
             });
 
-            toast.success("Pengalaman kerja berhasil ditambahkan");
+            toast.success(editIndex !== undefined ? "Pengalaman kerja berhasil diperbarui" : "Pengalaman kerja berhasil ditambahkan");
             form.reset();
             router.refresh();
             onSuccess();
@@ -103,7 +112,7 @@ function AddWorkExperienceForm({ user, onSuccess }: { user: User | undefined; on
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid grid-cols-2 items-start gap-4">
+                <div className="grid items-start gap-4 sm:grid-cols-2">
                     <FormField
                         control={form.control}
                         name="jobTitle"
