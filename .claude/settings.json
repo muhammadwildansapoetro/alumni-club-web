@@ -4,7 +4,8 @@
       "Read(//Users/muhammadwildansapoetro/Projects/IKA\\\\ FTIP/alumni-club-web/src/server/**)",
       "Read(//Users/muhammadwildansapoetro/Projects/IKA\\\\ FTIP/alumni-club-web/src/lib/**)",
       "Read(//Users/muhammadwildansapoetro/Projects/IKA\\\\ FTIP/alumni-club-web/src/app/dashboard/profile/**)",
-      "Read(//Users/muhammadwildansapoetro/Projects/IKA\\\\ FTIP/alumni-club-web/**)"
+      "Read(//Users/muhammadwildansapoetro/Projects/IKA\\\\ FTIP/alumni-club-web/**)",
+      "Bash(CLAUDE_NO_CO_AUTHOR=1 git commit -m \"feat\\(landing-page\\): redesign landing page with real organization content\" -m \"- Replace placeholder content with actual IKA FTIP Unpad akta & AD data:*)"
     ]
   }
 }

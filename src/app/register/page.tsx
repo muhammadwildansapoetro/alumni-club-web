@@ -508,11 +508,7 @@ export default function RegisterClient() {
                                             className="text-muted-foreground text-sm leading-tight peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                                         >
                                             Saya telah membaca dan menyetujui{" "}
-                                            <Link
-                                                href="/privacy-policy?from=register"
-                                                className="text-primary font-bold hover:underline"
-                                                target="_blank"
-                                            >
+                                            <Link href="/privacy-policy" className="text-primary font-bold hover:underline" target="_blank">
                                                 Kebijakan Privasi
                                             </Link>
                                         </label>
