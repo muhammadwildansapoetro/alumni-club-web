@@ -42,13 +42,13 @@ const registerSchema = z
         password: z.string(),
         passwordConfirmation: z.string(),
         department: z.string().min(1, "Program Studi harus dipilih"),
-        entryYear: z.number().min(1959, "Tahun masuk tidak valid").max(new Date().getFullYear(), "Tahun masuk tidak valid"),
-        graduationYear: z.number().min(1959, "Tahun lulus tidak valid").max(new Date().getFullYear(), "Tahun lulus tidak valid"),
+        entryYear: z.number().min(1983, "Tahun masuk tidak valid").max(new Date().getFullYear(), "Tahun masuk tidak valid"),
+        graduationYear: z.number().min(1986, "Tahun lulus tidak valid").max(new Date().getFullYear(), "Tahun lulus tidak valid"),
         isGoogleMode: z.boolean(),
     })
     .superRefine((data, ctx) => {
-        if (data.entryYear && data.graduationYear && data.graduationYear < data.entryYear) {
-            ctx.addIssue({ code: "custom", message: "Tahun lulus tidak boleh sebelum tahun masuk", path: ["graduationYear"] });
+        if (data.entryYear && data.graduationYear && data.graduationYear < data.entryYear + 3) {
+            ctx.addIssue({ code: "custom", message: "Tahun lulus minimal 3 tahun setelah tahun masuk", path: ["graduationYear"] });
         }
         if (!data.isGoogleMode) {
             if (!data.password || data.password.length < 8) {
@@ -111,7 +111,7 @@ export default function RegisterClient() {
         name: "passwordConfirmation",
     });
     const watchedEntryYear = useWatch({ control: form.control, name: "entryYear" });
-    const filteredGraduationYearOptions = graduationYearOptions.filter((opt) => !watchedEntryYear || opt.value >= watchedEntryYear);
+    const filteredGraduationYearOptions = graduationYearOptions.filter((opt) => !watchedEntryYear || opt.value >= watchedEntryYear + 3);
 
     const passwordMismatchError =
         !isGoogleMode && password && passwordConfirmation && password !== passwordConfirmation ? "Password tidak cocok" : "";

@@ -26,7 +26,7 @@ const profilFormSchema = z
         npm: z.string().min(1, "NPM harus diisi").max(12, "NPM maksimal 12 digit").regex(/^\d+$/, "NPM hanya boleh berisi angka"),
         entryYear: z
             .number()
-            .min(1959, "Tahun lulus tidak valid")
+            .min(1983, "Tahun lulus tidak valid")
             .max(currentYear - 3, "Tahun lulus tidak valid"),
         graduationYear: z.number().min(1962, "Tahun lulus tidak valid").max(currentYear, "Tahun lulus tidak valid"),
         linkedInUrl: z.string().url("URL LinkedIn tidak valid").or(z.literal("")).optional(),
@@ -42,11 +42,11 @@ const profilFormSchema = z
                     degree: z.enum(["MAGISTER", "DOCTOR"]),
                     entryYear: z
                         .number()
-                        .min(1959)
+                        .min(1983)
                         .max(currentYear + 5),
                     graduationYear: z
                         .number()
-                        .min(1959)
+                        .min(1983)
                         .max(currentYear + 10)
                         .nullable()
                         .optional(),
@@ -67,11 +67,11 @@ const profilFormSchema = z
                     companyName: z.string().min(1, "Nama perusahaan harus diisi").max(100),
                     startYear: z
                         .number()
-                        .min(1959)
+                        .min(1983)
                         .max(currentYear + 5),
                     endYear: z
                         .number()
-                        .min(1959)
+                        .min(1983)
                         .max(currentYear + 5)
                         .nullable()
                         .optional(),
@@ -123,9 +123,7 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
 
     const cityOptions = useMemo(() => {
         const seed =
-            user?.profile?.cityId && user?.profile?.cityName
-                ? [{ value: user.profile.cityId.toString(), label: user.profile.cityName }]
-                : [];
+            user?.profile?.cityId && user?.profile?.cityName ? [{ value: user.profile.cityId.toString(), label: user.profile.cityName }] : [];
         const merged = [...seed, ...extraCityOptions];
         const seen = new Set<string>();
         return merged.filter((o) => (seen.has(o.value) ? false : seen.add(o.value) && true));

@@ -20,19 +20,19 @@ export const departmentOptions = [
 
 export const currentYear = new Date().getFullYear();
 const maxYear = currentYear - 3;
-const minYear = 1959;
+const minYear = 1983;
 
 export const entryYearOptions = Array.from({ length: maxYear - minYear + 1 }, (_, i) => {
     const year = maxYear - i;
     return { value: year, label: year.toString() };
 });
 
-export const entryYearFurtherEducationOptions = Array.from({ length: maxYear - 1959 }, (_, i) => {
+export const entryYearFurtherEducationOptions = Array.from({ length: maxYear - 1983 }, (_, i) => {
     const year = maxYear - i;
     return { value: year, label: year.toString() };
 });
 
-export const graduationYearFurtherEducationOptions = Array.from({ length: currentYear - 1959 }, (_, i) => {
+export const graduationYearFurtherEducationOptions = Array.from({ length: currentYear - 1983 }, (_, i) => {
     const year = currentYear - i;
     return { value: year, label: year.toString() };
 });
