@@ -1,14 +1,19 @@
 import { API } from "@/lib/axios";
-import { JobType } from "@/types/job";
+import { JobType, SalaryRange } from "@/types/job";
 
 export type CreateJobPayload = {
     title: string;
     description: string;
     company?: string | null;
-    location?: string | null;
     jobType?: JobType | null;
-    salaryRange?: string | null;
+    salaryRange?: SalaryRange | null;
     externalUrl?: string | null;
+    cityId?: number | null;
+    cityName?: string | null;
+    provinceId?: number | null;
+    provinceName?: string | null;
+    countryId?: number | null;
+    countryName?: string | null;
 };
 
 export type UpdateJobPayload = Partial<CreateJobPayload> & { isActive?: boolean };

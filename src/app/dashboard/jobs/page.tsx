@@ -8,7 +8,7 @@ export default async function JobsPage(props: { searchParams?: Promise<{ [key: s
     const searchParams = props.searchParams ? await props.searchParams : {};
     const params = new URLSearchParams();
 
-    const supportedParams = ["page", "limit", "search", "location", "company", "jobType", "isActive"];
+    const supportedParams = ["page", "limit", "search", "company", "jobType", "isActive", "countryId", "provinceId", "cityId"];
     for (const key of supportedParams) {
         if (searchParams[key]) params.append(key, String(searchParams[key]));
     }

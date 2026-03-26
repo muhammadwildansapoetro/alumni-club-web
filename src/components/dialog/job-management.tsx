@@ -7,26 +7,38 @@ import z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Input, inputVariant } from "../ui/input";
 import ReactSelect from "../ui/react-select";
+import AsyncReactSelect from "../ui/async-select";
 import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
 import { Loader2Icon, SaveIcon } from "lucide-react";
-import { JobPosting } from "@/types/job";
+import { JobPosting, JobType, SalaryRange, SALARY_RANGE_LABELS } from "@/types/job";
 import { jobTypeOptions } from "@/lib/option";
 import { toast } from "sonner";
 import { createJob, updateJob } from "@/services/jobs.client";
 import { useRouter } from "next/navigation";
 import { useDialog } from "@/hooks/use-dialog";
 import { cn } from "@/lib/utils";
+import { useState, useEffect } from "react";
+import { fetchProvinces, fetchCities } from "@/services/country.client";
+import { ProvinceOption, CityOption } from "@/types/country";
+
+const salaryRangeOptions = (Object.keys(SALARY_RANGE_LABELS) as SalaryRange[]).map((key) => ({
+    value: key,
+    label: SALARY_RANGE_LABELS[key],
+}));
 
 const jobSchema = z.object({
     title: z.string().min(1, "Judul lowongan harus diisi").max(200, "Judul maksimal 200 karakter"),
     description: z.string().min(20, "Deskripsi minimal 20 karakter").max(2000, "Deskripsi maksimal 2000 karakter"),
-    company: z.string().min(1, "Nama perusahaan harus diisi").max(100, "Nama perusahaan maksimal 100 karakter"),
-    location: z.string().min(1, "Lokasi harus diisi").max(100, "Lokasi maksimal 100 karakter"),
-    jobType: z.string().min(1, "Tipe pekerjaan harus dipilih"),
-    salaryRange: z.string().min(1, "Rentang gaji harus diisi").max(50, "Rentang gaji maksimal 50 karakter"),
+    company: z.string().max(100, "Nama perusahaan maksimal 100 karakter").optional(),
+    jobType: z.string().optional(),
+    salaryRange: z.string().optional(),
     externalUrl: z.union([z.url({ error: "URL tidak valid" }), z.literal(""), z.null()]).optional(),
     isActive: z.boolean().optional(),
+    provinceId: z.number().nullable().optional(),
+    provinceName: z.string().nullable().optional(),
+    cityId: z.number().nullable().optional(),
+    cityName: z.string().nullable().optional(),
 });
 
 type JobFormValues = z.infer<typeof jobSchema>;
@@ -56,30 +68,63 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
     const editJob = data?.job;
     const isEdit = editJob !== undefined;
 
+    const [provinceOptions, setProvinceOptions] = useState<ProvinceOption[]>([]);
+    const [cityOptions, setCityOptions] = useState<CityOption[]>([]);
+
     const form = useForm<JobFormValues>({
         resolver: zodResolver(jobSchema),
         defaultValues: {
             title: editJob?.title ?? "",
             description: editJob?.description ?? "",
             company: editJob?.company ?? "",
-            location: editJob?.location ?? "",
             jobType: editJob?.jobType ?? "",
             salaryRange: editJob?.salaryRange ?? "",
             externalUrl: editJob?.externalUrl ?? "",
             isActive: editJob?.isActive ?? true,
+            provinceId: editJob?.provinceId ?? null,
+            provinceName: editJob?.provinceName ?? null,
+            cityId: editJob?.cityId ?? null,
+            cityName: editJob?.cityName ?? null,
         },
     });
+
+    const watchedProvinceId = form.watch("provinceId");
+
+    // Seed initial options for pre-selected values
+    useEffect(() => {
+        if (editJob?.provinceId && editJob?.provinceName) {
+            setProvinceOptions([{ value: String(editJob.provinceId), label: editJob.provinceName }]);
+        }
+        if (editJob?.cityId && editJob?.cityName) {
+            setCityOptions([{ value: String(editJob.cityId), label: editJob.cityName }]);
+        }
+    }, [editJob]);
+
+    const loadProvinceOptions = async (inputValue: string) => {
+        const { options } = await fetchProvinces(inputValue, 1, 50);
+        setProvinceOptions(options);
+        return options;
+    };
+
+    const loadCityOptions = async (inputValue: string) => {
+        const { options } = await fetchCities(inputValue, watchedProvinceId ?? undefined, 1, 50);
+        setCityOptions(options);
+        return options;
+    };
 
     const onSubmit = async (values: JobFormValues) => {
         try {
             const payload = {
                 title: values.title,
                 description: values.description,
-                company: values.company,
-                location: values.location,
-                jobType: values.jobType as JobPosting["jobType"],
-                salaryRange: values.salaryRange,
+                company: values.company || null,
+                jobType: (values.jobType as JobType) || null,
+                salaryRange: (values.salaryRange as SalaryRange) || null,
                 externalUrl: values.externalUrl || null,
+                provinceId: values.provinceId ?? null,
+                provinceName: values.provinceName ?? null,
+                cityId: values.cityId ?? null,
+                cityName: values.cityName ?? null,
                 ...(isEdit && { isActive: values.isActive }),
             };
 
@@ -139,22 +184,9 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
                         name="company"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel aria-required>Nama Perusahaan</FormLabel>
+                                <FormLabel>Nama Perusahaan</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Masukkan nama perusahaan" {...field} value={field.value ?? ""} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="location"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel aria-required>Lokasi</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="Masukkan lokasi pekerjaan" {...field} value={field.value ?? ""} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -165,7 +197,7 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
                         name="jobType"
                         render={({ field, fieldState }) => (
                             <FormItem>
-                                <FormLabel aria-required>Tipe Pekerjaan</FormLabel>
+                                <FormLabel>Tipe Pekerjaan</FormLabel>
                                 <FormControl>
                                     <ReactSelect
                                         {...field}
@@ -185,11 +217,20 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
                     <FormField
                         control={form.control}
                         name="salaryRange"
-                        render={({ field }) => (
+                        render={({ field, fieldState }) => (
                             <FormItem>
-                                <FormLabel aria-required>Rentang Gaji</FormLabel>
+                                <FormLabel>Rentang Gaji</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Contoh: 8-12 juta" {...field} value={field.value ?? ""} />
+                                    <ReactSelect
+                                        {...field}
+                                        isClearable
+                                        options={salaryRangeOptions}
+                                        placeholder="Pilih rentang gaji"
+                                        instanceId="salary-range-select"
+                                        value={salaryRangeOptions.find((opt) => opt.value === field.value) ?? null}
+                                        onChange={(opt: any) => field.onChange(opt?.value ?? "")}
+                                        fieldState={fieldState}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -199,10 +240,65 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
                         control={form.control}
                         name="externalUrl"
                         render={({ field }) => (
-                            <FormItem className="sm:col-span-2">
+                            <FormItem>
                                 <FormLabel>URL Lamaran (opsional)</FormLabel>
                                 <FormControl>
                                     <Input placeholder="https://..." {...field} value={field.value ?? ""} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="provinceId"
+                        render={({ field, fieldState }) => (
+                            <FormItem>
+                                <FormLabel>Provinsi</FormLabel>
+                                <FormControl>
+                                    <AsyncReactSelect
+                                        name="provinceId"
+                                        instanceId="province-select"
+                                        isClearable
+                                        defaultOptions={true}
+                                        placeholder="Pilih provinsi"
+                                        loadOptions={loadProvinceOptions}
+                                        value={provinceOptions.find((opt) => opt.value === String(field.value ?? "")) ?? null}
+                                        onChange={(opt: any) => {
+                                            field.onChange(opt ? Number(opt.value) : null);
+                                            form.setValue("provinceName", opt?.label ?? null);
+                                            form.setValue("cityId", null);
+                                            form.setValue("cityName", null);
+                                        }}
+                                        fieldState={fieldState}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="cityId"
+                        render={({ field, fieldState }) => (
+                            <FormItem>
+                                <FormLabel>Kota</FormLabel>
+                                <FormControl>
+                                    <AsyncReactSelect
+                                        key={watchedProvinceId ?? "no-province"}
+                                        name="cityId"
+                                        instanceId="city-select"
+                                        isClearable
+                                        defaultOptions={true}
+                                        placeholder="Pilih kota"
+                                        loadOptions={loadCityOptions}
+                                        value={cityOptions.find((opt) => opt.value === String(field.value ?? "")) ?? null}
+                                        onChange={(opt: any) => {
+                                            field.onChange(opt ? Number(opt.value) : null);
+                                            form.setValue("cityName", opt?.label ?? null);
+                                        }}
+                                        fieldState={fieldState}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

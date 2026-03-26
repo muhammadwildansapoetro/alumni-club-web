@@ -13,7 +13,7 @@ import { FilterIcon, Loader2Icon, PlusIcon, RefreshCcwIcon, SquarePenIcon, Trash
 import SearchInput from "@/components/input/search-input";
 import ReactSelect from "@/components/ui/react-select";
 import { jobTypeOptions } from "@/lib/option";
-import { JobPosting, JOB_TYPE_LABELS } from "@/types/job";
+import { JobPosting, JOB_TYPE_LABELS, SALARY_RANGE_LABELS } from "@/types/job";
 import { deleteJob } from "@/services/jobs.client";
 import { useDialog } from "@/hooks/use-dialog";
 import { toast } from "sonner";
@@ -126,14 +126,18 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
                     ),
             },
             {
-                accessorKey: "location",
+                id: "location",
                 header: "Lokasi",
-                cell: ({ row }) => row.original.location || "-",
+                cell: ({ row }) => {
+                    const { cityName, provinceName, countryName } = row.original;
+                    return cityName ?? provinceName ?? countryName ?? "-";
+                },
             },
             {
                 accessorKey: "salaryRange",
                 header: "Gaji",
-                cell: ({ row }) => row.original.salaryRange || "-",
+                cell: ({ row }) =>
+                    row.original.salaryRange ? SALARY_RANGE_LABELS[row.original.salaryRange] : "-",
             },
             {
                 id: "postedBy",
