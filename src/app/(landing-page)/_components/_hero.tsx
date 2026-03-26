@@ -8,7 +8,7 @@ export default function Hero() {
     return (
         <section
             id="home"
-            className="from-primary-50 to-primary-100 relative flex min-h-[85vh] items-center justify-center overflow-hidden bg-linear-to-br via-white"
+            className="from-primary-50 to-primary-100 relative flex min-h-[95vh] items-center justify-center overflow-hidden bg-linear-to-br via-white"
         >
             {/* Decorative floating shapes */}
             <div className="pointer-events-none absolute inset-0">
@@ -62,24 +62,6 @@ export default function Hero() {
                             Pelajari Lebih Lanjut
                             <ArrowRight className="h-5 w-5" />
                         </Link>
-                    </div>
-
-                    {/* Stats row */}
-                    <div className="mx-auto flex max-w-lg items-center justify-center gap-8 pt-8 md:gap-12">
-                        <div className="text-center">
-                            <p className="text-primary-600 text-2xl font-bold md:text-3xl">1.200+</p>
-                            <p className="text-sm text-gray-500">Total Alumni</p>
-                        </div>
-                        <div className="h-10 w-px bg-gray-300" />
-                        <div className="text-center">
-                            <p className="text-primary-600 text-2xl font-bold md:text-3xl">80+</p>
-                            <p className="text-sm text-gray-500">Industri</p>
-                        </div>
-                        <div className="h-10 w-px bg-gray-300" />
-                        <div className="text-center">
-                            <p className="text-primary-600 text-2xl font-bold md:text-3xl">34</p>
-                            <p className="text-sm text-gray-500">Provinsi Tersebar</p>
-                        </div>
                     </div>
                 </div>
             </div>

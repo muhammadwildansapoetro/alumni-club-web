@@ -135,7 +135,7 @@ export default function PrivacyPolicyPage() {
                                                 ["Membuat dan mengelola akun alumni", "Pelaksanaan perjanjian (syarat & ketentuan layanan)"],
                                                 ["Verifikasi identitas alumni FTIP Unpad", "Kepentingan sah organisasi"],
                                                 ["Mengirim email verifikasi dan reset kata sandi", "Pelaksanaan perjanjian"],
-                                                ["Menampilkan direktori alumni kepada sesama anggota", "Persetujuan (dengan mendaftar ke platform)"],
+                                                ["Menampilkan direktori alumni kepada sesama anggota", "Persetujuan (dengan mendaftar ke dasbor)"],
                                                 ["Menampilkan lowongan kerja dan direktori bisnis", "Pelaksanaan perjanjian"],
                                                 ["Mengirimkan email selamat datang setelah verifikasi", "Kepentingan sah organisasi"],
                                                 ["Memungkinkan pencarian dan filter data alumni", "Kepentingan sah organisasi"],

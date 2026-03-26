@@ -6,7 +6,7 @@ const stories = [
     {
         name: "Nama Alumni 1",
         major: "Teknologi Pangan · 2010",
-        story: "Bergabung dengan IKA FTIP Unpad membuka pintu jejaring yang luar biasa. Saya bertemu mitra bisnis agribisnis saya justru lewat direktori alumni di platform digital ini.",
+        story: "Bergabung dengan IKA FTIP Unpad membuka pintu jejaring yang luar biasa. Saya bertemu mitra bisnis agribisnis saya justru lewat direktori alumni di dasbor ini.",
         initial: "RF",
     },
     {

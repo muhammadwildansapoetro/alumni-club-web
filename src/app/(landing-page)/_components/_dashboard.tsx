@@ -24,9 +24,9 @@ const features: Feature[] = [
     },
     {
         icon: <Building2 className="h-7 w-7" />,
-        title: "Usaha Alumni",
+        title: "Bisnis Alumni",
         description:
-            "Daftarkan dan temukan usaha milik alumni FTIP Unpad — dari agribisnis, konsultasi pertanian, peternakan, hingga budidaya tanaman.",
+            "Daftarkan dan temukan bisnis milik alumni FTIP Unpad — dari agribisnis, konsultasi pertanian, peternakan, hingga budidaya tanaman.",
         highlight: "Membangun perekonomian masyarakat di bidang teknologi industri pertanian",
     },
     {
@@ -69,7 +69,7 @@ export default function Dashboard() {
                 </div>
 
                 {/* Feature Cards */}
-                <div className="grid gap-8 md:grid-cols-3 lg:grid-cols-3">
+                <div className="grid gap-8 md:grid-cols-2">
                     {features.map((feature) => (
                         <div
                             key={feature.title}
