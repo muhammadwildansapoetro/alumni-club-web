@@ -44,7 +44,7 @@ export default function PrivacyPolicyPage() {
                                 <SectionHeading number="1" title="Pendahuluan" />
                                 <p className="mb-4">
                                     Ikatan Keluarga Alumni Fakultas Teknologi Industri Pertanian Universitas Padjadjaran (
-                                    <strong>IKA FTIP Unpad</strong>) mengoperasikan platform alumni club yang dapat diakses melalui aplikasi ini
+                                    <strong>IKA FTIP Unpad</strong>) mengoperasikan dasbor IKA FTIP Unpad yang dapat diakses melalui aplikasi ini
                                     (&quot;Layanan&quot;). Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan
                                     melindungi informasi pribadi Anda ketika menggunakan Layanan kami.
                                 </p>
@@ -370,7 +370,7 @@ export default function PrivacyPolicyPage() {
 
                             {/* Footer note */}
                             <div className="border-t border-gray-200 pt-6 text-center text-sm text-gray-500">
-                                <p>Dokumen ini dibuat berdasarkan analisis teknis API IKA FTIP Alumni Club versi Maret 2026.</p>
+                                <p>Dokumen ini dibuat berdasarkan analisis teknis API Dasbor IKA FTIP Unpad versi Maret 2026.</p>
                             </div>
                         </div>
                     </div>

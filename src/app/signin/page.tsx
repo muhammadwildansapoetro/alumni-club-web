@@ -78,8 +78,8 @@ export default function LoginClient() {
                 <div className="flex w-full flex-col items-start justify-center gap-4 sm:w-fit">
                     {/* Heading */}
                     <div className="w-full">
-                        <h1 className="text-xl font-semibold lg:text-2xl">Masuk Dashboard</h1>
-                        <h1 className="text-primary-gradient text-2xl font-bold lg:text-3xl">FTIP Unpad Alumni Club</h1>
+                        <h1 className="text-xl font-semibold lg:text-2xl">Masuk Dasbor</h1>
+                        <h1 className="text-primary-gradient text-2xl font-bold lg:text-3xl">IKA FTIP Unpad</h1>
                     </div>
 
                     {/* Form */}

@@ -230,7 +230,7 @@ export default function RegisterClient() {
                     {/* Heading */}
                     <div className="w-full">
                         <h1 className="text-xl font-semibold lg:text-2xl">Daftar Akun</h1>
-                        <h1 className="text-primary-gradient text-2xl font-bold lg:text-3xl">FTIP Unpad Alumni Club</h1>
+                        <h1 className="text-primary-gradient text-2xl font-bold lg:text-3xl">Dasbor IKA FTIP Unpad</h1>
                     </div>
 
                     {/* Google Sign-In */}

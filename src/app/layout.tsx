@@ -17,8 +17,9 @@ const robotoMono = Roboto_Mono({
 });
 
 export const metadata: Metadata = {
-    title: "FTIP Unpad Alumni Club",
-    description: "Platform resmi untuk terhubung, berkolaborasi, dan mengakses informasi alumni FTIP Unpad.",
+    title: "IKA FTIP Unpad",
+    description:
+        "IKA FTIP Unpad — platform alumni resmi FTIP Universitas Padjadjaran. Kelola profil, telusuri direktori alumni, lacak statistik angkatan, serta temukan peluang karier dan bisnis sesama alumni.",
 };
 
 export default function RootLayout({

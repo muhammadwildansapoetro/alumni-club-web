@@ -84,8 +84,7 @@ const MobileNavigationMenu = () => {
                     <SheetTitle className="flex gap-3">
                         <LogoTitle />
                         <div className="-space-y-1 font-bold">
-                            <p>FTIP Unpad</p>
-                            <p>Alumni Club</p>
+                            <p>Dasbor IKA FTIP Unpad</p>
                         </div>
                     </SheetTitle>
                 </SheetHeader>
