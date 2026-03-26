@@ -1,6 +1,6 @@
 "use client";
 
-import { Building2, ChevronDown, Globe, Landmark } from "lucide-react";
+import { ChevronDown, Gavel, Network, Shield, Users } from "lucide-react";
 
 interface OrgLevel {
     icon: React.ReactNode;
@@ -13,27 +13,28 @@ interface OrgLevel {
 
 const orgLevels: OrgLevel[] = [
     {
-        icon: <Landmark className="h-8 w-8" />,
-        title: "Pengurus Pusat",
-        description: "Pusat koordinasi nasional IKA FTIP Unpad yang menetapkan kebijakan strategis, program kerja nasional, dan hubungan antar lembaga.",
+        icon: <Gavel className="h-8 w-8" />,
+        title: "Rapat Anggota",
+        description:
+            "Pemegang kekuasaan tertinggi perkumpulan. Menetapkan kebijakan, program kerja, dan keputusan strategis organisasi IKA FTIP Unpad.",
         bgColor: "bg-primary-600",
         iconColor: "text-white",
         borderColor: "border-primary-600",
     },
     {
-        icon: <Building2 className="h-8 w-8" />,
-        title: "Pengurus Fakultas (FTIP)",
+        icon: <Users className="h-8 w-8" />,
+        title: "Pengurus",
         description:
-            "Penghubung antara alumni dengan fakultas, mengelola kegiatan di lingkungan FTIP Unpad, dan menjadi mitra strategis dekanat.",
+            "Pelaksana operasional perkumpulan yang terdiri dari Ketua Umum, Wakil Ketua Umum, Sekretaris Umum, dan Bendahara Umum, serta bidang-bidang kerja.",
         bgColor: "bg-primary-500",
         iconColor: "text-white",
         borderColor: "border-primary-500",
     },
     {
-        icon: <Globe className="h-8 w-8" />,
-        title: "Pengurus Kewilayahan",
+        icon: <Shield className="h-8 w-8" />,
+        title: "Pengawas",
         description:
-            "Unit pelaksana di berbagai wilayah Indonesia yang mengkoordinasikan kegiatan alumni lokal dan memperluas jejaring daerah.",
+            "Bertugas memberi nasihat kepada Pengurus dalam menjalankan kegiatan perkumpulan dan memastikan organisasi berjalan sesuai AD/ART.",
         bgColor: "bg-primary-400",
         iconColor: "text-white",
         borderColor: "border-primary-400",
@@ -42,18 +43,24 @@ const orgLevels: OrgLevel[] = [
 
 export default function OrgStructure() {
     return (
-        <section id="organization" className="bg-white py-24">
-            <div className="container mx-auto max-w-4xl px-4">
+        <section id="organization" className="from-primary-50 to-primary-100 relative overflow-hidden bg-linear-to-br via-white py-24">
+            {/* Decorative floating shapes */}
+            <div className="pointer-events-none absolute inset-0">
+                <div className="bg-primary-200/30 absolute top-20 left-10 h-72 w-72 animate-pulse rounded-full blur-3xl" />
+                <div className="bg-primary-300/20 absolute right-10 bottom-20 h-96 w-96 animate-pulse rounded-full blur-3xl [animation-delay:1s]" />
+                <div className="bg-accent-200/20 absolute top-1/2 left-1/3 h-48 w-48 animate-pulse rounded-full blur-3xl [animation-delay:2s]" />
+            </div>
+            <div className="container relative z-10 mx-auto max-w-4xl px-4">
                 {/* Section Header */}
-                <div className="mx-auto mb-16 max-w-2xl text-center">
-                    <span className="mb-3 inline-block rounded-full bg-primary-50 px-4 py-1 text-sm font-semibold text-primary-600">
-                        Organisasi
+                <div className="mx-auto mb-16 max-w-4xl text-center">
+                    <span className="bg-primary-50 text-primary-600 mb-3 inline-flex items-center gap-1.5 rounded-full px-4 py-1 text-sm font-semibold">
+                        <Network className="h-3.5 w-3.5" /> Organisasi
                     </span>
                     <h2 className="mb-4 text-3xl font-bold text-gray-900 md:text-4xl">
                         Struktur <span className="text-primary-gradient">Organisasi</span>
                     </h2>
                     <p className="text-lg text-gray-600">
-                        Tiga pilar kepengurusan yang saling terhubung untuk menjalankan misi IKA FTIP Unpad secara efektif.
+                        Berdasarkan Pasal 10 Anggaran Dasar, organ IKA FTIP Unpad terdiri dari tiga unsur yang saling mendukung.
                     </p>
                 </div>
 
@@ -80,8 +87,9 @@ export default function OrgStructure() {
                             {/* Connector Arrow (not after last item) */}
                             {index < orgLevels.length - 1 && (
                                 <div className="flex flex-col items-center py-2">
-                                    <div className="h-6 w-0.5 bg-primary-300" />
-                                    <ChevronDown className="h-5 w-5 text-primary-400" />
+                                    <ChevronDown className="text-primary-400 h-4 w-4" />
+                                    <ChevronDown className="text-primary-400 h-4 w-4" />
+                                    <ChevronDown className="text-primary-400 h-4 w-4" />
                                 </div>
                             )}
                         </div>

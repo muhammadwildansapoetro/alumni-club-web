@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { ArrowRight, LogIn, LogInIcon, Sparkles } from "lucide-react";
+import { ArrowRight, LogInIcon, Sparkles } from "lucide-react";
 
-export default function HeroSection() {
+export default function Hero() {
     return (
         <section
             id="home"
@@ -22,21 +22,20 @@ export default function HeroSection() {
                     {/* Vision Badge */}
                     <div className="border-primary-300 inline-flex items-center gap-2 rounded-full border bg-white/80 px-4 py-2 shadow-sm backdrop-blur">
                         <Sparkles className="text-primary-500 h-4 w-4" />
-                        <span className="text-primary-700 text-sm font-semibold tracking-wide">
-                            Insan Abdi Masyarakat • Insan Pembina Nusa Bangsa
-                        </span>
+                        <span className="text-primary-700 text-sm font-semibold tracking-wide">Menghimpun Alumni, Membangun Negeri</span>
                     </div>
 
                     {/* Headline */}
                     <h1 className="text-4xl leading-tight font-extrabold tracking-tight text-gray-900 md:text-5xl lg:text-6xl">
-                        Sinergi Alumni FTIP Unpad:
+                        IKA FTIP Unpad:
                         <br />
-                        <span className="text-primary-gradient">Menjaga Citra & Reputasi Almamater</span>
+                        <span className="text-primary-gradient">Wadah Alumni, Mitra Bangsa</span>
                     </h1>
 
                     {/* Subtitle */}
                     <p className="mx-auto max-w-2xl text-lg leading-relaxed text-gray-600 md:text-xl">
-                        Platform resmi Ikatan Alumni FTIP Unpad untuk terhubung, berkolaborasi, dan bersinergi membangun almamater yang lebih baik.
+                        Menghimpun alumni Fakultas Teknologi Industri Pertanian Universitas Padjadjaran — bersama membangun perekonomian masyarakat di
+                        bidang teknologi industri pertanian dan mencerdaskan bangsa.
                     </p>
 
                     {/* CTA Buttons */}
@@ -49,11 +48,11 @@ export default function HeroSection() {
                             })}
                         >
                             <LogInIcon className="h-5 w-5" />
-                            Masuk ke Dashboard
+                            Masuk ke Dasbor
                         </Link>
 
                         <Link
-                            href="#membership"
+                            href="#about"
                             className={buttonVariants({
                                 size: "lg",
                                 variant: "outline",
@@ -66,20 +65,20 @@ export default function HeroSection() {
                     </div>
 
                     {/* Stats row */}
-                    <div className="mx-auto flex max-w-md items-center justify-center gap-8 pt-8 md:max-w-lg md:gap-12">
+                    <div className="mx-auto flex max-w-lg items-center justify-center gap-8 pt-8 md:gap-12">
                         <div className="text-center">
-                            <p className="text-primary-600 text-2xl font-bold md:text-3xl">1960</p>
-                            <p className="text-sm text-gray-500">Tahun Berdiri</p>
+                            <p className="text-primary-600 text-2xl font-bold md:text-3xl">1.200+</p>
+                            <p className="text-sm text-gray-500">Total Alumni</p>
                         </div>
                         <div className="h-10 w-px bg-gray-300" />
                         <div className="text-center">
-                            <p className="text-primary-600 text-2xl font-bold md:text-3xl">3</p>
-                            <p className="text-sm text-gray-500">Tier Keanggotaan</p>
+                            <p className="text-primary-600 text-2xl font-bold md:text-3xl">80+</p>
+                            <p className="text-sm text-gray-500">Industri</p>
                         </div>
                         <div className="h-10 w-px bg-gray-300" />
                         <div className="text-center">
-                            <p className="text-primary-600 text-2xl font-bold md:text-3xl">2</p>
-                            <p className="text-sm text-gray-500">Kantor Wilayah</p>
+                            <p className="text-primary-600 text-2xl font-bold md:text-3xl">34</p>
+                            <p className="text-sm text-gray-500">Provinsi Tersebar</p>
                         </div>
                     </div>
                 </div>

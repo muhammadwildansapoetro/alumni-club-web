@@ -8,21 +8,22 @@ import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTr
 import Image from "next/image";
 
 const navigation = [
+    { name: "Tentang", href: "#about" },
     { name: "Keanggotaan", href: "#membership" },
     { name: "Fitur", href: "#features" },
-    { name: "Organisasi", href: "#organization" },
+    { name: "Cerita", href: "#stories" },
 ];
 
 export default function TopBar() {
     const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <header className="sticky top-0 z-50 w-full bg-white/95 shadow backdrop-blur supports-backdrop-filter:bg-white/60">
+        <header className="sticky top-0 z-50 w-full bg-white/90 shadow backdrop-blur supports-backdrop-filter:bg-white/70">
             <div className="container mx-auto flex h-16 items-center justify-between px-4">
                 {/* Logo */}
                 <Link href="/" className="flex items-center space-x-2">
                     <Image src="/logo/logo-ika-ftip-unpad.png" alt="Logo" width={45} height={45} />
-                    <span className="text-lg font-bold text-gray-900">FTIP Unpad Alumni Club</span>
+                    <span className="hover:text-primary font-semibold text-gray-900">IKA FTIP Unpad</span>
                 </Link>
 
                 {/* Desktop Navigation */}
