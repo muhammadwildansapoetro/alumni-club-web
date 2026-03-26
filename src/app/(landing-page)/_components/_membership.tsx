@@ -2,9 +2,8 @@
 
 import { CheckCircle2, GraduationCap, Users, XCircle } from "lucide-react";
 
-
 const syarat = [
-    "Pernah kuliah di Jurusan/Fakultas Teknologi Pertanian Universitas Padjadjaran",
+    "Pernah kuliah di Fakultas Teknologi Pertanian Universitas Padjadjaran",
     "Sanggup aktif dalam kegiatan perkumpulan",
     "Menerima Anggaran Dasar dan Anggaran Rumah Tangga",
 ];

@@ -236,7 +236,7 @@ export default function RegisterClient() {
                     {/* Google Sign-In */}
                     {!isGoogleMode && (
                         <>
-                            <div className="flex w-full justify-center">
+                            <div className="flex w-full justify-start">
                                 <GoogleLogin
                                     onSuccess={handleGoogleSignIn}
                                     onError={() => {
@@ -325,11 +325,32 @@ export default function RegisterClient() {
 
                                 <div className="grid grid-cols-1 items-start gap-3 sm:grid-cols-2">
                                     <FormField
-                                        control={form.control}
                                         name="npm"
+                                        control={form.control}
                                         render={({ field }) => (
                                             <FormItem>
-                                                <FormLabel>Nomor Pokok Mahasiswa (NPM)</FormLabel>
+                                                <FormLabel className="flex items-center gap-2">
+                                                    Nomor Pokok Mahasiswa
+                                                    <TooltipProvider delayDuration={150}>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <button
+                                                                    type="button"
+                                                                    className="text-muted-foreground hover:text-foreground"
+                                                                    aria-label="NPM info"
+                                                                >
+                                                                    <InfoIcon className="h-4 w-4" />
+                                                                </button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent side="right" className="max-w-sm border bg-white">
+                                                                <p className="text-muted-foreground text-sm">
+                                                                    Nomor Pokok Mahasiswa (NPM)
+                                                                    <br /> dapat dilihat di ijazah
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+                                                </FormLabel>
                                                 <FormControl>
                                                     <Input type="text" inputMode="numeric" maxLength={12} placeholder="Masukkan NPM" {...field} />
                                                 </FormControl>

@@ -64,7 +64,7 @@ export default function PrivacyPolicyPage() {
                                     <li>Alamat email</li>
                                     <li>Nama lengkap</li>
                                     <li>Nomor Pokok Mahasiswa (NPM)</li>
-                                    <li>Departemen (TEP, TPN, atau TIN)</li>
+                                    <li>Program Studi (TEP, TPN, TIN, atau Teknotan)</li>
                                     <li>Tahun masuk kuliah</li>
                                     <li>Tahun kelulusan</li>
                                     <li>Kata sandi (disimpan dalam bentuk terenkripsi menggunakan bcrypt)</li>
@@ -74,7 +74,7 @@ export default function PrivacyPolicyPage() {
                                 <ul className="mb-4 ml-4 list-disc space-y-1 pl-2">
                                     <li>Alamat email (dari akun Google)</li>
                                     <li>Nama lengkap (dari profil Google)</li>
-                                    <li>NPM, departemen, tahun masuk, dan tahun kelulusan (diisi manual saat registrasi)</li>
+                                    <li>NPM, program studi, tahun masuk, dan tahun kelulusan (diisi manual saat registrasi)</li>
                                 </ul>
 
                                 <p className="mb-2 font-medium text-gray-800">Saat Memperbarui Profil Alumni:</p>
@@ -158,7 +158,7 @@ export default function PrivacyPolicyPage() {
 
                                 <SubHeading title="4.1 Dengan Sesama Anggota Terdaftar" />
                                 <p className="mb-4">
-                                    Informasi profil alumni (nama, NPM, departemen, angkatan, lokasi, LinkedIn, riwayat kerja dan pendidikan) dapat
+                                    Informasi profil alumni (nama, NPM, program studi, angkatan, lokasi, LinkedIn, riwayat kerja dan pendidikan) dapat
                                     dilihat oleh seluruh anggota terdaftar yang telah login. Lowongan kerja dan listing bisnis bersifat publik untuk
                                     seluruh anggota.
                                 </p>

@@ -15,6 +15,7 @@ export const departmentOptions = [
     { value: "TEP", label: "Teknik Pertanian (TEP)" },
     { value: "TPN", label: "Teknologi Pangan (TPN)" },
     { value: "TIN", label: "Teknologi Industri Pertanian (TIN)" },
+    { value: "TEKNOTAN", label: "Teknologi Pertanian (Teknotan)" },
 ];
 
 export const currentYear = new Date().getFullYear();
