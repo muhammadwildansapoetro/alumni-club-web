@@ -101,12 +101,14 @@ export default function Footer() {
                 <div className="border-t border-white/20" />
 
                 {/* Bottom Footer */}
-                <div className="flex flex-col items-center justify-between gap-2 text-sm text-white/70 md:flex-row">
-                    <p>© {new Date().getFullYear()} IKA FTIP Unpad. Dikelola oleh Pengurus IKA FTIP Unpad 2025-2029</p>
+                <div className="flex flex-col justify-between gap-2 text-sm text-white/70 md:flex-row">
+                    <p>© {new Date().getFullYear()} IKA FTIP Unpad</p>
+                    <p>Dikelola oleh Pengurus IKA FTIP Unpad 2025-2029</p>
+
                     <Link
                         href="/privacy-policy"
                         target="_blank"
-                        className="text-white/80 underline-offset-4 transition-colors hover:text-white hover:underline"
+                        className="text-white/80 underline underline-offset-4 transition-colors hover:text-white"
                     >
                         Kebijakan Privasi
                     </Link>

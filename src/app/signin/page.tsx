@@ -75,7 +75,7 @@ export default function LoginClient() {
         <div className="flex min-h-screen w-full">
             {/* Left Side - Login Form */}
             <div className="flex w-full flex-col items-center justify-center p-5 lg:w-1/2 lg:p-10">
-                <div className="flex w-full flex-col items-start justify-center gap-4 sm:w-fit">
+                <div className="flex w-full flex-col items-start justify-center gap-4 sm:w-sm">
                     {/* Heading */}
                     <div className="w-full">
                         <h1 className="text-xl font-semibold lg:text-2xl">Masuk Dasbor</h1>

@@ -43,8 +43,7 @@ export default function About() {
                         Sejarah & <span className="text-primary-200">Legalitas</span>
                     </h2>
                     <p className="text-lg text-white/80">
-                        IKA FTIP Unpad berdiri secara resmi dan berbadan hukum sejak 2017, <br />
-                        berdasarkan Anggaran Dasar yang disahkan oleh negara.
+                        IKA FTIP Unpad berdiri secara resmi dan berbadan hukum sejak 2017, berdasarkan Anggaran Dasar yang disahkan oleh negara.
                     </p>
                 </div>
 
@@ -111,7 +110,7 @@ export default function About() {
                         {[
                             "Menyelenggarakan lembaga pendidikan",
                             "Menjalankan penelitian pertanian",
-                            "Mengelola usaha peternakan & pertanian",
+                            "Mengelola usaha pertanian",
                             "Mengembangkan budidaya tanaman",
                             "Memasarkan hasil produksi",
                             "Menyediakan jasa konsultasi & kemitraan",

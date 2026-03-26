@@ -25,8 +25,7 @@ const features: Feature[] = [
     {
         icon: <Building2 className="h-7 w-7" />,
         title: "Bisnis Alumni",
-        description:
-            "Daftarkan dan temukan bisnis milik alumni FTIP Unpad — dari agribisnis, konsultasi pertanian, peternakan, hingga budidaya tanaman.",
+        description: "Daftarkan dan temukan bisnis milik alumni FTIP Unpad — dari agribisnis, konsultasi pertanian, hingga budidaya tanaman.",
         highlight: "Membangun perekonomian masyarakat di bidang teknologi industri pertanian",
     },
     {

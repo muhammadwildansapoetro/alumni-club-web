@@ -33,7 +33,7 @@ export default function Hero() {
                     </h1>
 
                     {/* Subtitle */}
-                    <p className="mx-auto max-w-2xl text-lg leading-relaxed text-gray-600 md:text-xl">
+                    <p className="mx-auto max-w-3xl text-lg leading-relaxed text-gray-600 md:text-xl">
                         Menghimpun alumni Fakultas Teknologi Industri Pertanian Universitas Padjadjaran — bersama membangun perekonomian masyarakat di
                         bidang teknologi industri pertanian dan mencerdaskan bangsa.
                     </p>
