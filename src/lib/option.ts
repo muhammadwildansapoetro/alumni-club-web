@@ -10,6 +10,7 @@ import {
     EIncomeRange,
     TIncomeRange,
 } from "@/types/user";
+import { JOB_TYPE_LABELS, JobType } from "@/types/job";
 
 export const departmentOptions = [
     { value: "TEP", label: "Teknik Pertanian (TEP)" },
@@ -73,4 +74,9 @@ export const employmentTypeOptions = Object.entries(TEmploymentType).map(([key, 
 export const incomeRangeOptions = Object.entries(TIncomeRange).map(([key, label]) => ({
     value: key as EIncomeRange,
     label,
+}));
+
+export const jobTypeOptions = (Object.keys(JOB_TYPE_LABELS) as JobType[]).map((key) => ({
+    value: key,
+    label: JOB_TYPE_LABELS[key],
 }));

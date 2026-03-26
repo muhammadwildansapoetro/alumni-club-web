@@ -2,7 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { Input } from "@/components/ui/input";
-import { useDebouncedCallback } from 'use-debounce';
+import { useDebouncedCallback } from "use-debounce";
 
 import { SearchIcon } from "lucide-react";
 
@@ -36,30 +36,30 @@ export default function SearchInput({
     const value = controlledValue !== undefined ? controlledValue : internalValue;
     const isControlled = controlledValue !== undefined;
 
-    const debouncedSearch = useDebouncedCallback(
-        (searchValue: string) => {
-            onSearch?.(searchValue);
+    const debouncedSearch = useDebouncedCallback((searchValue: string) => {
+        onSearch?.(searchValue);
+    }, debounceMs);
+
+    const handleChange = useCallback(
+        (e: React.ChangeEvent<HTMLInputElement>) => {
+            const newValue = e.target.value;
+
+            if (isControlled) {
+                onChange?.(newValue);
+            } else {
+                setInternalValue(newValue);
+            }
+
+            // Trigger debounced search
+            debouncedSearch(newValue);
+
+            // For backward compatibility with fetchData
+            if (fetchData) {
+                fetchData(newValue);
+            }
         },
-        debounceMs
+        [isControlled, onChange, debouncedSearch, fetchData],
     );
-
-    const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
-        const newValue = e.target.value;
-
-        if (isControlled) {
-            onChange?.(newValue);
-        } else {
-            setInternalValue(newValue);
-        }
-
-        // Trigger debounced search
-        debouncedSearch(newValue);
-
-        // For backward compatibility with fetchData
-        if (fetchData) {
-            fetchData(newValue);
-        }
-    }, [isControlled, onChange, debouncedSearch, fetchData]);
 
     // Cleanup debounced callback on unmount
     useEffect(() => {
@@ -78,7 +78,9 @@ export default function SearchInput({
                 placeholder={placeholder}
                 onChange={handleChange}
                 onFocus={() => onSelect?.(value)}
-                className={isDashboard ? `bg-background w-full pl-9 ${inputClassName || ""}` : `rounded-full border-black/50 pl-8 ${inputClassName || ""}`}
+                className={
+                    isDashboard ? `bg-background w-full pl-9 ${inputClassName || ""}` : `rounded-full border-black/50 pl-8 ${inputClassName || ""}`
+                }
             />
         </div>
     );
