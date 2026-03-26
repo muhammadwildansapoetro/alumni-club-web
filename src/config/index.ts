@@ -11,6 +11,7 @@ export const CONFIG = {
             auth: process.env.NEXT_PUBLIC_API_URL + "/auth",
             users: process.env.NEXT_PUBLIC_API_URL + "/users",
             jobs: process.env.NEXT_PUBLIC_API_URL + "/jobs",
+            businesses: process.env.NEXT_PUBLIC_API_URL + "/businesses",
         },
     },
 

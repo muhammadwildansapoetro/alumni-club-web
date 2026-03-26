@@ -5,6 +5,7 @@ import ChangePasswordDialog from "./change-password";
 import FurtherEducationManagementDialog from "./further-education-management";
 import WorkExperienceManagementDialog from "./work-experience-management";
 import JobManagementDialog from "./job-management";
+import BusinessManagementDialog from "./business-management";
 
 export default function DialogProvider() {
     return (
@@ -14,6 +15,7 @@ export default function DialogProvider() {
             <FurtherEducationManagementDialog />
             <WorkExperienceManagementDialog />
             <JobManagementDialog />
+            <BusinessManagementDialog />
         </>
     );
 }

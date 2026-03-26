@@ -36,6 +36,5 @@ export default async function JobsPage(props: { searchParams?: Promise<{ [key: s
     } catch (e: any) {
         error = e.message;
     }
-    console.log("jobs", jobs);
     return <JobsClient jobs={jobs} error={error} />;
 }
