@@ -12,7 +12,7 @@ const berakhir = ["Meninggal dunia", "Permintaan sendiri", "Pindah keanggotaan",
 
 export default function Membership() {
     return (
-        <section id="membership" className="bg-white py-24">
+        <section id="membership" className="min-h-screen bg-white py-24">
             <div className="container mx-auto max-w-5xl px-4">
                 {/* Section Header */}
                 <div className="mx-auto mb-16 max-w-4xl text-center">

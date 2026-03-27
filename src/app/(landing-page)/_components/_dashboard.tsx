@@ -26,7 +26,7 @@ const features: Feature[] = [
         icon: <Building2 className="h-7 w-7" />,
         title: "Bisnis Alumni",
         description: "Daftarkan dan temukan bisnis milik alumni FTIP Unpad — dari agribisnis, konsultasi pertanian, hingga budidaya tanaman.",
-        highlight: "Membangun perekonomian masyarakat di bidang teknologi industri pertanian",
+        highlight: "Membangun perekonomian masyarakat di bidang industri pertanian",
     },
     {
         icon: <BarChart3 className="h-7 w-7" />,
@@ -53,6 +53,7 @@ export default function Dashboard() {
                     }}
                 />
             </div>
+
             <div className="relative z-10 container mx-auto max-w-7xl px-4">
                 {/* Section Header */}
                 <div className="mx-auto mb-16 max-w-4xl text-center">
@@ -72,11 +73,8 @@ export default function Dashboard() {
                     {features.map((feature) => (
                         <div
                             key={feature.title}
-                            className="group relative rounded-2xl border border-white/20 bg-white/10 p-8 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:bg-white/15 hover:shadow-xl"
+                            className="group hover:border-primary-200/60 relative rounded-2xl border border-white/20 bg-white/10 p-8 backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-t-8 hover:bg-white/15 hover:shadow-xl"
                         >
-                            {/* Accent bar on hover */}
-                            <div className="bg-primary-200/60 absolute inset-x-0 top-0 h-1 rounded-t-2xl opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-
                             {/* Icon */}
                             <div className="mb-5 inline-flex rounded-xl bg-white/20 p-3 text-white">{feature.icon}</div>
 
