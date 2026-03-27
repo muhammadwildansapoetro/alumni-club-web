@@ -16,6 +16,7 @@ const badgeVariants = cva(
                 TEP: "border-green-600 text-green-600 bg-transparent hover:bg-green-50",
                 TPN: "border-red-600 text-red-600 bg-transparent hover:bg-red-50",
                 TIN: "border-orange-600 text-orange-600 bg-transparent hover:bg-orange-50",
+                TEKNOTAN: "border-blue-600 text-blue-600 bg-transparent hover:bg-blue-50",
             },
 
             size: {

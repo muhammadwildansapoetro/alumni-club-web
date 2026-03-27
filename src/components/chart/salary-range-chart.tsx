@@ -1,28 +1,37 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { AlumniDataDummy } from "@/data/dummy/alumni";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { useMemo } from "react";
+import { PieChart, Pie, Cell } from "recharts";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ChartContainer, ChartLegend, ChartLegendContent, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
+import { EIncomeRange, TIncomeRange } from "@/types/user";
+import type { ChartConfig } from "@/components/ui/chart";
 
-const Chart = dynamic(() => import("react-apexcharts"), { ssr: false });
+interface SalaryRangeChartProps {
+    data: Record<string, number>;
+}
 
-export default function SalaryRangeChart() {
-    const low = AlumniDataDummy.filter((a) => a.salaryRange === "low").length;
-    const mid = AlumniDataDummy.filter((a) => a.salaryRange === "mid").length;
-    const high = AlumniDataDummy.filter((a) => a.salaryRange === "high").length;
+const SALARY_ORDER: EIncomeRange[] = [EIncomeRange.BELOW_5M, EIncomeRange.RANGE_5_10M, EIncomeRange.RANGE_10_15M, EIncomeRange.ABOVE_15M];
 
-    const series = [low, mid, high];
+const COLORS = ["#60a5fa", "#34d399", "#f97316", "#f43f5e"];
 
-    const options: ApexCharts.ApexOptions = {
-        chart: {
-            type: "pie",
-        },
-        labels: ["0 - 5.000.000", "5.000.000 - 10.000.000", "> 10.000.000"],
-        colors: ["#60A5FA", "#34D399", "#F87171"],
-        legend: {
-            position: "bottom",
-        },
-    };
+const chartConfig: ChartConfig = {
+    [EIncomeRange.BELOW_5M]: { label: TIncomeRange[EIncomeRange.BELOW_5M], color: COLORS[0] },
+    [EIncomeRange.RANGE_5_10M]: { label: TIncomeRange[EIncomeRange.RANGE_5_10M], color: COLORS[1] },
+    [EIncomeRange.RANGE_10_15M]: { label: TIncomeRange[EIncomeRange.RANGE_10_15M], color: COLORS[2] },
+    [EIncomeRange.ABOVE_15M]: { label: TIncomeRange[EIncomeRange.ABOVE_15M], color: COLORS[3] },
+};
+
+export default function SalaryRangeChart({ data }: SalaryRangeChartProps) {
+    const chartData = useMemo(
+        () =>
+            SALARY_ORDER.map((key, i) => ({
+                name: key,
+                value: data[key] ?? 0,
+                fill: COLORS[i],
+            })).filter((item) => item.value > 0),
+        [data],
+    );
 
     return (
         <Card className="gap-1">
@@ -30,7 +39,17 @@ export default function SalaryRangeChart() {
                 <CardTitle className="text-lg">Estimasi Rentang Pendapatan</CardTitle>
             </CardHeader>
             <CardContent>
-                <Chart options={options} series={series} type="pie" height={320} />
+                <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[300px]">
+                    <PieChart>
+                        <ChartTooltip content={<ChartTooltipContent nameKey="name" hideLabel />} />
+                        <Pie data={chartData} dataKey="value" nameKey="name" outerRadius={100}>
+                            {chartData.map((entry, i) => (
+                                <Cell key={entry.name} fill={COLORS[i % COLORS.length]} />
+                            ))}
+                        </Pie>
+                        <ChartLegend content={(props) => <ChartLegendContent payload={props.payload ? [...props.payload] : undefined} nameKey="name" />} />
+                    </PieChart>
+                </ChartContainer>
             </CardContent>
         </Card>
     );

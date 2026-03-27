@@ -83,12 +83,14 @@ export enum EDepartment {
     TEP = "TEP",
     TPN = "TPN",
     TIN = "TIN",
+    TEKNOTAN = "TEKNOTAN",
 }
 
 export const TDepartment = {
     [EDepartment.TEP]: "Teknik Pertanian",
     [EDepartment.TPN]: "Teknologi Pangan",
     [EDepartment.TIN]: "Teknologi Industri Pertanian",
+    [EDepartment.TEKNOTAN]: "Teknologi Pertanian",
 };
 
 export enum EIndustry {
@@ -278,5 +280,10 @@ export const departmentBorderMap = {
         firstCard: "border-orange-500 border-t-8",
         card: "border-orange-500 border-t",
         header: "border-orange-500/50 border-b",
+    },
+    TEKNOTAN: {
+        firstCard: "border-blue-500 border-t-8",
+        card: "border-blue-500 border-t",
+        header: "border-blue-500/50 border-b",
     },
 } as const;

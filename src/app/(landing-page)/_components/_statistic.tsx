@@ -5,12 +5,37 @@ import { AlumniDataDummy } from "@/data/dummy/alumni";
 import IndustryChart from "@/components/chart/industry-chart";
 import SalaryRangeChart from "@/components/chart/salary-range-chart";
 import { Users, Globe, Building, TrendingUp } from "lucide-react";
+import { EIncomeRange } from "@/types/user";
 
 export default function Statistic() {
     const totalAlumni = AlumniDataDummy?.length || 0;
     const countries = new Set(AlumniDataDummy?.map((a) => a.location)).size; // Using location field
     const industries = new Set(AlumniDataDummy?.map((a) => a.industry)).size;
     const companies = Math.floor(totalAlumni * 0.3); // Estimate: 30% work in different companies
+
+    // Derive industry counts for chart (using raw dummy industry keys)
+    const industryData: Record<string, number> = AlumniDataDummy.reduce(
+        (acc, item) => {
+            acc[item.industry] = (acc[item.industry] || 0) + 1;
+            return acc;
+        },
+        {} as Record<string, number>,
+    );
+
+    // Map dummy salary ranges to API enum keys
+    const salaryRangeMap: Record<string, EIncomeRange> = {
+        low: EIncomeRange.BELOW_5M,
+        mid: EIncomeRange.RANGE_5_10M,
+        high: EIncomeRange.ABOVE_15M,
+    };
+    const salaryData: Record<string, number> = AlumniDataDummy.reduce(
+        (acc, item) => {
+            const key = salaryRangeMap[item.salaryRange] ?? EIncomeRange.UNKNOWN;
+            acc[key] = (acc[key] || 0) + 1;
+            return acc;
+        },
+        {} as Record<string, number>,
+    );
 
     return (
         <section id="statistics" className="bg-white py-20">
@@ -76,10 +101,10 @@ export default function Statistic() {
                     {/* Charts Section */}
                     <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
                         {/* Industry Distribution */}
-                        <IndustryChart />
+                        <IndustryChart data={industryData} />
 
                         {/* Salary Range */}
-                        <SalaryRangeChart />
+                        <SalaryRangeChart data={salaryData} />
                     </div>
                 </div>
             </div>

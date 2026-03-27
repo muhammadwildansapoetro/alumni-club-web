@@ -1,16 +1,21 @@
 "use client";
 
-import { AppleIcon, ArrowRightIcon, TractorIcon, UsersIcon, WarehouseIcon } from "lucide-react";
+import { AppleIcon, ArrowRightIcon, LeafIcon, TractorIcon, UsersIcon, WarehouseIcon } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { buttonVariants } from "../ui/button";
 import Link from "next/link";
+import { AlumniStatistics } from "@/types/statistic";
 
-export default function StatisticCard() {
+interface StatisticCardProps {
+    data: AlumniStatistics;
+}
+
+export default function StatisticCard({ data }: StatisticCardProps) {
     return (
         <div className="space-y-1">
             <h2 className="text-lg font-bold">Statistik Alumni</h2>
 
-            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
                 <Card className="justify-between gap-3 border-2 border-yellow-500 bg-yellow-50/50 text-yellow-600">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2 text-sm">
@@ -18,7 +23,7 @@ export default function StatisticCard() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-xl font-bold">0</p>
+                        <p className="text-xl font-bold">{data.totalAlumni.toLocaleString("id-ID")}</p>
                     </CardContent>
                 </Card>
 
@@ -29,9 +34,9 @@ export default function StatisticCard() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="flex items-center justify-between">
-                        <p className="text-xl font-bold">0</p>
+                        <p className="text-xl font-bold">{(data.byDepartment["TEP"] ?? 0).toLocaleString("id-ID")}</p>
                         <Link
-                            href={"/dashboard/alumni/agricultural-engineering"}
+                            href={"/dashboard/alumni?department=TEP"}
                             className={buttonVariants({ className: "h-6! text-xs", size: "sm", variant: "outline" })}
                         >
                             Lihat <ArrowRightIcon />
@@ -46,9 +51,9 @@ export default function StatisticCard() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="flex items-center justify-between">
-                        <p className="text-xl font-bold">0</p>
+                        <p className="text-xl font-bold">{(data.byDepartment["TPN"] ?? 0).toLocaleString("id-ID")}</p>
                         <Link
-                            href={"/dashboard/alumni/food-technology"}
+                            href={"/dashboard/alumni?department=TPN"}
                             className={buttonVariants({
                                 className: "h-6! border-red-500 text-xs text-red-500 hover:border-red-500 hover:bg-red-50 hover:text-red-500",
                                 size: "sm",
@@ -67,12 +72,34 @@ export default function StatisticCard() {
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="flex items-center justify-between">
-                        <p className="text-xl font-bold">0</p>
+                        <p className="text-xl font-bold">{(data.byDepartment["TIN"] ?? 0).toLocaleString("id-ID")}</p>
                         <Link
-                            href={"/dashboard/alumni/agricultural-industrial-technology"}
+                            href={"/dashboard/alumni?department=TIN"}
                             className={buttonVariants({
                                 className:
                                     "h-6! border-orange-500 text-xs text-orange-500 hover:border-orange-500 hover:bg-orange-50 hover:text-orange-500",
+                                size: "sm",
+                                variant: "outline",
+                            })}
+                        >
+                            Lihat <ArrowRightIcon />
+                        </Link>
+                    </CardContent>
+                </Card>
+
+                <Card className="gap-3 border-blue-500 bg-blue-50/50 text-blue-600">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2 text-sm">
+                            <LeafIcon className="h-5 w-5" /> Teknologi Pertanian
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="flex items-center justify-between">
+                        <p className="text-xl font-bold">{(data.byDepartment["TEKNOTAN"] ?? 0).toLocaleString("id-ID")}</p>
+                        <Link
+                            href={"/dashboard/alumni?department=TEKNOTAN"}
+                            className={buttonVariants({
+                                className:
+                                    "h-6! border-blue-500 text-xs text-blue-500 hover:border-blue-500 hover:bg-blue-50 hover:text-blue-500",
                                 size: "sm",
                                 variant: "outline",
                             })}
