@@ -1,6 +1,7 @@
 import { cookies } from "next/headers";
 import { CONFIG } from "@/config";
 import BusinessClient from "./client";
+import FeatureUnderConstruction from "@/components/feature-under-construction";
 
 export default async function BusinessPage(props: { searchParams?: Promise<{ [key: string]: string | string[] | undefined }> }) {
     const cookieStore = await cookies();
@@ -43,5 +44,10 @@ export default async function BusinessPage(props: { searchParams?: Promise<{ [ke
         error = e.message;
     }
 
-    return <BusinessClient businesses={businesses} error={error} />;
+    return (
+        <>
+            <FeatureUnderConstruction />
+            <BusinessClient businesses={businesses} error={error} />
+        </>
+    );
 }
