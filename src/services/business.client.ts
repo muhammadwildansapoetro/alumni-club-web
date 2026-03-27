@@ -1,22 +1,12 @@
 import { API } from "@/lib/axios";
+import type { CreateBusinessInput, UpdateBusinessInput } from "@/types/business";
 
-export type CreateBusinessPayload = {
-    businessName: string;
-    description: string;
-    category?: string | null;
-    location?: string | null;
-    website?: string | null;
-    contactInfo?: string | null;
-};
-
-export type UpdateBusinessPayload = Partial<CreateBusinessPayload> & { isActive?: boolean };
-
-export const createBusiness = async (payload: CreateBusinessPayload) => {
+export const createBusiness = async (payload: CreateBusinessInput) => {
     const res = await API.post("/businesses", payload);
     return res.data;
 };
 
-export const updateBusiness = async (id: string, payload: UpdateBusinessPayload) => {
+export const updateBusiness = async (id: string, payload: UpdateBusinessInput) => {
     const res = await API.patch(`/businesses/${id}`, payload);
     return res.data;
 };

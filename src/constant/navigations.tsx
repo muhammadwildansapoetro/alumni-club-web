@@ -1,10 +1,4 @@
-import {
-    BriefcaseBusinessIcon,
-    ChartColumnBigIcon,
-    HandshakeIcon,
-    UserCheckIcon,
-    UsersIcon,
-} from "lucide-react";
+import { BriefcaseBusinessIcon, ChartColumnBigIcon, StoreIcon, UserCheckIcon, UsersIcon } from "lucide-react";
 
 export interface INavigation {
     name: string;
@@ -48,7 +42,7 @@ export const NAVIGATIONS: INavigation[] = [
     },
     {
         name: "Bisnis",
-        icon: HandshakeIcon,
+        icon: StoreIcon,
         href: "/dashboard/business",
         roles: [],
         active: ["/dashboard/business"],

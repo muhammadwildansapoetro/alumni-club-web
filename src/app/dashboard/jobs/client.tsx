@@ -136,8 +136,7 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
             {
                 accessorKey: "salaryRange",
                 header: "Gaji",
-                cell: ({ row }) =>
-                    row.original.salaryRange ? SALARY_RANGE_LABELS[row.original.salaryRange] : "-",
+                cell: ({ row }) => (row.original.salaryRange ? SALARY_RANGE_LABELS[row.original.salaryRange] : "-"),
             },
             {
                 id: "postedBy",
@@ -208,7 +207,7 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
                 <h1 className="text-2xl font-bold tracking-tight">Lowongan Kerja</h1>
 
                 <div className="flex w-xl items-center gap-4">
-                    <SearchInput variant="dashboard" placeholder="Cari lowongan" value={search} onChange={(value) => setSearch(value)} />
+                    <SearchInput variant="dashboard" placeholder="Cari lowongan pekerjaan" value={search} onChange={(value) => setSearch(value)} />
 
                     <div className="flex justify-end gap-2">
                         <Popover

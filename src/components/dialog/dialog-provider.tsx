@@ -6,6 +6,7 @@ import FurtherEducationManagementDialog from "./further-education-management";
 import WorkExperienceManagementDialog from "./work-experience-management";
 import JobManagementDialog from "./job-management";
 import BusinessManagementDialog from "./business-management";
+import BusinessDetailDialog from "./business-detail";
 
 export default function DialogProvider() {
     return (
@@ -16,6 +17,7 @@ export default function DialogProvider() {
             <WorkExperienceManagementDialog />
             <JobManagementDialog />
             <BusinessManagementDialog />
+            <BusinessDetailDialog />
         </>
     );
 }

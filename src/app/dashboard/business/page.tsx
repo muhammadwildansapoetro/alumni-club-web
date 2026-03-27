@@ -33,11 +33,11 @@ export default async function BusinessPage(props: { searchParams?: Promise<{ [ke
         }
 
         businesses = {
-            data: json.data,
-            page: json.page,
-            limit: json.limit,
-            total: json.total,
-            totalPages: json.totalPages,
+            data: json.data.items,
+            page: json.data.pagination.page,
+            limit: json.data.pagination.limit,
+            total: json.data.pagination.total,
+            totalPages: json.data.pagination.totalPages,
         };
     } catch (e: any) {
         error = e.message;

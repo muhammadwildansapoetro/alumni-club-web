@@ -4,7 +4,7 @@ export interface BusinessOwnerBrief {
     email: string;
     profile: {
         fullName: string;
-        department: "TEP" | "TPN" | "TIN" | "Teknotan";
+        department: "TEP" | "TPN" | "TIN";
         entryYear: number;
     } | null;
 }
@@ -20,7 +20,7 @@ export interface WorkExperience {
 export interface BusinessOwnerDetail extends BusinessOwnerBrief {
     profile: {
         fullName: string;
-        department: "TEP" | "TPN" | "TIN" | "Teknotan";
+        department: "TEP" | "TPN" | "TIN";
         entryYear: number;
         cityId: number | null;
         cityName: string | null;
@@ -37,6 +37,12 @@ export interface Business {
     description: string;
     category: string | null;
     location: string | null;
+    countryId: number | null;
+    countryName: string | null;
+    provinceId: number | null;
+    provinceName: string | null;
+    cityId: number | null;
+    cityName: string | null;
     website: string | null;
     contactInfo: string | null;
     isActive: boolean;
@@ -49,8 +55,17 @@ export interface BusinessDetail extends Business {
     user: BusinessOwnerDetail;
 }
 
+export interface BusinessFilters {
+    page?: number;
+    limit?: number;
+    search?: string;
+    category?: string;
+    location?: string;
+    isActive?: boolean;
+}
+
 export interface PaginatedBusinessResponse {
-    success: true;
+    success: boolean;
     message: string;
     data: Business[];
     page: number;
@@ -60,7 +75,26 @@ export interface PaginatedBusinessResponse {
 }
 
 export interface BusinessResponse {
-    success: true;
+    success: boolean;
     message: string;
     data: Business;
 }
+
+export interface CreateBusinessInput {
+    businessName: string;
+    description: string;
+    category?: string;
+    location?: string;
+    countryId?: number | null;
+    countryName?: string | null;
+    provinceId?: number | null;
+    provinceName?: string | null;
+    cityId?: number | null;
+    cityName?: string | null;
+    website?: string;
+    contactInfo?: string;
+}
+
+export type UpdateBusinessInput = Partial<CreateBusinessInput> & {
+    isActive?: boolean;
+};
