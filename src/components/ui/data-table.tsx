@@ -60,7 +60,7 @@ export function DataTable<TData, TValue>({ columns, data, loading = false, error
                             <TableRow key={headerGroup.id}>
                                 {headerGroup.headers.map((header) => {
                                     return (
-                                        <TableHead key={header.id} className="text-white">
+                                        <TableHead key={header.id} className="text-xs font-semibold text-white">
                                             {header.isPlaceholder ? null : flexRender(header.column.columnDef.header, header.getContext())}
                                         </TableHead>
                                     );

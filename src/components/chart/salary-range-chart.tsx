@@ -36,7 +36,7 @@ export default function SalaryRangeChart({ data }: SalaryRangeChartProps) {
     return (
         <Card className="gap-1">
             <CardHeader>
-                <CardTitle className="text-lg">Estimasi Rentang Pendapatan</CardTitle>
+                <CardTitle className="text-lg">Rentang Pendapatan</CardTitle>
             </CardHeader>
             <CardContent>
                 <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[300px]">
@@ -47,7 +47,9 @@ export default function SalaryRangeChart({ data }: SalaryRangeChartProps) {
                                 <Cell key={entry.name} fill={COLORS[i % COLORS.length]} />
                             ))}
                         </Pie>
-                        <ChartLegend content={(props) => <ChartLegendContent payload={props.payload ? [...props.payload] : undefined} nameKey="name" />} />
+                        <ChartLegend
+                            content={(props) => <ChartLegendContent payload={props.payload ? [...props.payload] : undefined} nameKey="name" />}
+                        />
                     </PieChart>
                 </ChartContainer>
             </CardContent>

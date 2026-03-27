@@ -17,11 +17,15 @@ export default function JobDetailDialog() {
 
     const { profile, name, email } = job.user;
 
-    const location = job.cityName ?? job.provinceName ?? job.countryName ?? null;
+    const location = (() => {
+        if (!job.countryName && !job.provinceName && !job.cityName) return null;
+        if (job.countryId === 77) return [job.cityName, job.provinceName, job.countryName].filter(Boolean).join(", ");
+        return job.countryName ?? null;
+    })();
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-w-lg" onOpenAutoFocus={(e) => e.preventDefault()}>
+            <DialogContent className="w-full sm:max-w-lg" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
                     <DialogTitle>{job.title}</DialogTitle>
                     <DialogDescription>{job.company || ""}</DialogDescription>
@@ -30,43 +34,49 @@ export default function JobDetailDialog() {
                 <div className="space-y-4 text-sm">
                     <div className="flex flex-wrap items-center gap-2">
                         {job.isActive ? (
-                            <Badge variant="default" size="xs">Aktif</Badge>
+                            <Badge variant="default" size="xs">
+                                Aktif
+                            </Badge>
                         ) : (
-                            <Badge variant="destructive" size="xs">Nonaktif</Badge>
+                            <Badge variant="destructive" size="xs">
+                                Nonaktif
+                            </Badge>
                         )}
                         {job.jobType && (
-                            <Badge variant="outline" size="xs">{JOB_TYPE_LABELS[job.jobType]}</Badge>
+                            <Badge variant="outline" size="xs">
+                                {JOB_TYPE_LABELS[job.jobType]}
+                            </Badge>
                         )}
                     </div>
 
                     <div className="space-y-3">
                         <div>
-                            <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide mb-1">Deskripsi</p>
+                            <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Deskripsi</p>
                             <p className="leading-relaxed whitespace-pre-line">{job.description}</p>
                         </div>
 
                         {location && (
                             <div>
-                                <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide mb-1">Lokasi</p>
+                                <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Lokasi</p>
                                 <p>{location}</p>
                             </div>
                         )}
 
                         {job.salaryRange && (
                             <div>
-                                <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide mb-1">Gaji</p>
+                                <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Gaji</p>
                                 <p>{SALARY_RANGE_LABELS[job.salaryRange]}</p>
                             </div>
                         )}
 
                         {job.externalUrl && (
                             <div>
-                                <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide mb-1">Link Lamaran</p>
+                                <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Link Lamaran</p>
                                 <a
                                     href={job.externalUrl}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    className="text-primary hover:underline inline-flex items-center gap-1"
+                                    className="text-primary inline-flex items-center gap-1 hover:underline"
                                 >
                                     {job.externalUrl}
                                     <ExternalLinkIcon className="h-3 w-3" />
@@ -75,7 +85,7 @@ export default function JobDetailDialog() {
                         )}
 
                         <div>
-                            <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide mb-1">Diposting Oleh</p>
+                            <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Diposting Oleh</p>
                             <p className="font-medium">{profile?.fullName ?? name ?? email}</p>
                             {profile?.department && (
                                 <Badge variant={profile.department as any} size="xs" className="mt-1">
@@ -85,7 +95,7 @@ export default function JobDetailDialog() {
                         </div>
 
                         <div>
-                            <p className="text-muted-foreground text-xs font-medium uppercase tracking-wide mb-1">Ditambahkan</p>
+                            <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Ditambahkan</p>
                             <p>
                                 {new Date(job.createdAt).toLocaleDateString("id-ID", {
                                     day: "2-digit",

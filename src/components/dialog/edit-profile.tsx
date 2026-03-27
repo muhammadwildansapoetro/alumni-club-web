@@ -29,7 +29,8 @@ const profilFormSchema = z
             .min(1983, "Tahun lulus tidak valid")
             .max(currentYear - 3, "Tahun lulus tidak valid"),
         graduationYear: z.number().min(1962, "Tahun lulus tidak valid").max(currentYear, "Tahun lulus tidak valid"),
-        linkedInUrl: z.string().url("URL LinkedIn tidak valid").or(z.literal("")).optional(),
+        linkedInUrl: z.string().nullable().optional(),
+        instagramUrl: z.string().nullable().optional(),
         countryId: z.number().nullable().optional(),
         countryName: z.string().optional(),
         provinceId: z.number().nullable().optional(),
@@ -93,7 +94,7 @@ export default function EditProfileDialog() {
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-h-[90vh] max-w-3xl overflow-visible" onOpenAutoFocus={(e) => e.preventDefault()}>
+            <DialogContent className="max-h-[90vh] max-w-5xl overflow-visible" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
                     <DialogTitle>Ubah Profil</DialogTitle>
                     <DialogDescription></DialogDescription>
@@ -137,6 +138,7 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
             entryYear: undefined,
             graduationYear: undefined,
             linkedInUrl: "",
+            instagramUrl: "",
             countryId: undefined,
             countryName: undefined,
             cityId: undefined,
@@ -177,7 +179,8 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
                     fullName: values.fullname,
                     entryYear: values.entryYear,
                     graduationYear: values.graduationYear,
-                    linkedInUrl: values.linkedInUrl,
+                    linkedInUrl: values.linkedInUrl || null,
+                    instagramUrl: values.instagramUrl || null,
                     countryId: values.countryId,
                     countryName: values.countryName,
                     provinceId: values.provinceId,
@@ -207,6 +210,7 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
             entryYear: user.profile?.entryYear ?? undefined,
             graduationYear: user.profile?.graduationYear ?? undefined,
             linkedInUrl: user.profile?.linkedInUrl ?? "",
+            instagramUrl: user.profile?.instagramUrl ?? "",
             countryId: user.profile?.countryId ?? null,
             countryName: user.profile?.countryName ?? undefined,
             provinceId: user.profile?.provinceId ?? null,
@@ -219,7 +223,7 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(updateProfil)} className="space-y-4">
-                <div className="grid items-start gap-4 sm:grid-cols-2">
+                <div className="grid items-start gap-4 sm:grid-cols-2 md:grid-cols-3">
                     <FormField
                         name="fullname"
                         control={form.control}
@@ -297,9 +301,22 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
                         control={form.control}
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Link Profil LinkedIn</FormLabel>
+                                <FormLabel>Tautan Profil LinkedIn</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="https://www.linkedin.com/in/username" {...field} />
+                                    <Input placeholder="https://www.linkedin.com/in/username" {...field} value={field.value ?? ""} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        name="instagramUrl"
+                        control={form.control}
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Tautan Profil Instagram</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="https://www.instagram.com/username" {...field} value={field.value ?? ""} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -386,7 +403,7 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
                                         placeholder="Ketik untuk mencari kota"
                                         instanceId="city-select"
                                         isClearable={true}
-                                        isDisabled={!isIndonesia}
+                                        isDisabled={!isIndonesia || !watchedProvinceId}
                                         fieldState={fieldState}
                                         value={cityOptions.find((opt) => Number(opt.value) === field.value) ?? null}
                                         onChange={(opt: any) => {

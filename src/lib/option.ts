@@ -9,8 +9,10 @@ import {
     TDegree,
     EIncomeRange,
     TIncomeRange,
+    EFieldOfStudy,
+    TFieldOfStudy,
 } from "@/types/user";
-import { JOB_TYPE_LABELS, JobType } from "@/types/job";
+import { INDUSTRY_LABELS, IndustryField, JOB_TYPE_LABELS, JobType } from "@/types/job";
 
 export const departmentOptions = [
     { value: "TEP", label: "Teknik Pertanian (TEP)" },
@@ -28,8 +30,8 @@ export const entryYearOptions = Array.from({ length: maxYear - minYear + 1 }, (_
     return { value: year, label: year.toString() };
 });
 
-export const entryYearFurtherEducationOptions = Array.from({ length: maxYear - 1983 }, (_, i) => {
-    const year = maxYear - i;
+export const entryYearFurtherEducationOptions = Array.from({ length: currentYear - 1983 }, (_, i) => {
+    const year = currentYear - i;
     return { value: year, label: year.toString() };
 });
 
@@ -79,4 +81,14 @@ export const incomeRangeOptions = Object.entries(TIncomeRange).map(([key, label]
 export const jobTypeOptions = (Object.keys(JOB_TYPE_LABELS) as JobType[]).map((key) => ({
     value: key,
     label: JOB_TYPE_LABELS[key],
+}));
+
+export const jobIndustryOptions = (Object.keys(INDUSTRY_LABELS) as IndustryField[]).map((key) => ({
+    value: key,
+    label: INDUSTRY_LABELS[key],
+}));
+
+export const fieldOfStudyOptions = Object.entries(TFieldOfStudy).map(([key, label]) => ({
+    value: key as EFieldOfStudy,
+    label,
 }));

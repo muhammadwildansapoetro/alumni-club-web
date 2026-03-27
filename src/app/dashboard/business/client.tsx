@@ -231,13 +231,13 @@ export default function BusinessClient({ businesses, error }: BusinessClientProp
 
     return (
         <div className="space-y-4">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex flex-col gap-4 sm:justify-between md:flex-row">
                 <h1 className="text-2xl font-bold tracking-tight">Direktori Bisnis</h1>
 
-                <div className="flex w-md items-center gap-4">
+                <div className="flex flex-col gap-4 sm:w-lg sm:flex-row">
                     <SearchInput variant="dashboard" placeholder="Cari bisnis" value={search} onChange={(value) => setSearch(value)} />
 
-                    <div className="flex justify-end gap-2">
+                    <div className="grid w-full grid-cols-2 gap-4">
                         <Popover
                             open={popoverOpen}
                             onOpenChange={(open) => {

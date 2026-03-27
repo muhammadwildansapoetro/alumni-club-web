@@ -1,20 +1,34 @@
 "use client";
 
-import React, { useState, useEffect, useTransition, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useTransition, useCallback } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { useDebounce } from "use-debounce";
-import { ColumnDef } from "@tanstack/react-table";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { DataTable } from "@/components/ui/data-table";
 import { Pagination } from "@/components/ui/pagination";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { EyeIcon, FilterIcon, Loader2Icon, PlusIcon, RefreshCcwIcon, SquarePenIcon, Trash2Icon } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import {
+    BuildingIcon,
+    CalendarIcon,
+    ExternalLinkIcon,
+    FilterIcon,
+    Loader2Icon,
+    MapPinIcon,
+    PlusIcon,
+    RefreshCcwIcon,
+    SquarePenIcon,
+    Trash2Icon,
+    WalletIcon,
+} from "lucide-react";
 import SearchInput from "@/components/input/search-input";
 import ReactSelect from "@/components/ui/react-select";
-import { jobTypeOptions } from "@/lib/option";
-import { JobPosting, JOB_TYPE_LABELS, SALARY_RANGE_LABELS } from "@/types/job";
+import AsyncReactSelect from "@/components/ui/async-select";
+import { jobIndustryOptions, jobTypeOptions } from "@/lib/option";
+import { JobPosting, JOB_TYPE_LABELS, SALARY_RANGE_LABELS, INDUSTRY_LABELS } from "@/types/job";
+import { TDepartment } from "@/types/user";
 import { deleteJob } from "@/services/jobs.client";
+import { fetchCountries, fetchProvinces, fetchCities } from "@/services/country.client";
 import { useDialog } from "@/hooks/use-dialog";
 import { useAuthStore } from "@/stores/auth.store";
 import { toast } from "sonner";
@@ -27,6 +41,205 @@ interface JobsClientProps {
     error: string | null;
 }
 
+function JobDetail({
+    job,
+    currentUserId,
+    onEdit,
+    onDelete,
+    confirmDeleteId,
+    setConfirmDeleteId,
+    deletingId,
+}: {
+    job: JobPosting;
+    currentUserId?: string;
+    onEdit: (job: JobPosting) => void;
+    onDelete: (id: string) => void;
+    confirmDeleteId: string | null;
+    setConfirmDeleteId: (id: string | null) => void;
+    deletingId: string | null;
+}) {
+    const { profile, name, email } = job.user;
+    const isOwner = currentUserId === job.user.id;
+
+    const location = (() => {
+        if (!job.countryName && !job.provinceName && !job.cityName) return null;
+        if (job.countryId === 77) return [job.cityName, job.provinceName, job.countryName].filter(Boolean).join(", ");
+        return job.countryName ?? null;
+    })();
+
+    return (
+        <div className="space-y-5 p-5 text-sm">
+            <div className="flex items-start justify-between gap-3">
+                <div className="space-y-1">
+                    <h2 className="text-xl leading-tight font-bold">{job.title}</h2>
+                    {job.company && (
+                        <p className="text-muted-foreground flex items-center gap-1.5">
+                            <BuildingIcon className="h-3.5 w-3.5 shrink-0" />
+                            {job.company}
+                        </p>
+                    )}
+                    {location && (
+                        <p className="text-muted-foreground flex items-center gap-1.5">
+                            <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
+                            {location}
+                        </p>
+                    )}
+                    <p className="text-muted-foreground flex items-center gap-1.5">
+                        <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
+                        {new Date(job.createdAt).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}
+                    </p>
+                </div>
+
+                {isOwner && (
+                    <div className="flex shrink-0 gap-2">
+                        <Button variant="outline" size="sm" onClick={() => onEdit(job)}>
+                            <SquarePenIcon className="h-4 w-4" />
+                            Edit
+                        </Button>
+                        {confirmDeleteId === job.id ? (
+                            <>
+                                <Button variant="destructive" size="sm" disabled={deletingId === job.id} onClick={() => onDelete(job.id)}>
+                                    {deletingId === job.id ? <Loader2Icon className="h-4 w-4 animate-spin" /> : "Yakin?"}
+                                </Button>
+                                <Button variant="outline" size="sm" onClick={() => setConfirmDeleteId(null)}>
+                                    Batal
+                                </Button>
+                            </>
+                        ) : (
+                            <Button variant="outline_destructive" size="sm" onClick={() => setConfirmDeleteId(job.id)}>
+                                <Trash2Icon className="h-4 w-4" />
+                                Hapus
+                            </Button>
+                        )}
+                    </div>
+                )}
+            </div>
+
+            <div className="flex flex-wrap gap-2">
+                {job.isActive ? (
+                    <Badge variant="default" size="xs">
+                        Aktif
+                    </Badge>
+                ) : (
+                    <Badge variant="destructive" size="xs">
+                        Nonaktif
+                    </Badge>
+                )}
+                {job.jobType && (
+                    <Badge variant="outline" size="xs">
+                        {JOB_TYPE_LABELS[job.jobType]}
+                    </Badge>
+                )}
+                {job.industry && (
+                    <Badge variant="outline" size="xs">
+                        {INDUSTRY_LABELS[job.industry]}
+                    </Badge>
+                )}
+            </div>
+
+            <div className="border-t pt-4">
+                <h3 className="mb-2 font-semibold">Deskripsi Pekerjaan</h3>
+                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{job.description}</p>
+            </div>
+
+            {job.salaryRange && (
+                <div className="flex items-center gap-2">
+                    <WalletIcon className="text-muted-foreground h-4 w-4 shrink-0" />
+                    <div>
+                        <p className="text-muted-foreground text-xs">Rentang Gaji</p>
+                        <p className="font-medium">{SALARY_RANGE_LABELS[job.salaryRange] ?? "-"}</p>
+                    </div>
+                </div>
+            )}
+
+            {job.externalUrl && (
+                <div>
+                    <p className="text-muted-foreground mb-1 text-xs font-medium">Link Lamaran</p>
+                    <a
+                        href={job.externalUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary inline-flex items-center gap-1 break-all hover:underline"
+                    >
+                        {job.externalUrl}
+                        <ExternalLinkIcon className="h-3 w-3 shrink-0" />
+                    </a>
+                </div>
+            )}
+
+            <div className="border-t pt-4">
+                <p className="text-muted-foreground mb-1 text-xs font-medium">Diposting Oleh</p>
+                <p className="font-medium">{profile?.fullName ?? name ?? email}</p>
+                {profile?.department && (
+                    <Badge variant={profile.department as any} size="xs" className="mt-1">
+                        {TDepartment[profile.department as keyof typeof TDepartment]} - {profile.entryYear}
+                    </Badge>
+                )}
+            </div>
+        </div>
+    );
+}
+
+function JobCard({ job, selected, onClick }: { job: JobPosting; selected: boolean; onClick: () => void }) {
+    const location = (() => {
+        if (!job.countryName && !job.provinceName && !job.cityName) return null;
+        if (job.countryId === 77) return [job.cityName, job.provinceName, job.countryName].filter(Boolean).join(", ");
+        return job.countryName ?? null;
+    })();
+
+    return (
+        <button
+            onClick={onClick}
+            className={`w-full cursor-pointer rounded-lg border p-4 text-left transition-colors ${
+                selected ? "border-primary bg-primary/5" : "bg-card hover:bg-muted/50"
+            }`}
+        >
+            <div className="space-y-1.5">
+                <div className="flex items-start justify-between gap-2">
+                    <p className={`leading-tight font-semibold ${selected ? "text-primary" : ""}`}>{job.title}</p>
+                    {job.isActive ? (
+                        <Badge variant="default" size="xs" className="shrink-0">
+                            Aktif
+                        </Badge>
+                    ) : (
+                        <Badge variant="destructive" size="xs" className="shrink-0">
+                            Nonaktif
+                        </Badge>
+                    )}
+                </div>
+                {job.company && <p className="text-muted-foreground text-xs">{job.company}</p>}
+                {location && (
+                    <p className="text-muted-foreground flex items-center gap-1 text-xs">
+                        <MapPinIcon className="h-3 w-3 shrink-0" />
+                        {location}
+                    </p>
+                )}
+                {job.salaryRange && (
+                    <p className="text-muted-foreground flex items-center gap-1 text-xs">
+                        <WalletIcon className="h-3 w-3 shrink-0" />
+                        {SALARY_RANGE_LABELS[job.salaryRange] ?? "-"}
+                    </p>
+                )}
+                <div className="flex flex-wrap gap-1 pt-1">
+                    {job.jobType && (
+                        <Badge variant="outline" size="xs">
+                            {JOB_TYPE_LABELS[job.jobType]}
+                        </Badge>
+                    )}
+                    {job.industry && (
+                        <Badge variant="outline" size="xs">
+                            {INDUSTRY_LABELS[job.industry]}
+                        </Badge>
+                    )}
+                </div>
+                <p className="text-muted-foreground text-xs">
+                    {new Date(job.createdAt).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
+                </p>
+            </div>
+        </button>
+    );
+}
+
 export default function JobsClient({ jobs, error }: JobsClientProps) {
     const router = useRouter();
     const pathname = usePathname();
@@ -37,10 +250,34 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
     const [search, setSearch] = useState(searchParams.get("search") || "");
     const [debouncedSearch] = useDebounce(search, 500);
     const jobType = searchParams.get("jobType") || "";
+    const industry = searchParams.get("industry") || "";
+    const isActive = searchParams.get("isActive") || "";
+    const countryId = searchParams.get("countryId") || "";
+    const provinceId = searchParams.get("provinceId") || "";
+    const cityId = searchParams.get("cityId") || "";
+
     const [filterJobType, setFilterJobType] = useState(jobType);
+    const [filterIndustry, setFilterIndustry] = useState(industry);
+    const [filterIsActive, setFilterIsActive] = useState(isActive);
+    const [filterCountry, setFilterCountry] = useState<{ value: string; label: string } | null>(null);
+    const [filterProvince, setFilterProvince] = useState<{ value: string; label: string } | null>(null);
+    const [filterCity, setFilterCity] = useState<{ value: string; label: string } | null>(null);
     const [popoverOpen, setPopoverOpen] = useState(false);
     const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [selectedJob, setSelectedJob] = useState<JobPosting | null>(jobs?.items?.[0] ?? null);
+    const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
+
+    useEffect(() => {
+        if (jobs?.items?.length) {
+            setSelectedJob((prev) => {
+                const stillExists = jobs.items.find((j) => j.id === prev?.id);
+                return stillExists ?? jobs.items[0];
+            });
+        } else {
+            setSelectedJob(null);
+        }
+    }, [jobs]);
 
     const handleDelete = useCallback(
         async (id: string) => {
@@ -59,15 +296,45 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
         [router],
     );
 
-    const applyFilters = (newJobType: string) => {
+    const applyFilters = () => {
         const params = new URLSearchParams(searchParams);
 
-        if (newJobType) {
-            params.set("jobType", newJobType);
-        } else {
-            params.delete("jobType");
-        }
+        if (filterJobType) params.set("jobType", filterJobType);
+        else params.delete("jobType");
+        if (filterIndustry) params.set("industry", filterIndustry);
+        else params.delete("industry");
+        if (filterIsActive) params.set("isActive", filterIsActive);
+        else params.delete("isActive");
+        if (filterCountry) params.set("countryId", filterCountry.value);
+        else params.delete("countryId");
+        if (filterProvince) params.set("provinceId", filterProvince.value);
+        else params.delete("provinceId");
+        if (filterCity) params.set("cityId", filterCity.value);
+        else params.delete("cityId");
 
+        params.set("page", "1");
+
+        startTransition(() => {
+            router.push(`${pathname}?${params.toString()}`);
+            setPopoverOpen(false);
+        });
+    };
+
+    const resetFilters = () => {
+        setFilterJobType("");
+        setFilterIndustry("");
+        setFilterIsActive("");
+        setFilterCountry(null);
+        setFilterProvince(null);
+        setFilterCity(null);
+
+        const params = new URLSearchParams(searchParams);
+        params.delete("jobType");
+        params.delete("industry");
+        params.delete("isActive");
+        params.delete("countryId");
+        params.delete("provinceId");
+        params.delete("cityId");
         params.set("page", "1");
 
         startTransition(() => {
@@ -103,143 +370,41 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
         }
     }, [debouncedSearch, pathname, router, searchParams]);
 
-    const columns = useMemo<ColumnDef<JobPosting>[]>(
-        () => [
-            {
-                accessorKey: "title",
-                header: "Lowongan / Perusahaan",
-                cell: ({ row }) => (
-                    <div>
-                        <p className="font-medium">{row.original.title}</p>
-                        <p className="text-muted-foreground text-xs">{row.original.company || "-"}</p>
-                    </div>
-                ),
-            },
-            {
-                accessorKey: "jobType",
-                header: "Tipe",
-                cell: ({ row }) =>
-                    row.original.jobType ? (
-                        <Badge variant="outline" size="xs">
-                            {JOB_TYPE_LABELS[row.original.jobType]}
-                        </Badge>
-                    ) : (
-                        "-"
-                    ),
-            },
-            {
-                id: "location",
-                header: "Lokasi",
-                cell: ({ row }) => {
-                    const { cityName, provinceName, countryName } = row.original;
-                    return cityName ?? provinceName ?? countryName ?? "-";
-                },
-            },
-            {
-                accessorKey: "salaryRange",
-                header: "Gaji",
-                cell: ({ row }) => (row.original.salaryRange ? SALARY_RANGE_LABELS[row.original.salaryRange] : "-"),
-            },
-            {
-                id: "postedBy",
-                header: "Diposting Oleh",
-                cell: ({ row }) => (
-                    <div>
-                        <p className="font-medium">{row.original.user.profile?.fullName ?? row.original.user.name ?? row.original.user.email}</p>
-                        <p className="text-muted-foreground text-xs">
-                            {new Date(row.original.createdAt).toLocaleDateString("id-ID", {
-                                day: "2-digit",
-                                month: "short",
-                                year: "numeric",
-                            })}
-                        </p>
-                    </div>
-                ),
-            },
-            {
-                accessorKey: "isActive",
-                header: "Status",
-                cell: ({ row }) =>
-                    row.original.isActive ? (
-                        <Badge variant="default" size="xs">
-                            Aktif
-                        </Badge>
-                    ) : (
-                        <Badge variant="destructive" size="xs">
-                            Nonaktif
-                        </Badge>
-                    ),
-            },
-            {
-                id: "actions",
-                header: "Aksi",
-                cell: ({ row }) => {
-                    const id = row.original.id;
-                    const isOwner = currentUser?.id === row.original.user.id;
-                    if (confirmDeleteId === id) {
-                        return (
-                            <div className="flex gap-2">
-                                <Button variant="destructive" size="sm" disabled={deletingId === id} onClick={() => handleDelete(id)}>
-                                    {deletingId === id ? <Loader2Icon className="h-4 w-4 animate-spin" /> : "Yakin?"}
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={() => setConfirmDeleteId(null)}>
-                                    Batal
-                                </Button>
-                            </div>
-                        );
-                    }
-                    return (
-                        <div className="flex gap-2">
-                            <Button variant="outline" size="sm" onClick={() => onOpen("job-detail", { job: row.original })}>
-                                <EyeIcon className="h-4 w-4" />
-                            </Button>
-                            {isOwner && (
-                                <>
-                                    <Button variant="outline" size="sm" onClick={() => onOpen("job-management", { job: row.original })}>
-                                        <SquarePenIcon className="h-4 w-4" />
-                                    </Button>
-                                    <Button variant="destructive" size="sm" onClick={() => setConfirmDeleteId(id)}>
-                                        <Trash2Icon className="h-4 w-4" />
-                                    </Button>
-                                </>
-                            )}
-                        </div>
-                    );
-                },
-            },
-        ],
-        [confirmDeleteId, deletingId, onOpen, handleDelete, currentUser?.id],
-    );
+    const activeFilterCount = [jobType, industry, isActive, countryId, provinceId, cityId].filter(Boolean).length;
 
     return (
-        <div className="space-y-4">
+        <div className="flex h-full flex-col gap-4">
+            {/* Header */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <h1 className="text-2xl font-bold tracking-tight">Lowongan Kerja</h1>
 
-                <div className="flex w-md items-center gap-4">
+                <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
                     <SearchInput variant="dashboard" placeholder="Cari lowongan pekerjaan" value={search} onChange={(value) => setSearch(value)} />
 
-                    <div className="flex justify-end gap-2">
+                    <div className="grid grid-cols-2 gap-4 sm:flex">
                         <Popover
                             open={popoverOpen}
                             onOpenChange={(open) => {
                                 if (open) {
                                     setFilterJobType(searchParams.get("jobType") || "");
+                                    setFilterIndustry(searchParams.get("industry") || "");
+                                    setFilterIsActive(searchParams.get("isActive") || "");
                                 }
                                 setPopoverOpen(open);
                             }}
                         >
                             <PopoverTrigger asChild>
-                                <Button variant={jobType ? "default" : "outline"} className="flex w-full gap-2 sm:w-auto">
+                                <Button variant={activeFilterCount > 0 ? "default" : "outline"} className="flex gap-2">
                                     <FilterIcon className="h-4 w-4" />
                                     Filter
-                                    {jobType && (
+                                    {activeFilterCount > 0 && (
                                         <Badge className="flex h-4 items-center justify-center rounded-full border-white px-1 text-xs font-medium text-white">
-                                            1
+                                            {activeFilterCount}
                                         </Badge>
                                     )}
                                 </Button>
                             </PopoverTrigger>
+
                             <PopoverContent className="w-72 p-4" align="end">
                                 <div className="grid gap-4">
                                     <div className="space-y-1">
@@ -258,25 +423,102 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
                                                 onChange={(opt: any) => setFilterJobType(opt?.value ?? "")}
                                             />
                                         </div>
+                                        <div className="grid gap-2">
+                                            <span className="text-xs font-medium">Industri</span>
+                                            <ReactSelect
+                                                name="industry"
+                                                instanceId="filter-industry"
+                                                options={jobIndustryOptions}
+                                                placeholder="Pilih industri"
+                                                isClearable
+                                                value={jobIndustryOptions.find((opt) => opt.value === filterIndustry) ?? null}
+                                                onChange={(opt: any) => setFilterIndustry(opt?.value ?? "")}
+                                            />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <span className="text-xs font-medium">Status</span>
+                                            <ReactSelect
+                                                name="isActive"
+                                                instanceId="filter-is-active"
+                                                options={[
+                                                    { value: "true", label: "Aktif" },
+                                                    { value: "false", label: "Nonaktif" },
+                                                ]}
+                                                placeholder="Pilih status"
+                                                isClearable
+                                                value={
+                                                    filterIsActive
+                                                        ? { value: filterIsActive, label: filterIsActive === "true" ? "Aktif" : "Nonaktif" }
+                                                        : null
+                                                }
+                                                onChange={(opt: any) => setFilterIsActive(opt?.value ?? "")}
+                                            />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <span className="text-xs font-medium">Negara</span>
+                                            <AsyncReactSelect
+                                                name="countryId"
+                                                instanceId="filter-country"
+                                                placeholder="Pilih negara"
+                                                isClearable
+                                                defaultOptions
+                                                value={filterCountry}
+                                                loadOptions={(inputValue) => fetchCountries(inputValue).then((opts) => opts)}
+                                                onChange={(opt: any) => {
+                                                    setFilterCountry(opt ?? null);
+                                                    setFilterProvince(null);
+                                                    setFilterCity(null);
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <span className="text-xs font-medium">Provinsi</span>
+                                            <AsyncReactSelect
+                                                key={filterCountry?.value ?? "no-country"}
+                                                name="provinceId"
+                                                instanceId="filter-province"
+                                                placeholder="Pilih provinsi"
+                                                isClearable
+                                                defaultOptions
+                                                value={filterProvince}
+                                                loadOptions={(inputValue) => fetchProvinces(inputValue).then((r) => r.options)}
+                                                onChange={(opt: any) => {
+                                                    setFilterProvince(opt ?? null);
+                                                    setFilterCity(null);
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <span className="text-xs font-medium">Kota</span>
+                                            <AsyncReactSelect
+                                                key={filterProvince?.value ?? "no-province"}
+                                                name="cityId"
+                                                instanceId="filter-city"
+                                                placeholder="Pilih kota"
+                                                isClearable
+                                                defaultOptions
+                                                value={filterCity}
+                                                loadOptions={(inputValue) =>
+                                                    fetchCities(inputValue, filterProvince ? Number(filterProvince.value) : undefined).then(
+                                                        (r) => r.options,
+                                                    )
+                                                }
+                                                onChange={(opt: any) => setFilterCity(opt ?? null)}
+                                            />
+                                        </div>
                                     </div>
                                     <div className="flex justify-end gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => {
-                                                setFilterJobType("");
-                                                applyFilters("");
-                                            }}
-                                        >
+                                        <Button variant="outline" size="sm" onClick={resetFilters}>
                                             <RefreshCcwIcon /> Reset
                                         </Button>
-                                        <Button size="sm" onClick={() => applyFilters(filterJobType)}>
+                                        <Button size="sm" onClick={applyFilters}>
                                             <FilterIcon /> Terapkan
                                         </Button>
                                     </div>
                                 </div>
                             </PopoverContent>
                         </Popover>
+
                         <Button variant="default" onClick={() => onOpen("job-management", {})}>
                             <PlusIcon className="h-4 w-4" />
                             Tambah
@@ -285,17 +527,89 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
                 </div>
             </div>
 
-            <DataTable columns={columns} data={jobs?.items || []} loading={isPending} error={error} />
-
-            {jobs?.pagination && jobs.pagination.totalPages > 0 && (
-                <div className="pt-2">
-                    <Pagination
-                        currentPage={Number(jobs.pagination.page)}
-                        totalPages={Number(jobs.pagination.totalPages)}
-                        onPageChange={handlePageChange}
-                    />
+            {/* Two-panel layout */}
+            <div className="grid min-h-0 flex-1 grid-cols-1 gap-4 md:grid-cols-[2fr_3fr]" style={{ height: "calc(100vh - 220px)" }}>
+                {/* Left panel — job list */}
+                <div className="flex flex-col gap-2 overflow-y-auto rounded-lg border p-2">
+                    {isPending ? (
+                        <div className="flex flex-1 items-center justify-center py-16">
+                            <Loader2Icon className="text-muted-foreground h-6 w-6 animate-spin" />
+                        </div>
+                    ) : error ? (
+                        <div className="text-destructive py-16 text-center text-sm">{error}</div>
+                    ) : !jobs?.items?.length ? (
+                        <div className="text-muted-foreground py-16 text-center text-sm">Tidak ada lowongan ditemukan</div>
+                    ) : (
+                        <>
+                            {jobs.items.map((job) => (
+                                <JobCard
+                                    key={job.id}
+                                    job={job}
+                                    selected={selectedJob?.id === job.id}
+                                    onClick={() => {
+                                        setSelectedJob(job);
+                                        setMobileDetailOpen(true);
+                                    }}
+                                />
+                            ))}
+                            {jobs.pagination && jobs.pagination.totalPages > 1 && (
+                                <div className="border-t pt-2">
+                                    <Pagination
+                                        currentPage={Number(jobs.pagination.page)}
+                                        totalPages={Number(jobs.pagination.totalPages)}
+                                        onPageChange={handlePageChange}
+                                    />
+                                </div>
+                            )}
+                        </>
+                    )}
                 </div>
-            )}
+
+                {/* Right panel — job detail (desktop only) */}
+                <div className="hidden overflow-y-auto rounded-lg border md:block">
+                    {selectedJob ? (
+                        <JobDetail
+                            job={selectedJob}
+                            currentUserId={currentUser?.id}
+                            onEdit={(job) => onOpen("job-management", { job })}
+                            onDelete={handleDelete}
+                            confirmDeleteId={confirmDeleteId}
+                            setConfirmDeleteId={setConfirmDeleteId}
+                            deletingId={deletingId}
+                        />
+                    ) : (
+                        <div className="text-muted-foreground flex h-full items-center justify-center text-sm">
+                            Pilih lowongan untuk melihat detail
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* Mobile detail dialog */}
+            <Dialog open={mobileDetailOpen} onOpenChange={setMobileDetailOpen}>
+                <DialogContent className="max-h-[85vh] w-full overflow-y-auto sm:max-w-4xl" onOpenAutoFocus={(e) => e.preventDefault()}>
+                    <DialogHeader>
+                        <DialogTitle className="sr-only">{selectedJob?.title}</DialogTitle>
+                    </DialogHeader>
+                    {selectedJob && (
+                        <JobDetail
+                            job={selectedJob}
+                            currentUserId={currentUser?.id}
+                            onEdit={(job) => {
+                                setMobileDetailOpen(false);
+                                onOpen("job-management", { job });
+                            }}
+                            onDelete={async (id) => {
+                                await handleDelete(id);
+                                setMobileDetailOpen(false);
+                            }}
+                            confirmDeleteId={confirmDeleteId}
+                            setConfirmDeleteId={setConfirmDeleteId}
+                            deletingId={deletingId}
+                        />
+                    )}
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

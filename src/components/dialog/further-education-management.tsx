@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { updateOwnProfile } from "@/services/profile.client";
 import { useRouter } from "next/navigation";
 import { useDialog } from "@/hooks/use-dialog";
-import { degreeOptions, entryYearFurtherEducationOptions, graduationYearFurtherEducationOptions } from "@/lib/option";
+import { degreeOptions, entryYearFurtherEducationOptions, fieldOfStudyOptions, graduationYearFurtherEducationOptions } from "@/lib/option";
 
 const gradYearWithCurrent = [{ value: null as number | null, label: "Belum lulus" }, ...graduationYearFurtherEducationOptions];
 
@@ -127,11 +127,19 @@ function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManag
                     <FormField
                         control={form.control}
                         name="fieldOfStudy"
-                        render={({ field }) => (
+                        render={({ field, fieldState }) => (
                             <FormItem>
                                 <FormLabel>Bidang Studi</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="Masukkan bidang studi" {...field} />
+                                    <ReactSelect
+                                        {...field}
+                                        options={fieldOfStudyOptions}
+                                        placeholder="Pilih bidang studi"
+                                        instanceId="field-of-study-select"
+                                        value={fieldOfStudyOptions.find((opt) => opt.value === field.value) ?? null}
+                                        onChange={(opt: any) => field.onChange(opt?.value ?? null)}
+                                        fieldState={fieldState}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

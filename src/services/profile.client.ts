@@ -10,7 +10,8 @@ export type UpdateProfilePayload = {
         provinceName?: string | null;
         countryId?: number | null;
         countryName?: string;
-        linkedInUrl?: string;
+        linkedInUrl?: string | null;
+        instagramUrl?: string | null;
         graduationYear?: number;
         status?: EAlumniStatus | null;
         furtherEducations?: FurtherEducation[] | null;
