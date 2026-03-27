@@ -9,13 +9,14 @@ import { Badge } from "@/components/ui/badge";
 import { DataTable } from "@/components/ui/data-table";
 import { Pagination } from "@/components/ui/pagination";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { FilterIcon, Loader2Icon, PlusIcon, RefreshCcwIcon, SquarePenIcon, Trash2Icon } from "lucide-react";
+import { EyeIcon, FilterIcon, Loader2Icon, PlusIcon, RefreshCcwIcon, SquarePenIcon, Trash2Icon } from "lucide-react";
 import SearchInput from "@/components/input/search-input";
 import ReactSelect from "@/components/ui/react-select";
 import { jobTypeOptions } from "@/lib/option";
 import { JobPosting, JOB_TYPE_LABELS, SALARY_RANGE_LABELS } from "@/types/job";
 import { deleteJob } from "@/services/jobs.client";
 import { useDialog } from "@/hooks/use-dialog";
+import { useAuthStore } from "@/stores/auth.store";
 import { toast } from "sonner";
 
 interface JobsClientProps {
@@ -31,6 +32,7 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const { onOpen } = useDialog();
+    const currentUser = useAuthStore((s) => s.user);
     const [isPending, startTransition] = useTransition();
     const [search, setSearch] = useState(searchParams.get("search") || "");
     const [debouncedSearch] = useDebounce(search, 500);
@@ -173,6 +175,7 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
                 header: "Aksi",
                 cell: ({ row }) => {
                     const id = row.original.id;
+                    const isOwner = currentUser?.id === row.original.user.id;
                     if (confirmDeleteId === id) {
                         return (
                             <div className="flex gap-2">
@@ -187,18 +190,25 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
                     }
                     return (
                         <div className="flex gap-2">
-                            <Button variant="outline" size="sm" onClick={() => onOpen("job-management", { job: row.original })}>
-                                <SquarePenIcon className="h-4 w-4" />
+                            <Button variant="outline" size="sm" onClick={() => onOpen("job-detail", { job: row.original })}>
+                                <EyeIcon className="h-4 w-4" />
                             </Button>
-                            <Button variant="destructive" size="sm" onClick={() => setConfirmDeleteId(id)}>
-                                <Trash2Icon className="h-4 w-4" />
-                            </Button>
+                            {isOwner && (
+                                <>
+                                    <Button variant="outline" size="sm" onClick={() => onOpen("job-management", { job: row.original })}>
+                                        <SquarePenIcon className="h-4 w-4" />
+                                    </Button>
+                                    <Button variant="destructive" size="sm" onClick={() => setConfirmDeleteId(id)}>
+                                        <Trash2Icon className="h-4 w-4" />
+                                    </Button>
+                                </>
+                            )}
                         </div>
                     );
                 },
             },
         ],
-        [confirmDeleteId, deletingId, onOpen, handleDelete],
+        [confirmDeleteId, deletingId, onOpen, handleDelete, currentUser?.id],
     );
 
     return (
@@ -206,7 +216,7 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <h1 className="text-2xl font-bold tracking-tight">Lowongan Kerja</h1>
 
-                <div className="flex w-xl items-center gap-4">
+                <div className="flex w-md items-center gap-4">
                     <SearchInput variant="dashboard" placeholder="Cari lowongan pekerjaan" value={search} onChange={(value) => setSearch(value)} />
 
                     <div className="flex justify-end gap-2">

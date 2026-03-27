@@ -234,7 +234,7 @@ export default function BusinessClient({ businesses, error }: BusinessClientProp
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <h1 className="text-2xl font-bold tracking-tight">Direktori Bisnis</h1>
 
-                <div className="flex w-xl items-center gap-4">
+                <div className="flex w-md items-center gap-4">
                     <SearchInput variant="dashboard" placeholder="Cari bisnis" value={search} onChange={(value) => setSearch(value)} />
 
                     <div className="flex justify-end gap-2">
