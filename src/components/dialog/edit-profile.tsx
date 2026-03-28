@@ -198,7 +198,6 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
             toast.success("Berhasil memperbarui profil");
             onSuccess();
         } catch (error: any) {
-            console.log("error", error);
             const message = error?.response?.data?.message;
             toast.error(message);
         }

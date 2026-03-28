@@ -13,6 +13,9 @@ export default async function ProfileBusinessPage(props: { searchParams?: Promis
     const params = new URLSearchParams();
     if (user?.id) params.append("userId", user.id);
     if (searchParams["page"]) params.append("page", String(searchParams["page"]));
+    if (searchParams["search"]) params.append("search", String(searchParams["search"]));
+    if (searchParams["category"]) params.append("category", String(searchParams["category"]));
+    if (searchParams["isActive"]) params.append("isActive", String(searchParams["isActive"]));
 
     let businesses = null;
     let error = null;

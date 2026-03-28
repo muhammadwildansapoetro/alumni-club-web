@@ -18,7 +18,7 @@ export const INDUSTRY_LABELS: Record<IndustryField, string> = {
     GOVERNMENT: "Pemerintahan", OTHER: "Lainnya", HORTICULTURE: "Hortikultura",
     PLANTATION: "Perkebunan", LIVESTOCK: "Peternakan", FISHERIES: "Perikanan",
     FOOD_PROCESSING: "Pengolahan Pangan", AGRI_CHEMICAL: "Agrokimia",
-    AGRI_MACHINERY: "Alsintan", IRRIGATION: "Irigasi", MANUFACTURING: "Manufaktur",
+    AGRI_MACHINERY: "Alat dan Mesin Pertanian", IRRIGATION: "Irigasi", MANUFACTURING: "Manufaktur",
     CONSTRUCTION: "Konstruksi", MINING: "Pertambangan", ENERGY: "Energi",
     TELECOMMUNICATION: "Telekomunikasi", TRANSPORTATION: "Transportasi",
     LOGISTICS: "Logistik", HEALTHCARE: "Kesehatan", HOSPITALITY: "Perhotelan",

@@ -172,7 +172,6 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
             router.refresh();
             onSuccess();
         } catch (error: any) {
-            console.log("error", error);
             toast.error(error?.response?.data?.message ?? "Terjadi kesalahan");
         }
     };
@@ -302,63 +301,65 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="provinceId"
-                        render={({ field, fieldState }) => (
-                            <FormItem>
-                                <FormLabel>Provinsi</FormLabel>
-                                <FormControl>
-                                    <AsyncReactSelect
-                                        name="provinceId"
-                                        instanceId="province-select"
-                                        isClearable
-                                        defaultOptions={true}
-                                        isDisabled={!isIndonesia}
-                                        placeholder="Pilih provinsi"
-                                        loadOptions={loadProvinceOptions}
-                                        value={provinceOptions.find((opt) => opt.value === String(field.value ?? "")) ?? null}
-                                        onChange={(opt: any) => {
-                                            field.onChange(opt ? Number(opt.value) : null);
-                                            form.setValue("provinceName", opt?.label ?? null);
-                                            form.setValue("cityId", null);
-                                            form.setValue("cityName", null);
-                                        }}
-                                        fieldState={fieldState}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="cityId"
-                        render={({ field, fieldState }) => (
-                            <FormItem>
-                                <FormLabel>Kota</FormLabel>
-                                <FormControl>
-                                    <AsyncReactSelect
-                                        key={`${watchedCountryId}-${watchedProvinceId ?? "no-province"}`}
-                                        name="cityId"
-                                        instanceId="city-select"
-                                        isClearable
-                                        defaultOptions={true}
-                                        isDisabled={!isIndonesia || !watchedProvinceId}
-                                        placeholder="Pilih kota"
-                                        loadOptions={loadCityOptions}
-                                        value={cityOptions.find((opt) => opt.value === String(field.value ?? "")) ?? null}
-                                        onChange={(opt: any) => {
-                                            field.onChange(opt ? Number(opt.value) : null);
-                                            form.setValue("cityName", opt?.label ?? null);
-                                        }}
-                                        fieldState={fieldState}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                    {isIndonesia && (
+                        <>
+                            <FormField
+                                control={form.control}
+                                name="provinceId"
+                                render={({ field, fieldState }) => (
+                                    <FormItem>
+                                        <FormLabel>Provinsi</FormLabel>
+                                        <FormControl>
+                                            <AsyncReactSelect
+                                                name="provinceId"
+                                                instanceId="province-select"
+                                                isClearable
+                                                defaultOptions={true}
+                                                placeholder="Pilih provinsi"
+                                                loadOptions={loadProvinceOptions}
+                                                value={provinceOptions.find((opt) => opt.value === String(field.value ?? "")) ?? null}
+                                                onChange={(opt: any) => {
+                                                    field.onChange(opt ? Number(opt.value) : null);
+                                                    form.setValue("provinceName", opt?.label ?? null);
+                                                    form.setValue("cityId", null);
+                                                    form.setValue("cityName", null);
+                                                }}
+                                                fieldState={fieldState}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={form.control}
+                                name="cityId"
+                                render={({ field, fieldState }) => (
+                                    <FormItem>
+                                        <FormLabel>Kota</FormLabel>
+                                        <FormControl>
+                                            <AsyncReactSelect
+                                                key={`city-${watchedProvinceId ?? "no-province"}`}
+                                                name="cityId"
+                                                instanceId="city-select"
+                                                isClearable
+                                                defaultOptions={true}
+                                                placeholder="Pilih kota"
+                                                loadOptions={loadCityOptions}
+                                                value={cityOptions.find((opt) => opt.value === String(field.value ?? "")) ?? null}
+                                                onChange={(opt: any) => {
+                                                    field.onChange(opt ? Number(opt.value) : null);
+                                                    form.setValue("cityName", opt?.label ?? null);
+                                                }}
+                                                fieldState={fieldState}
+                                            />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                        </>
+                    )}
                     <FormField
                         control={form.control}
                         name="salaryRange"

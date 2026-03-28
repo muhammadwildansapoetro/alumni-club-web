@@ -43,6 +43,13 @@ export default function AlumniDetailDialog() {
                     )}
 
                     <div className="space-y-3">
+                        {profile?.npm && (
+                            <div>
+                                <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">NPM</p>
+                                <p>{profile.npm}</p>
+                            </div>
+                        )}
+
                         {profile?.graduationYear && (
                             <div>
                                 <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Tahun Lulus</p>

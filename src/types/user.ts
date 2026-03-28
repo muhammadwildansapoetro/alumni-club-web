@@ -1,6 +1,7 @@
 export interface AlumniProfile {
     id: string;
     fullName: string | null;
+    npm: string | null;
     department: "TEP" | "TPN" | "TIN";
     entryYear: number;
     graduationYear: number | null;

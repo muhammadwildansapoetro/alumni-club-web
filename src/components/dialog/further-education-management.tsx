@@ -100,8 +100,6 @@ function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManag
             router.refresh();
             onSuccess();
         } catch (error: any) {
-            console.log("error", error);
-
             toast.error(error?.response?.data?.message ?? "Terjadi kesalahan");
         }
     };

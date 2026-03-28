@@ -13,6 +13,7 @@ import { FilterIcon, GlobeIcon, Loader2Icon, MapPinIcon, PlusIcon, RefreshCcwIco
 import SearchInput from "@/components/input/search-input";
 import ReactSelect from "@/components/ui/react-select";
 import { Input } from "@/components/ui/input";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Business } from "@/types/business";
 import { INDUSTRY_LABELS } from "@/types/job";
 import { TDepartment } from "@/types/user";
@@ -64,23 +65,17 @@ function BusinessCardSkeleton() {
 function BusinessCard({
     business,
     currentUserId,
-    confirmDeleteId,
     deletingId,
     onView,
     onEdit,
-    onDeleteConfirm,
-    onDeleteCancel,
     onDelete,
 }: {
     business: Business;
     currentUserId: string | undefined;
-    confirmDeleteId: string | null;
     deletingId: string | null;
     onView: () => void;
     onEdit: () => void;
-    onDeleteConfirm: () => void;
-    onDeleteCancel: () => void;
-    onDelete: () => void;
+    onDelete: (id: string) => void;
 }) {
     const isOwner = currentUserId === business.user.id;
     const { profile, name, email } = business.user;
@@ -96,96 +91,125 @@ function BusinessCard({
         return countryName;
     })();
 
+    const [confirmOpen, setConfirmOpen] = useState(false);
+
     return (
-        <div className="bg-card flex cursor-pointer flex-col space-y-3 rounded-lg border p-5 transition-shadow hover:shadow-md" onClick={onView}>
-            <div className="flex-1 space-y-3">
-                <div className="flex items-start justify-between gap-2">
-                    <h3 className="line-clamp-2 text-base leading-snug font-semibold">{business.businessName}</h3>
-                    {business.isActive ? (
-                        <Badge variant="default" size="xs" className="shrink-0">
-                            Aktif
-                        </Badge>
-                    ) : (
-                        <Badge variant="destructive" size="xs" className="shrink-0">
-                            Nonaktif
-                        </Badge>
-                    )}
-                </div>
-
-                {business.industry && (
-                    <div className="flex items-center gap-1.5 text-xs">
-                        <TagIcon className="h-3.5 w-3.5 shrink-0" />
-                        <span>{INDUSTRY_LABELS[business.industry]}</span>
-                    </div>
-                )}
-
-                {locationLabel && (
-                    <div className="flex items-center gap-1.5 text-xs">
-                        <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
-                        <span className="line-clamp-1">{locationLabel}</span>
-                    </div>
-                )}
-
-                {business.website && (
-                    <div className="flex items-center gap-1.5 text-xs">
-                        <GlobeIcon className="h-3.5 w-3.5 shrink-0" />
-                        <a href={business.website} target="_blank" rel="noopener noreferrer" className="text-primary line-clamp-1 hover:underline">
-                            {business.website}
-                        </a>
-                    </div>
-                )}
-
-                {business.instagramUrl && (
-                    <div className="flex items-center gap-1.5 text-xs">
-                        <Image src="/logo/instagram.svg" alt="Instagram Logo" width={14} height={14} className="shrink-0" />
-                        <a
-                            href={business.instagramUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-primary line-clamp-1 hover:underline"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            {business.instagramUrl}
-                        </a>
-                    </div>
-                )}
-            </div>
-
-            <div className="flex items-center justify-between gap-2 border-t pt-2" onClick={(e) => e.stopPropagation()}>
-                <div className="min-w-0">
-                    <p className="truncate text-xs font-medium">{ownerName}</p>
-                    {profile?.department && (
-                        <Badge variant={profile.department as any} size="xs" className="mt-0.5">
-                            {TDepartment[profile.department as keyof typeof TDepartment]} - {profile.entryYear}
-                        </Badge>
-                    )}
-                </div>
-
-                {confirmDeleteId === business.id ? (
-                    <div className="flex shrink-0 gap-2">
-                        <Button variant="destructive" size="sm" disabled={deletingId === business.id} onClick={onDelete}>
-                            {deletingId === business.id ? <Loader2Icon className="h-4 w-4 animate-spin" /> : "Yakin?"}
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={onDeleteCancel}>
-                            Batal
-                        </Button>
-                    </div>
-                ) : (
-                    <div className="flex shrink-0 gap-2">
-                        {isOwner && (
-                            <>
-                                <Button variant="outline" size="sm" onClick={onEdit}>
-                                    <SquarePenIcon className="h-4 w-4" />
-                                </Button>
-                                <Button variant="destructive" size="sm" onClick={onDeleteConfirm}>
-                                    <Trash2Icon className="h-4 w-4" />
-                                </Button>
-                            </>
+        <>
+            <div className="bg-card flex cursor-pointer flex-col space-y-3 rounded-lg border p-5 transition-shadow hover:shadow-md" onClick={onView}>
+                <div className="flex-1 space-y-3">
+                    <div className="flex items-start justify-between gap-2">
+                        <h3 className="line-clamp-2 text-base leading-snug font-semibold">{business.businessName}</h3>
+                        {business.isActive ? (
+                            <Badge variant="default" size="xs" className="shrink-0">
+                                Aktif
+                            </Badge>
+                        ) : (
+                            <Badge variant="destructive" size="xs" className="shrink-0">
+                                Nonaktif
+                            </Badge>
                         )}
                     </div>
-                )}
+
+                    {business.industry && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                            <TagIcon className="h-3.5 w-3.5 shrink-0" />
+                            <span>{INDUSTRY_LABELS[business.industry]}</span>
+                        </div>
+                    )}
+
+                    {locationLabel && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                            <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
+                            <span className="line-clamp-1">{locationLabel}</span>
+                        </div>
+                    )}
+
+                    {business.website && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                            <GlobeIcon className="h-3.5 w-3.5 shrink-0" />
+                            <a
+                                href={business.website}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary line-clamp-1 hover:underline"
+                            >
+                                {business.website}
+                            </a>
+                        </div>
+                    )}
+
+                    {business.instagramUrl && (
+                        <div className="flex items-center gap-1.5 text-xs">
+                            <Image src="/logo/instagram.svg" alt="Instagram Logo" width={14} height={14} className="shrink-0" />
+                            <a
+                                href={business.instagramUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="text-primary line-clamp-1 hover:underline"
+                                onClick={(e) => e.stopPropagation()}
+                            >
+                                {business.instagramUrl}
+                            </a>
+                        </div>
+                    )}
+                </div>
+
+                <div className="flex items-center justify-between gap-2 border-t pt-2" onClick={(e) => e.stopPropagation()}>
+                    <div className="min-w-0">
+                        <p className="truncate text-xs font-medium">{ownerName}</p>
+                        {profile?.department && (
+                            <Badge variant={profile.department as any} size="xs" className="mt-0.5">
+                                {TDepartment[profile.department as keyof typeof TDepartment]} - {profile.entryYear}
+                            </Badge>
+                        )}
+                    </div>
+
+                    {isOwner && (
+                        <div className="flex shrink-0 gap-2">
+                            <Button variant="outline" size="sm" onClick={onEdit}>
+                                <SquarePenIcon className="h-4 w-4" />
+                            </Button>
+                            <Button variant="outline_destructive" size="sm" onClick={() => setConfirmOpen(true)}>
+                                <Trash2Icon className="h-4 w-4" />
+                            </Button>
+                        </div>
+                    )}
+                </div>
             </div>
-        </div>
+
+            <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                <DialogContent className="sm:max-w-xl">
+                    <DialogHeader>
+                        <DialogTitle>Hapus Bisnis</DialogTitle>
+                        <DialogDescription>
+                            Apakah kamu yakin ingin menghapus bisnis <span className="font-medium">&ldquo;{business.businessName}&rdquo;</span>?
+                            Tindakan ini tidak dapat dibatalkan.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+                            Batal
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            disabled={deletingId === business.id}
+                            onClick={() => {
+                                onDelete(business.id);
+                                setConfirmOpen(false);
+                            }}
+                        >
+                            {deletingId === business.id ? (
+                                <Loader2Icon className="h-4 w-4 animate-spin" />
+                            ) : (
+                                <>
+                                    <Trash2Icon className="h-4 w-4" /> Hapus
+                                </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
+        </>
     );
 }
 
@@ -204,7 +228,6 @@ export default function BusinessClient({ businesses, error }: BusinessClientProp
     const activeCategory = searchParams.get("category") || "";
     const activeIsActive = searchParams.get("isActive") || "";
     const activeFilterCount = [activeCategory, activeIsActive].filter(Boolean).length;
-    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const handleDelete = useCallback(
@@ -218,7 +241,6 @@ export default function BusinessClient({ businesses, error }: BusinessClientProp
                 toast.error(err?.response?.data?.message ?? "Gagal menghapus bisnis");
             } finally {
                 setDeletingId(null);
-                setConfirmDeleteId(null);
             }
         },
         [router],
@@ -367,13 +389,10 @@ export default function BusinessClient({ businesses, error }: BusinessClientProp
                             key={business.id}
                             business={business}
                             currentUserId={currentUser?.id}
-                            confirmDeleteId={confirmDeleteId}
                             deletingId={deletingId}
                             onView={() => onOpen("business-detail", { business })}
                             onEdit={() => onOpen("business-management", { business })}
-                            onDeleteConfirm={() => setConfirmDeleteId(business.id)}
-                            onDeleteCancel={() => setConfirmDeleteId(null)}
-                            onDelete={() => handleDelete(business.id)}
+                            onDelete={handleDelete}
                         />
                     ))}
                 </div>
