@@ -22,8 +22,8 @@ import { currentYear, entryYearOptions, graduationYearOptions } from "@/lib/opti
 
 const profilFormSchema = z
     .object({
-        fullname: z.string().min(1, "Nama lengkap harus diisi").max(100, "Nama terlalu panjang"),
-        npm: z.string().min(1, "NPM harus diisi").max(12, "NPM maksimal 12 digit").regex(/^\d+$/, "NPM hanya boleh berisi angka"),
+        fullname: z.string().min(1, "Nama lengkap wajib diisi").max(100, "Nama terlalu panjang"),
+        npm: z.string().min(1, "NPM wajib diisi").max(12, "NPM maksimal 12 digit").regex(/^\d+$/, "NPM hanya boleh berisi angka"),
         entryYear: z
             .number()
             .min(1983, "Tahun lulus tidak valid")
@@ -40,7 +40,9 @@ const profilFormSchema = z
         furtherEducations: z
             .array(
                 z.object({
-                    degree: z.enum(["MAGISTER", "DOCTOR"]),
+                    degree: z.enum(["MAGISTER", "DOCTOR"], {
+                        error: "Gelar wajib diisi",
+                    }),
                     entryYear: z
                         .number()
                         .min(1983)
@@ -51,8 +53,8 @@ const profilFormSchema = z
                         .max(currentYear + 10)
                         .nullable()
                         .optional(),
-                    universityName: z.string().min(1, "Nama universitas harus diisi").max(200),
-                    fieldOfStudy: z.string().min(1, "Bidang studi harus diisi").max(200),
+                    universityName: z.string().min(1, "Nama universitas wajib diisi").max(200),
+                    fieldOfStudy: z.string().min(1, "Bidang studi wajib diisi").max(200),
                 }),
             )
             .nullable()
@@ -60,12 +62,12 @@ const profilFormSchema = z
         workExperiences: z
             .array(
                 z.object({
-                    industry: z.string().min(1, "Industri harus dipilih"),
-                    jobLevel: z.string().min(1, "Level jabatan harus dipilih"),
-                    employmentType: z.string().min(1, "Tipe pekerjaan harus dipilih"),
+                    industry: z.string().min(1, "Industri wajib dipilih"),
+                    jobLevel: z.string().min(1, "Level jabatan wajib dipilih"),
+                    employmentType: z.string().min(1, "Tipe pekerjaan wajib dipilih"),
                     incomeRange: z.string().optional().nullable(),
-                    jobTitle: z.string().min(1, "Judul pekerjaan harus diisi").max(100),
-                    companyName: z.string().min(1, "Nama perusahaan harus diisi").max(100),
+                    jobTitle: z.string().min(1, "Judul pekerjaan wajib diisi").max(100),
+                    companyName: z.string().min(1, "Nama perusahaan wajib diisi").max(100),
                     startYear: z
                         .number()
                         .min(1983)
@@ -94,7 +96,7 @@ export default function EditProfileDialog() {
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-h-[90vh] max-w-5xl overflow-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
+            <DialogContent className="max-h-[90vh] max-w-5xl overflow-auto sm:overflow-visible" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
                     <DialogTitle>Ubah Profil</DialogTitle>
                     <DialogDescription></DialogDescription>
@@ -196,6 +198,7 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
             toast.success("Berhasil memperbarui profil");
             onSuccess();
         } catch (error: any) {
+            console.log("error", error);
             const message = error?.response?.data?.message;
             toast.error(message);
         }

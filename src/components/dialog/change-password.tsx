@@ -20,7 +20,7 @@ const PasswordInput = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTM
             <Input type={showPassword ? "text" : "password"} className="pr-10" ref={ref} {...props} />
             <button
                 type="button"
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+                className="text-muted-foreground hover:text-foreground absolute top-1/2 right-3 -translate-y-1/2"
                 onClick={() => setShowPassword(!showPassword)}
                 tabIndex={-1}
             >
@@ -33,14 +33,14 @@ PasswordInput.displayName = "PasswordInput";
 
 const changePasswordSchema = z
     .object({
-        currentPassword: z.string().min(1, "Kata sandi saat ini harus diisi"),
+        currentPassword: z.string().min(1, "Kata sandi saat ini wajib diisi"),
         newPassword: z
             .string()
             .min(8, "Kata sandi minimal 8 karakter")
-            .regex(/[A-Z]/, "Harus mengandung huruf kapital")
-            .regex(/[a-z]/, "Harus mengandung huruf kecil")
-            .regex(/[0-9]/, "Harus mengandung angka"),
-        confirmPassword: z.string().min(1, "Konfirmasi kata sandi harus diisi"),
+            .regex(/[A-Z]/, "Wajib mengandung huruf kapital")
+            .regex(/[a-z]/, "Wajib mengandung huruf kecil")
+            .regex(/[0-9]/, "Wajib mengandung angka"),
+        confirmPassword: z.string().min(1, "Konfirmasi kata sandi wajib diisi"),
     })
     .refine((data) => data.newPassword === data.confirmPassword, {
         message: "Konfirmasi kata sandi tidak cocok",

@@ -28,15 +28,18 @@ const salaryRangeOptions = (Object.keys(SALARY_RANGE_LABELS) as SalaryRange[]).m
 }));
 
 const jobSchema = z.object({
-    title: z.string().min(1, "Judul lowongan harus diisi").max(200, "Judul maksimal 200 karakter"),
+    title: z.string().min(1, "Judul lowongan wajib diisi").max(200, "Judul maksimal 200 karakter"),
     description: z.string().min(20, "Deskripsi minimal 20 karakter").max(2000, "Deskripsi maksimal 2000 karakter"),
-    company: z.string().max(100, "Nama perusahaan maksimal 100 karakter").optional(),
-    industry: z.string().optional(),
-    jobType: z.string().optional(),
+    company: z.string().min(1, "Nama perusahaan wajib diisi").max(100, "Nama perusahaan maksimal 100 karakter"),
+    industry: z.string().min(1, "Industri wajib diisi"),
+    jobType: z.string().min(1, "Tipe pekerjaan wajib diisi"),
     salaryRange: z.string().optional(),
     externalUrl: z.union([z.url({ error: "URL tidak valid" }), z.literal(""), z.null()]).optional(),
     isActive: z.boolean().optional(),
-    countryId: z.number().nullable().optional(),
+    countryId: z
+        .number({ error: "Negara wajib diisi" })
+        .nullable()
+        .refine((v) => v !== null, { message: "Negara wajib diisi" }),
     countryName: z.string().nullable().optional(),
     provinceId: z.number().nullable().optional(),
     provinceName: z.string().nullable().optional(),
@@ -169,6 +172,7 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
             router.refresh();
             onSuccess();
         } catch (error: any) {
+            console.log("error", error);
             toast.error(error?.response?.data?.message ?? "Terjadi kesalahan");
         }
     };
@@ -176,12 +180,12 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
     return (
         <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <div className="grid items-start gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <div className="grid items-start gap-4 sm:grid-cols-2">
                     <FormField
                         control={form.control}
                         name="title"
                         render={({ field }) => (
-                            <FormItem className="sm:col-span-2 xl:col-span-4">
+                            <FormItem className="sm:col-span-2">
                                 <FormLabel aria-required>Judul Lowongan</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Masukkan judul lowongan" {...field} />
@@ -194,7 +198,7 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
                         control={form.control}
                         name="description"
                         render={({ field }) => (
-                            <FormItem className="sm:col-span-2 xl:col-span-4">
+                            <FormItem className="sm:col-span-2">
                                 <FormLabel aria-required>Deskripsi</FormLabel>
                                 <FormControl>
                                     <textarea
@@ -213,7 +217,7 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
                         name="company"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Nama Perusahaan</FormLabel>
+                                <FormLabel aria-required>Nama Perusahaan</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Masukkan nama perusahaan" {...field} value={field.value ?? ""} />
                                 </FormControl>
@@ -226,7 +230,7 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
                         name="industry"
                         render={({ field, fieldState }) => (
                             <FormItem>
-                                <FormLabel>Industri</FormLabel>
+                                <FormLabel aria-required>Industri</FormLabel>
                                 <FormControl>
                                     <ReactSelect
                                         {...field}
@@ -248,7 +252,7 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
                         name="jobType"
                         render={({ field, fieldState }) => (
                             <FormItem>
-                                <FormLabel>Tipe Pekerjaan</FormLabel>
+                                <FormLabel aria-required>Tipe Pekerjaan</FormLabel>
                                 <FormControl>
                                     <ReactSelect
                                         {...field}
@@ -267,45 +271,10 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
                     />
                     <FormField
                         control={form.control}
-                        name="salaryRange"
-                        render={({ field, fieldState }) => (
-                            <FormItem>
-                                <FormLabel>Rentang Gaji</FormLabel>
-                                <FormControl>
-                                    <ReactSelect
-                                        {...field}
-                                        isClearable
-                                        options={salaryRangeOptions}
-                                        placeholder="Pilih rentang gaji"
-                                        instanceId="salary-range-select"
-                                        value={salaryRangeOptions.find((opt) => opt.value === field.value) ?? null}
-                                        onChange={(opt: any) => field.onChange(opt?.value ?? "")}
-                                        fieldState={fieldState}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
-                        name="externalUrl"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Situs Web</FormLabel>
-                                <FormControl>
-                                    <Input placeholder="https://..." {...field} value={field.value ?? ""} />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                    <FormField
-                        control={form.control}
                         name="countryId"
                         render={({ field, fieldState }) => (
                             <FormItem>
-                                <FormLabel>Negara</FormLabel>
+                                <FormLabel aria-required>Negara</FormLabel>
                                 <FormControl>
                                     <AsyncReactSelect
                                         name="countryId"
@@ -385,6 +354,41 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
                                         }}
                                         fieldState={fieldState}
                                     />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="salaryRange"
+                        render={({ field, fieldState }) => (
+                            <FormItem>
+                                <FormLabel>Rentang Gaji</FormLabel>
+                                <FormControl>
+                                    <ReactSelect
+                                        {...field}
+                                        isClearable
+                                        options={salaryRangeOptions}
+                                        placeholder="Pilih rentang gaji"
+                                        instanceId="salary-range-select"
+                                        value={salaryRangeOptions.find((opt) => opt.value === field.value) ?? null}
+                                        onChange={(opt: any) => field.onChange(opt?.value ?? "")}
+                                        fieldState={fieldState}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="externalUrl"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Situs Web</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="https://..." {...field} value={field.value ?? ""} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>

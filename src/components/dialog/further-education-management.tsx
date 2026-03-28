@@ -20,10 +20,10 @@ const gradYearWithCurrent = [{ value: null as number | null, label: "Belum lulus
 
 const addFurtherEducationSchema = z
     .object({
-        universityName: z.string().min(1, "Nama universitas harus diisi").max(200),
-        fieldOfStudy: z.string().min(1, "Bidang studi harus diisi").max(200),
-        degree: z.string().min(1, "Gelar harus dipilih"),
-        entryYear: z.number({ error: "Tahun masuk harus diisi" }),
+        universityName: z.string().min(1, "Nama universitas wajib diisi").max(200),
+        fieldOfStudy: z.string().min(1, "Bidang studi wajib diisi").max(200),
+        degree: z.string().min(1, "Gelar wajib dipilih"),
+        entryYear: z.number({ error: "Tahun masuk wajib diisi" }),
         graduationYear: z.number().nullable().optional(),
     })
     .superRefine((data, ctx) => {
@@ -66,7 +66,7 @@ function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManag
         defaultValues: {
             universityName: editItem?.universityName ?? "",
             fieldOfStudy: editItem?.fieldOfStudy ?? "",
-            degree: editItem?.degree ?? undefined,
+            degree: editItem?.degree ?? "",
             entryYear: editItem?.entryYear ?? undefined,
             graduationYear: editItem?.graduationYear ?? null,
         },
@@ -89,10 +89,7 @@ function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManag
                 graduationYear: values.graduationYear ?? null,
             };
 
-            const updated =
-                editIndex !== undefined
-                    ? existing.map((item, i) => (i === editIndex ? newItem : item))
-                    : [...existing, newItem];
+            const updated = editIndex !== undefined ? existing.map((item, i) => (i === editIndex ? newItem : item)) : [...existing, newItem];
 
             await updateOwnProfile({
                 profile: { furtherEducations: updated },
@@ -103,6 +100,8 @@ function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManag
             router.refresh();
             onSuccess();
         } catch (error: any) {
+            console.log("error", error);
+
             toast.error(error?.response?.data?.message ?? "Terjadi kesalahan");
         }
     };
@@ -161,7 +160,7 @@ function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManag
                                         placeholder="Pilih gelar"
                                         instanceId="degree-select"
                                         value={degreeOptions.find((opt) => opt.value === field.value) ?? null}
-                                        onChange={(opt: any) => field.onChange(opt?.value ?? null)}
+                                        onChange={(opt: any) => field.onChange(opt?.value ?? "")}
                                         fieldState={fieldState}
                                     />
                                 </FormControl>

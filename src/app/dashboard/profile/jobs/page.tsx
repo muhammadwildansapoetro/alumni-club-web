@@ -13,7 +13,7 @@ export default async function ProfileJobsPage(props: { searchParams?: Promise<{ 
     const params = new URLSearchParams();
     if (user?.id) params.append("userId", user.id);
 
-    const supportedParams = ["page", "limit", "search", "jobType", "isActive"];
+    const supportedParams = ["page", "limit", "search", "jobType", "industry", "isActive", "countryId", "provinceId", "cityId"];
     for (const key of supportedParams) {
         if (searchParams[key]) params.append(key, String(searchParams[key]));
     }

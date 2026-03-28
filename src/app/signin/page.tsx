@@ -34,7 +34,7 @@ const photoCards = [
 
 const loginSchema = z.object({
     email: z.email({ message: "Email tidak valid" }),
-    password: z.string().min(1, "Kata sandi harus diisi"),
+    password: z.string().min(1, "Kata sandi wajib diisi"),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;

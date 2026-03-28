@@ -2,40 +2,55 @@
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import { Card, CardAction, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { InfoGrid } from "@/components/ui/info-grid";
 import { InfoItem } from "@/components/ui/info-item";
 import { useDialog } from "@/hooks/use-dialog";
 import { TDegree, TDepartment, TEmploymentLevel, TEmploymentType, TFieldOfStudy, TIndustryField, User } from "@/types/user";
 import { updateOwnProfile } from "@/services/profile.client";
-import { BriefcaseBusinessIcon, ExternalLinkIcon, GraduationCapIcon, PlusIcon, SquarePenIcon, Trash2Icon, UserCircleIcon } from "lucide-react";
+import {
+    BriefcaseBusinessIcon,
+    ExternalLinkIcon,
+    GraduationCapIcon,
+    Loader2Icon,
+    PlusIcon,
+    SquarePenIcon,
+    Trash2Icon,
+    UserCircleIcon,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 import { toast } from "sonner";
+
+type DeleteTarget = { type: "work-experience" | "further-education"; index: number };
 
 export default function ProfileClient({ user }: { user: User }) {
     const { onOpen } = useDialog();
     const router = useRouter();
+    const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
+    const [isDeleting, setIsDeleting] = useState(false);
 
-    const handleDeleteWorkExperience = async (index: number) => {
+    const confirmDelete = async () => {
+        if (!deleteTarget) return;
+        setIsDeleting(true);
         try {
-            const updated = (user?.profile?.workExperiences ?? []).filter((_, i) => i !== index);
-            await updateOwnProfile({ profile: { workExperiences: updated } });
-            toast.success("Pengalaman kerja berhasil dihapus");
+            if (deleteTarget.type === "work-experience") {
+                const updated = (user?.profile?.workExperiences ?? []).filter((_, i) => i !== deleteTarget.index);
+                await updateOwnProfile({ profile: { workExperiences: updated } });
+                toast.success("Pengalaman kerja berhasil dihapus");
+            } else {
+                const updated = (user?.profile?.furtherEducations ?? []).filter((_, i) => i !== deleteTarget.index);
+                await updateOwnProfile({ profile: { furtherEducations: updated.length > 0 ? updated : null } });
+                toast.success("Pendidikan lanjutan berhasil dihapus");
+            }
             router.refresh();
+            setDeleteTarget(null);
         } catch (error: any) {
             toast.error(error?.response?.data?.message ?? "Terjadi kesalahan");
-        }
-    };
-
-    const handleDeleteFurtherEducation = async (index: number) => {
-        try {
-            const updated = (user?.profile?.furtherEducations ?? []).filter((_, i) => i !== index);
-            await updateOwnProfile({ profile: { furtherEducations: updated } });
-            toast.success("Pendidikan lanjutan berhasil dihapus");
-            router.refresh();
-        } catch (error: any) {
-            toast.error(error?.response?.data?.message ?? "Terjadi kesalahan");
+        } finally {
+            setIsDeleting(false);
         }
     };
 
@@ -156,7 +171,7 @@ export default function ProfileClient({ user }: { user: User }) {
                                             <Button
                                                 variant="outline_destructive"
                                                 size="sm"
-                                                onClick={() => handleDeleteWorkExperience(exp._originalIndex)}
+                                                onClick={() => setDeleteTarget({ type: "work-experience", index: exp._originalIndex })}
                                             >
                                                 <Trash2Icon className="h-4 w-4" />
                                             </Button>
@@ -210,7 +225,7 @@ export default function ProfileClient({ user }: { user: User }) {
                                             <Button
                                                 variant="outline_destructive"
                                                 size="sm"
-                                                onClick={() => handleDeleteFurtherEducation(edu._originalIndex)}
+                                                onClick={() => setDeleteTarget({ type: "further-education", index: edu._originalIndex })}
                                             >
                                                 <Trash2Icon className="h-4 w-4" />
                                             </Button>
@@ -222,6 +237,28 @@ export default function ProfileClient({ user }: { user: User }) {
                     </CardContent>
                 </Card>
             </div>
+
+            <Dialog open={!!deleteTarget} onOpenChange={(open) => !open && setDeleteTarget(null)}>
+                <DialogContent className="max-w-md" onOpenAutoFocus={(e) => e.preventDefault()}>
+                    <DialogHeader>
+                        <DialogTitle>Konfirmasi Hapus</DialogTitle>
+                        <DialogDescription>
+                            {deleteTarget?.type === "work-experience"
+                                ? "Apakah Anda yakin ingin menghapus pengalaman kerja ini?"
+                                : "Apakah Anda yakin ingin menghapus pendidikan lanjutan ini?"}
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setDeleteTarget(null)} disabled={isDeleting}>
+                            Batal
+                        </Button>
+                        <Button variant="destructive" onClick={confirmDelete} disabled={isDeleting}>
+                            {isDeleting ? <Loader2Icon className="h-4 w-4 animate-spin" /> : <Trash2Icon className="h-4 w-4" />}
+                            Hapus
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }

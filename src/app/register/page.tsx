@@ -37,11 +37,11 @@ const photoCards = [
 const registerSchema = z
     .object({
         email: z.string().email("Email tidak valid"),
-        npm: z.string().min(1, "NPM harus diisi").max(12, "NPM maksimal 12 digit").regex(/^\d+$/, "NPM hanya boleh berisi angka"),
-        name: z.string().min(1, "Nama harus diisi"),
+        npm: z.string().min(1, "NPM wajib diisi").max(12, "NPM maksimal 12 digit").regex(/^\d+$/, "NPM hanya boleh berisi angka"),
+        name: z.string().min(1, "Nama wajib diisi"),
         password: z.string(),
         passwordConfirmation: z.string(),
-        department: z.string().min(1, "Program Studi harus dipilih"),
+        department: z.string().min(1, "Program Studi wajib dipilih"),
         entryYear: z.number().min(1983, "Tahun masuk tidak valid").max(new Date().getFullYear(), "Tahun masuk tidak valid"),
         graduationYear: z.number().min(1986, "Tahun lulus tidak valid").max(new Date().getFullYear(), "Tahun lulus tidak valid"),
         isGoogleMode: z.boolean(),
@@ -55,17 +55,17 @@ const registerSchema = z
                 ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi minimal 8 karakter", path: ["password"] });
             } else {
                 if (!/[A-Z]/.test(data.password)) {
-                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi harus mengandung huruf besar", path: ["password"] });
+                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi wajib mengandung huruf besar", path: ["password"] });
                 }
                 if (!/[a-z]/.test(data.password)) {
-                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi harus mengandung huruf kecil", path: ["password"] });
+                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi wajib mengandung huruf kecil", path: ["password"] });
                 }
                 if (!/[0-9]/.test(data.password)) {
-                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi harus mengandung angka", path: ["password"] });
+                    ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi wajib mengandung angka", path: ["password"] });
                 }
             }
             if (!data.passwordConfirmation) {
-                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Konfirmasi Kata sandi harus diisi", path: ["passwordConfirmation"] });
+                ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Konfirmasi Kata sandi wajib diisi", path: ["passwordConfirmation"] });
             } else if (data.password !== data.passwordConfirmation) {
                 ctx.addIssue({ code: z.ZodIssueCode.custom, message: "Kata sandi tidak cocok", path: ["passwordConfirmation"] });
             }

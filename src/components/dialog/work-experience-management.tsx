@@ -8,7 +8,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Input } from "../ui/input";
 import ReactSelect from "../ui/react-select";
 import { Button } from "../ui/button";
-import { Loader2Icon, SaveIcon } from "lucide-react";
+import { InfoIcon, Loader2Icon, SaveIcon } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "../ui/tooltip";
 import { User, EIndustry, EmploymentLevel, EEmploymentType, EIncomeRange } from "@/types/user";
 import { toast } from "sonner";
 import { updateOwnProfile } from "@/services/profile.client";
@@ -25,13 +26,13 @@ const endYearOptions = [{ value: null as number | null, label: "Sampai sekarang"
 
 const addWorkExperienceSchema = z
     .object({
-        jobTitle: z.string().min(1, "Judul pekerjaan harus diisi").max(100),
-        companyName: z.string().min(1, "Nama perusahaan harus diisi").max(100),
-        industry: z.string().min(1, "Industri harus dipilih"),
-        jobLevel: z.string().min(1, "Level jabatan harus dipilih"),
-        employmentType: z.string().min(1, "Tipe pekerjaan harus dipilih"),
+        jobTitle: z.string().min(1, "Judul pekerjaan wajib diisi").max(100),
+        companyName: z.string().min(1, "Nama perusahaan wajib diisi").max(100),
+        industry: z.string().min(1, "Industri wajib dipilih"),
+        jobLevel: z.string().min(1, "Level jabatan wajib dipilih"),
+        employmentType: z.string().min(1, "Tipe pekerjaan wajib dipilih"),
         incomeRange: z.string().nullable().optional(),
-        startYear: z.number({ error: "Tahun mulai harus diisi" }),
+        startYear: z.number({ error: "Tahun mulai wajib diisi" }),
         endYear: z.number().nullable().optional(),
     })
     .superRefine((data, ctx) => {
@@ -51,7 +52,7 @@ export default function WorkExperienceManagementDialog() {
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
+            <DialogContent className="max-h-[90vh] max-w-2xl overflow-auto sm:overflow-visible" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
                     <DialogTitle>{isEdit ? "Edit Pengalaman Bekerja" : "Tambah Pengalaman Bekerja"}</DialogTitle>
                     <DialogDescription></DialogDescription>
@@ -84,10 +85,7 @@ function WorkExperienceForm({ data, onSuccess }: { data: WorkExperienceManagemen
     });
 
     const watchedStartYear = useWatch({ control: form.control, name: "startYear" });
-    const filteredEndYearOptions = [
-        endYearOptions[0],
-        ...workStartYearOptions.filter((opt) => !watchedStartYear || opt.value >= watchedStartYear),
-    ];
+    const filteredEndYearOptions = [endYearOptions[0], ...workStartYearOptions.filter((opt) => !watchedStartYear || opt.value >= watchedStartYear)];
 
     const onSubmit = async (values: AddWorkExperienceFormValues) => {
         try {
@@ -103,10 +101,7 @@ function WorkExperienceForm({ data, onSuccess }: { data: WorkExperienceManagemen
                 endYear: values.endYear ?? null,
             };
 
-            const updated =
-                editIndex !== undefined
-                    ? existing.map((item, i) => (i === editIndex ? newItem : item))
-                    : [...existing, newItem];
+            const updated = editIndex !== undefined ? existing.map((item, i) => (i === editIndex ? newItem : item)) : [...existing, newItem];
 
             await updateOwnProfile({
                 profile: { workExperiences: updated },
@@ -219,7 +214,25 @@ function WorkExperienceForm({ data, onSuccess }: { data: WorkExperienceManagemen
                         name="incomeRange"
                         render={({ field, fieldState }) => (
                             <FormItem>
-                                <FormLabel>Rentang Pendapatan</FormLabel>
+                                <div className="flex items-center gap-1">
+                                    <FormLabel>Rentang Pendapatan</FormLabel>
+                                    <TooltipProvider delayDuration={150}>
+                                        <Tooltip>
+                                            <TooltipTrigger asChild>
+                                                <button
+                                                    type="button"
+                                                    className="text-muted-foreground hover:text-foreground"
+                                                    aria-label="Info rentang pendapatan"
+                                                >
+                                                    <InfoIcon className="size-3.5" />
+                                                </button>
+                                            </TooltipTrigger>
+                                            <TooltipContent className="z-[1000] max-w-60 bg-white text-black border">
+                                                Hanya untuk statistik anonim. Tidak akan ditampilkan di profil Anda.
+                                            </TooltipContent>
+                                        </Tooltip>
+                                    </TooltipProvider>
+                                </div>
                                 <FormControl>
                                     <ReactSelect
                                         {...field}

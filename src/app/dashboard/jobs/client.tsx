@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Pagination } from "@/components/ui/pagination";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import {
     BuildingIcon,
     CalendarIcon,
@@ -46,18 +46,15 @@ function JobDetail({
     currentUserId,
     onEdit,
     onDelete,
-    confirmDeleteId,
-    setConfirmDeleteId,
     deletingId,
 }: {
     job: JobPosting;
     currentUserId?: string;
     onEdit: (job: JobPosting) => void;
     onDelete: (id: string) => void;
-    confirmDeleteId: string | null;
-    setConfirmDeleteId: (id: string | null) => void;
     deletingId: string | null;
 }) {
+    const [confirmOpen, setConfirmOpen] = useState(false);
     const { profile, name, email } = job.user;
     const isOwner = currentUserId === job.user.id;
 
@@ -96,21 +93,10 @@ function JobDetail({
                             <SquarePenIcon className="h-4 w-4" />
                             Edit
                         </Button>
-                        {confirmDeleteId === job.id ? (
-                            <>
-                                <Button variant="destructive" size="sm" disabled={deletingId === job.id} onClick={() => onDelete(job.id)}>
-                                    {deletingId === job.id ? <Loader2Icon className="h-4 w-4 animate-spin" /> : "Yakin?"}
-                                </Button>
-                                <Button variant="outline" size="sm" onClick={() => setConfirmDeleteId(null)}>
-                                    Batal
-                                </Button>
-                            </>
-                        ) : (
-                            <Button variant="outline_destructive" size="sm" onClick={() => setConfirmDeleteId(job.id)}>
-                                <Trash2Icon className="h-4 w-4" />
-                                Hapus
-                            </Button>
-                        )}
+                        <Button variant="outline_destructive" size="sm" onClick={() => setConfirmOpen(true)}>
+                            <Trash2Icon className="h-4 w-4" />
+                            Hapus
+                        </Button>
                     </div>
                 )}
             </div>
@@ -176,6 +162,39 @@ function JobDetail({
                     </Badge>
                 )}
             </div>
+
+            <Dialog open={confirmOpen} onOpenChange={setConfirmOpen}>
+                <DialogContent className="sm:max-w-xl">
+                    <DialogHeader>
+                        <DialogTitle>Hapus Lowongan</DialogTitle>
+                        <DialogDescription>
+                            Apakah kamu yakin ingin menghapus lowongan <span className="font-medium">&ldquo;{job.title}&rdquo;</span>? Tindakan ini
+                            tidak dapat dibatalkan.
+                        </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                        <Button variant="outline" onClick={() => setConfirmOpen(false)}>
+                            Batal
+                        </Button>
+                        <Button
+                            variant="destructive"
+                            disabled={deletingId === job.id}
+                            onClick={() => {
+                                onDelete(job.id);
+                                setConfirmOpen(false);
+                            }}
+                        >
+                            {deletingId === job.id ? (
+                                <Loader2Icon className="h-4 w-4 animate-spin" />
+                            ) : (
+                                <>
+                                    <Trash2Icon className="h-4 w-4" /> Hapus
+                                </>
+                            )}
+                        </Button>
+                    </DialogFooter>
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
@@ -261,7 +280,6 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
     const [filterProvince, setFilterProvince] = useState<{ value: string; label: string } | null>(null);
     const [filterCity, setFilterCity] = useState<{ value: string; label: string } | null>(null);
     const [popoverOpen, setPopoverOpen] = useState(false);
-    const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [selectedJob, setSelectedJob] = useState<JobPosting | null>(jobs?.items?.[0] ?? null);
     const [mobileDetailOpen, setMobileDetailOpen] = useState(false);
@@ -288,7 +306,6 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
                 toast.error(err?.response?.data?.message ?? "Gagal menghapus lowongan");
             } finally {
                 setDeletingId(null);
-                setConfirmDeleteId(null);
             }
         },
         [router],
@@ -546,7 +563,7 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
                                     selected={selectedJob?.id === job.id}
                                     onClick={() => {
                                         setSelectedJob(job);
-                                        setMobileDetailOpen(true);
+                                        if (window.innerWidth < 768) setMobileDetailOpen(true);
                                     }}
                                 />
                             ))}
@@ -571,8 +588,6 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
                             currentUserId={currentUser?.id}
                             onEdit={(job) => onOpen("job-management", { job })}
                             onDelete={handleDelete}
-                            confirmDeleteId={confirmDeleteId}
-                            setConfirmDeleteId={setConfirmDeleteId}
                             deletingId={deletingId}
                         />
                     ) : (
@@ -599,8 +614,6 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
                                 await handleDelete(id);
                                 setMobileDetailOpen(false);
                             }}
-                            confirmDeleteId={confirmDeleteId}
-                            setConfirmDeleteId={setConfirmDeleteId}
                             deletingId={deletingId}
                         />
                     )}

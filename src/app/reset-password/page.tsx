@@ -18,10 +18,10 @@ const resetPasswordSchema = z
         password: z
             .string()
             .min(8, "Kata sandi minimal 8 karakter")
-            .regex(/[A-Z]/, "Harus mengandung huruf kapital")
-            .regex(/[a-z]/, "Harus mengandung huruf kecil")
-            .regex(/[0-9]/, "Harus mengandung angka"),
-        confirmPassword: z.string().min(1, "Konfirmasi kata sandi harus diisi"),
+            .regex(/[A-Z]/, "Wajib mengandung huruf kapital")
+            .regex(/[a-z]/, "Wajib mengandung huruf kecil")
+            .regex(/[0-9]/, "Wajib mengandung angka"),
+        confirmPassword: z.string().min(1, "Konfirmasi kata sandi wajib diisi"),
     })
     .refine((data) => data.password === data.confirmPassword, {
         message: "Konfirmasi kata sandi tidak cocok",

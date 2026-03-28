@@ -25,7 +25,7 @@ import { jobIndustryOptions } from "@/lib/option";
 const INDONESIA_ID = 77;
 
 const businessSchema = z.object({
-    businessName: z.string().min(1, "Nama bisnis harus diisi").max(100, "Nama bisnis maksimal 100 karakter"),
+    businessName: z.string().min(1, "Nama bisnis wajib diisi").max(100, "Nama bisnis maksimal 100 karakter"),
     description: z.string().min(20, "Deskripsi minimal 20 karakter").max(2000, "Deskripsi maksimal 2000 karakter"),
     industry: z.string().min(1, "Industri harus dipilih"),
     instagramUrl: z.union([z.url({ error: "URL tidak valid" }), z.literal("")]),

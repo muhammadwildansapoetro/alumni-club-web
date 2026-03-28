@@ -1,4 +1,5 @@
 import axios from "axios";
+import { toast } from "sonner";
 
 export const API = axios.create({
     baseURL: "/api/proxy",
@@ -24,7 +25,12 @@ API.interceptors.response.use(
         if (error.response?.status === 401) {
             if (typeof window !== "undefined") {
                 localStorage.removeItem("auth-storage");
-                window.location.href = "/signin";
+                toast.error("Sesi Anda telah berakhir. Silakan masuk kembali.", {
+                    duration: 5000,
+                });
+                setTimeout(() => {
+                    window.location.href = "/signin";
+                }, 5000);
             }
         }
 
