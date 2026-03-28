@@ -51,27 +51,27 @@ export default function JobDetailDialog() {
 
                     <div className="space-y-3">
                         <div>
-                            <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Deskripsi</p>
+                            <p className="mb-1 text-xs font-medium tracking-wide">Deskripsi</p>
                             <p className="leading-relaxed whitespace-pre-line">{job.description}</p>
                         </div>
 
                         {location && (
                             <div>
-                                <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Lokasi</p>
+                                <p className="mb-1 text-xs font-medium tracking-wide">Lokasi</p>
                                 <p>{location}</p>
                             </div>
                         )}
 
                         {job.salaryRange && (
                             <div>
-                                <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Gaji</p>
+                                <p className="mb-1 text-xs font-medium tracking-wide">Gaji</p>
                                 <p>{SALARY_RANGE_LABELS[job.salaryRange]}</p>
                             </div>
                         )}
 
                         {job.externalUrl && (
                             <div>
-                                <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Link Lamaran</p>
+                                <p className="mb-1 text-xs font-medium tracking-wide">Situs Web</p>
                                 <a
                                     href={job.externalUrl}
                                     target="_blank"
@@ -85,7 +85,7 @@ export default function JobDetailDialog() {
                         )}
 
                         <div>
-                            <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Diposting Oleh</p>
+                            <p className="mb-1 text-xs font-medium tracking-wide">Diposting Oleh</p>
                             <p className="font-medium">{profile?.fullName ?? name ?? email}</p>
                             {profile?.department && (
                                 <Badge variant={profile.department as any} size="xs" className="mt-1">
@@ -95,7 +95,7 @@ export default function JobDetailDialog() {
                         </div>
 
                         <div>
-                            <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Ditambahkan</p>
+                            <p className="mb-1 text-xs font-medium tracking-wide">Ditambahkan</p>
                             <p>
                                 {new Date(job.createdAt).toLocaleDateString("id-ID", {
                                     day: "2-digit",

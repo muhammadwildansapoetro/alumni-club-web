@@ -73,18 +73,18 @@ function JobDetail({
                 <div className="space-y-1">
                     <h2 className="text-xl leading-tight font-bold">{job.title}</h2>
                     {job.company && (
-                        <p className="text-muted-foreground flex items-center gap-1.5">
+                        <p className="flex items-center gap-1.5">
                             <BuildingIcon className="h-3.5 w-3.5 shrink-0" />
                             {job.company}
                         </p>
                     )}
                     {location && (
-                        <p className="text-muted-foreground flex items-center gap-1.5">
+                        <p className="flex items-center gap-1.5">
                             <MapPinIcon className="h-3.5 w-3.5 shrink-0" />
                             {location}
                         </p>
                     )}
-                    <p className="text-muted-foreground flex items-center gap-1.5">
+                    <p className="flex items-center gap-1.5">
                         <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
                         {new Date(job.createdAt).toLocaleDateString("id-ID", { day: "2-digit", month: "long", year: "numeric" })}
                     </p>
@@ -139,14 +139,14 @@ function JobDetail({
 
             <div className="border-t pt-4">
                 <h3 className="mb-2 font-semibold">Deskripsi Pekerjaan</h3>
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-line">{job.description}</p>
+                <p className="leading-relaxed whitespace-pre-line">{job.description}</p>
             </div>
 
             {job.salaryRange && (
                 <div className="flex items-center gap-2">
-                    <WalletIcon className="text-muted-foreground h-4 w-4 shrink-0" />
+                    <WalletIcon className="h-4 w-4 shrink-0" />
                     <div>
-                        <p className="text-muted-foreground text-xs">Rentang Gaji</p>
+                        <p className="text-xs">Rentang Gaji</p>
                         <p className="font-medium">{SALARY_RANGE_LABELS[job.salaryRange] ?? "-"}</p>
                     </div>
                 </div>
@@ -154,7 +154,7 @@ function JobDetail({
 
             {job.externalUrl && (
                 <div>
-                    <p className="text-muted-foreground mb-1 text-xs font-medium">Link Lamaran</p>
+                    <p className="mb-1 text-xs font-medium">Situs Web</p>
                     <a
                         href={job.externalUrl}
                         target="_blank"
@@ -168,7 +168,7 @@ function JobDetail({
             )}
 
             <div className="border-t pt-4">
-                <p className="text-muted-foreground mb-1 text-xs font-medium">Diposting Oleh</p>
+                <p className="mb-1 text-xs font-medium">Diposting Oleh</p>
                 <p className="font-medium">{profile?.fullName ?? name ?? email}</p>
                 {profile?.department && (
                     <Badge variant={profile.department as any} size="xs" className="mt-1">
@@ -207,15 +207,15 @@ function JobCard({ job, selected, onClick }: { job: JobPosting; selected: boolea
                         </Badge>
                     )}
                 </div>
-                {job.company && <p className="text-muted-foreground text-xs">{job.company}</p>}
+                {job.company && <p className="text-xs">{job.company}</p>}
                 {location && (
-                    <p className="text-muted-foreground flex items-center gap-1 text-xs">
+                    <p className="flex items-center gap-1 text-xs">
                         <MapPinIcon className="h-3 w-3 shrink-0" />
                         {location}
                     </p>
                 )}
                 {job.salaryRange && (
-                    <p className="text-muted-foreground flex items-center gap-1 text-xs">
+                    <p className="flex items-center gap-1 text-xs">
                         <WalletIcon className="h-3 w-3 shrink-0" />
                         {SALARY_RANGE_LABELS[job.salaryRange] ?? "-"}
                     </p>
@@ -232,9 +232,7 @@ function JobCard({ job, selected, onClick }: { job: JobPosting; selected: boolea
                         </Badge>
                     )}
                 </div>
-                <p className="text-muted-foreground text-xs">
-                    {new Date(job.createdAt).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}
-                </p>
+                <p className="text-xs">{new Date(job.createdAt).toLocaleDateString("id-ID", { day: "2-digit", month: "short", year: "numeric" })}</p>
             </div>
         </button>
     );
@@ -533,12 +531,12 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
                 <div className="flex flex-col gap-2 overflow-y-auto rounded-lg border p-2">
                     {isPending ? (
                         <div className="flex flex-1 items-center justify-center py-16">
-                            <Loader2Icon className="text-muted-foreground h-6 w-6 animate-spin" />
+                            <Loader2Icon className="h-6 w-6 animate-spin" />
                         </div>
                     ) : error ? (
                         <div className="text-destructive py-16 text-center text-sm">{error}</div>
                     ) : !jobs?.items?.length ? (
-                        <div className="text-muted-foreground py-16 text-center text-sm">Tidak ada lowongan ditemukan</div>
+                        <div className="py-16 text-center text-sm">Tidak ada lowongan ditemukan</div>
                     ) : (
                         <>
                             {jobs.items.map((job) => (
@@ -578,9 +576,7 @@ export default function JobsClient({ jobs, error }: JobsClientProps) {
                             deletingId={deletingId}
                         />
                     ) : (
-                        <div className="text-muted-foreground flex h-full items-center justify-center text-sm">
-                            Pilih lowongan untuk melihat detail
-                        </div>
+                        <div className="flex h-full items-center justify-center text-sm">Pilih lowongan untuk melihat detail</div>
                     )}
                 </div>
             </div>

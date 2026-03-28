@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { Switch } from "../ui/switch";
 import { Loader2Icon, SaveIcon } from "lucide-react";
 import { Business, CreateBusinessInput, UpdateBusinessInput } from "@/types/business";
+import { IndustryField } from "@/types/job";
 import { toast } from "sonner";
 import { createBusiness, updateBusiness } from "@/services/business.client";
 import { useRouter } from "next/navigation";
@@ -18,20 +19,26 @@ import { cn } from "@/lib/utils";
 import { useMemo, useState } from "react";
 import { fetchCountries, fetchProvinces, fetchCities } from "@/services/country.client";
 import AsyncReactSelect from "../ui/async-select";
+import ReactSelect from "../ui/react-select";
+import { jobIndustryOptions } from "@/lib/option";
 
 const INDONESIA_ID = 77;
 
 const businessSchema = z.object({
     businessName: z.string().min(1, "Nama bisnis harus diisi").max(100, "Nama bisnis maksimal 100 karakter"),
     description: z.string().min(20, "Deskripsi minimal 20 karakter").max(2000, "Deskripsi maksimal 2000 karakter"),
-    category: z.string().max(50, "Kategori maksimal 50 karakter").optional(),
-    countryId: z.number().nullable().optional(),
+    industry: z.string().min(1, "Industri harus dipilih"),
+    instagramUrl: z.union([z.url({ error: "URL tidak valid" }), z.literal("")]),
+    countryId: z
+        .number()
+        .nullable()
+        .refine((v) => v !== null, "Negara harus dipilih"),
     countryName: z.string().nullable().optional(),
     provinceId: z.number().nullable().optional(),
     provinceName: z.string().nullable().optional(),
     cityId: z.number().nullable().optional(),
     cityName: z.string().nullable().optional(),
-    website: z.union([z.url({ error: "URL tidak valid" }), z.literal(""), z.null()]).optional(),
+    website: z.union([z.url({ error: "URL tidak valid" }), z.literal("")]),
     contactInfo: z.string().max(500, "Info kontak maksimal 500 karakter").optional(),
     isActive: z.boolean().optional(),
 });
@@ -46,7 +53,7 @@ export default function BusinessManagementDialog() {
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-h-[90vh] max-w-2xl overflow-visible" onOpenAutoFocus={(e) => e.preventDefault()}>
+            <DialogContent className="max-h-[90vh] max-w-2xl overflow-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
                     <DialogTitle>{isEdit ? "Edit Bisnis" : "Tambah Bisnis"}</DialogTitle>
                     <DialogDescription></DialogDescription>
@@ -72,13 +79,14 @@ function BusinessManagementForm({ data, onSuccess }: { data: BusinessManagementD
         defaultValues: {
             businessName: editBusiness?.businessName ?? "",
             description: editBusiness?.description ?? "",
-            category: editBusiness?.category ?? "",
-            countryId: null,
-            countryName: null,
-            provinceId: null,
-            provinceName: null,
-            cityId: null,
-            cityName: null,
+            industry: editBusiness?.industry ?? "",
+            instagramUrl: "",
+            countryId: editBusiness?.countryId ?? null,
+            countryName: editBusiness?.countryName ?? null,
+            provinceId: editBusiness?.provinceId ?? null,
+            provinceName: editBusiness?.provinceName ?? null,
+            cityId: editBusiness?.cityId ?? null,
+            cityName: editBusiness?.cityName ?? null,
             website: editBusiness?.website ?? "",
             contactInfo: editBusiness?.contactInfo ?? "",
             isActive: editBusiness?.isActive ?? true,
@@ -119,17 +127,8 @@ function BusinessManagementForm({ data, onSuccess }: { data: BusinessManagementD
         return options;
     };
 
-    const buildLocation = (values: BusinessFormValues): string | undefined => {
-        if (values.cityName) return values.cityName;
-        if (values.provinceName) return values.provinceName;
-        if (values.countryName) return values.countryName;
-        return undefined;
-    };
-
     const onSubmit = async (values: BusinessFormValues) => {
         try {
-            const location = buildLocation(values);
-
             const locationFields = {
                 countryId: values.countryId ?? null,
                 countryName: values.countryName ?? null,
@@ -143,8 +142,8 @@ function BusinessManagementForm({ data, onSuccess }: { data: BusinessManagementD
                 const payload: UpdateBusinessInput = {
                     businessName: values.businessName,
                     description: values.description,
-                    ...(values.category ? { category: values.category } : {}),
-                    ...(location ? { location } : {}),
+                    industry: (values.industry as IndustryField) || undefined,
+                    instagramUrl: values.instagramUrl || null,
                     ...locationFields,
                     website: values.website || "",
                     ...(values.contactInfo ? { contactInfo: values.contactInfo } : {}),
@@ -156,8 +155,8 @@ function BusinessManagementForm({ data, onSuccess }: { data: BusinessManagementD
                 const payload: CreateBusinessInput = {
                     businessName: values.businessName,
                     description: values.description,
-                    ...(values.category ? { category: values.category } : {}),
-                    ...(location ? { location } : {}),
+                    industry: (values.industry as IndustryField) || undefined,
+                    instagramUrl: values.instagramUrl || null,
                     ...locationFields,
                     ...(values.website ? { website: values.website } : {}),
                     ...(values.contactInfo ? { contactInfo: values.contactInfo } : {}),
@@ -211,12 +210,21 @@ function BusinessManagementForm({ data, onSuccess }: { data: BusinessManagementD
                     />
                     <FormField
                         control={form.control}
-                        name="category"
-                        render={({ field }) => (
+                        name="industry"
+                        render={({ field, fieldState }) => (
                             <FormItem>
-                                <FormLabel>Kategori</FormLabel>
+                                <FormLabel aria-required>Industri</FormLabel>
                                 <FormControl>
-                                    <Input placeholder="mis. Kuliner, Teknologi, Konsultan" {...field} value={field.value ?? ""} />
+                                    <ReactSelect
+                                        {...field}
+                                        isClearable
+                                        options={jobIndustryOptions}
+                                        placeholder="Pilih industri"
+                                        instanceId="business-industry-select"
+                                        value={jobIndustryOptions.find((opt) => opt.value === field.value) ?? null}
+                                        onChange={(opt: any) => field.onChange(opt?.value ?? "")}
+                                        fieldState={fieldState}
+                                    />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -227,7 +235,7 @@ function BusinessManagementForm({ data, onSuccess }: { data: BusinessManagementD
                         name="countryId"
                         render={({ field, fieldState }) => (
                             <FormItem>
-                                <FormLabel>Negara</FormLabel>
+                                <FormLabel aria-required>Negara</FormLabel>
                                 <FormControl>
                                     <AsyncReactSelect
                                         name="countryId"
@@ -321,10 +329,23 @@ function BusinessManagementForm({ data, onSuccess }: { data: BusinessManagementD
                         control={form.control}
                         name="website"
                         render={({ field }) => (
-                            <FormItem className="sm:col-span-2">
-                                <FormLabel>Website</FormLabel>
+                            <FormItem>
+                                <FormLabel>Situs Web</FormLabel>
                                 <FormControl>
                                     <Input placeholder="https://example.com" {...field} value={field.value ?? ""} />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField
+                        control={form.control}
+                        name="instagramUrl"
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Instagram</FormLabel>
+                                <FormControl>
+                                    <Input placeholder="https://instagram.com/username" {...field} value={field.value ?? ""} />
                                 </FormControl>
                                 <FormMessage />
                             </FormItem>
@@ -335,7 +356,7 @@ function BusinessManagementForm({ data, onSuccess }: { data: BusinessManagementD
                         name="contactInfo"
                         render={({ field }) => (
                             <FormItem className="sm:col-span-2">
-                                <FormLabel>Info Kontak</FormLabel>
+                                <FormLabel>Kontak</FormLabel>
                                 <FormControl>
                                     <textarea
                                         {...field}

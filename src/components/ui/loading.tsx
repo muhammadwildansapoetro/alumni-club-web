@@ -9,38 +9,38 @@ interface LoadingProps {
     overlay?: boolean;
 }
 
-interface LoadingContentProps {
-    size: "sm" | "md" | "lg";
-    className?: string;
-}
-
-const LoadingContent = ({ size, className }: LoadingContentProps) => {
-    const sizeClasses = {
-        sm: "w-12 h-12",
-        md: "w-16 h-16",
-        lg: "w-20 h-20",
-    };
-
-    return (
-        <div className={cn("flex items-center justify-center", className)}>
-            {/* Logo with fade-in animation */}
-            <div className={cn("relative flex animate-ping items-center justify-center", sizeClasses[size])}>
-                <Image src="/logo/logo-ika-ftip-unpad.png" alt="IKA FTIP Unpad Logo" width={50} height={50} className="object-contain" />
-            </div>
-        </div>
-    );
+const sizeMap = {
+    sm: { logo: 32, ring: "w-12 h-12" },
+    md: { logo: 44, ring: "w-16 h-16" },
+    lg: { logo: 56, ring: "w-20 h-20" },
 };
 
 const Loading = ({ size = "md", className, overlay = false }: LoadingProps) => {
-    if (overlay) {
-        return (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/5">
-                <LoadingContent size={size} className={className} />
+    const { logo, ring } = sizeMap[size];
+
+    const content = (
+        <div className={cn("flex items-center justify-center", className)}>
+            <div className="relative flex items-center justify-center">
+                {/* Spinning ring */}
+                <div className={cn("absolute animate-spin rounded-full border-2 border-primary-200 border-t-primary-500", ring)} />
+                {/* Logo */}
+                <Image
+                    src="/logo/logo-ika-ftip-unpad.png"
+                    alt="IKA FTIP Unpad"
+                    width={logo}
+                    height={logo}
+                    priority
+                    className="relative z-10 object-contain opacity-90"
+                />
             </div>
-        );
+        </div>
+    );
+
+    if (overlay) {
+        return <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/80 backdrop-blur-sm">{content}</div>;
     }
 
-    return <LoadingContent size={size} className={className} />;
+    return content;
 };
 
 export { Loading };

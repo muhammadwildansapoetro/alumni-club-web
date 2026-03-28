@@ -94,7 +94,7 @@ export default function EditProfileDialog() {
 
     return (
         <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-            <DialogContent className="max-h-[90vh] max-w-5xl overflow-visible" onOpenAutoFocus={(e) => e.preventDefault()}>
+            <DialogContent className="max-h-[90vh] max-w-5xl overflow-auto" onOpenAutoFocus={(e) => e.preventDefault()}>
                 <DialogHeader>
                     <DialogTitle>Ubah Profil</DialogTitle>
                     <DialogDescription></DialogDescription>
@@ -301,7 +301,7 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
                         control={form.control}
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Tautan Profil LinkedIn</FormLabel>
+                                <FormLabel>LinkedIn</FormLabel>
                                 <FormControl>
                                     <Input placeholder="https://www.linkedin.com/in/username" {...field} value={field.value ?? ""} />
                                 </FormControl>
@@ -314,7 +314,7 @@ function EditProfileForm({ user, onSuccess }: { user: User | undefined; onSucces
                         control={form.control}
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Tautan Profil Instagram</FormLabel>
+                                <FormLabel>Instagram</FormLabel>
                                 <FormControl>
                                     <Input placeholder="https://www.instagram.com/username" {...field} value={field.value ?? ""} />
                                 </FormControl>

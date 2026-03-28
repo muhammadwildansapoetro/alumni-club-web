@@ -1,3 +1,5 @@
+import { IndustryField } from "./job";
+
 export interface BusinessOwnerBrief {
     id: string;
     name: string;
@@ -35,8 +37,8 @@ export interface Business {
     userId: string;
     businessName: string;
     description: string;
-    category: string | null;
-    location: string | null;
+    industry: IndustryField | null;
+    instagramUrl: string | null;
     countryId: number | null;
     countryName: string | null;
     provinceId: number | null;
@@ -59,8 +61,7 @@ export interface BusinessFilters {
     page?: number;
     limit?: number;
     search?: string;
-    category?: string;
-    location?: string;
+    industry?: IndustryField;
     isActive?: boolean;
 }
 
@@ -83,8 +84,8 @@ export interface BusinessResponse {
 export interface CreateBusinessInput {
     businessName: string;
     description: string;
-    category?: string;
-    location?: string;
+    industry?: IndustryField;
+    instagramUrl?: string | null;
     countryId?: number | null;
     countryName?: string | null;
     provinceId?: number | null;

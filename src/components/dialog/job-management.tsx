@@ -292,7 +292,7 @@ function JobManagementForm({ data, onSuccess }: { data: JobManagementDialogData 
                         name="externalUrl"
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Tautan Lamaran</FormLabel>
+                                <FormLabel>Situs Web</FormLabel>
                                 <FormControl>
                                     <Input placeholder="https://..." {...field} value={field.value ?? ""} />
                                 </FormControl>
