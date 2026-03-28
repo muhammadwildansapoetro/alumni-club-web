@@ -124,23 +124,26 @@ function BusinessCard({
                         </div>
                     )}
 
-                    {business.website && (
-                        <div className="flex items-center gap-1.5 text-xs">
-                            <GlobeIcon className="h-3.5 w-3.5 shrink-0" />
+                    <div className="flex items-center gap-1.5 text-xs">
+                        <GlobeIcon className="h-3.5 w-3.5 shrink-0" />
+                        {business.website ? (
                             <a
                                 href={business.website}
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 className="text-primary line-clamp-1 hover:underline"
+                                onClick={(e) => e.stopPropagation()}
                             >
                                 {business.website}
                             </a>
-                        </div>
-                    )}
+                        ) : (
+                            <span className="text-muted-foreground">-</span>
+                        )}
+                    </div>
 
-                    {business.instagramUrl && (
-                        <div className="flex items-center gap-1.5 text-xs">
-                            <Image src="/logo/instagram.svg" alt="Instagram Logo" width={14} height={14} className="shrink-0" />
+                    <div className="flex items-center gap-1.5 text-xs">
+                        <Image src="/logo/instagram.svg" alt="Instagram Logo" width={14} height={14} className="shrink-0" />
+                        {business.instagramUrl ? (
                             <a
                                 href={business.instagramUrl}
                                 target="_blank"
@@ -150,8 +153,10 @@ function BusinessCard({
                             >
                                 {business.instagramUrl}
                             </a>
-                        </div>
-                    )}
+                        ) : (
+                            <span className="text-muted-foreground">-</span>
+                        )}
+                    </div>
                 </div>
 
                 <div className="flex items-center justify-between gap-2 border-t pt-2" onClick={(e) => e.stopPropagation()}>
