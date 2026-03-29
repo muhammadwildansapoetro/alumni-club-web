@@ -378,8 +378,8 @@ export default function RegisterClient() {
                                                             </TooltipTrigger>
                                                             <TooltipContent side="right" className="max-w-sm border bg-white">
                                                                 <p className="text-muted-foreground text-sm">
-                                                                    Bagi lulusan sarjana (S1) di FTIP Unpad,
-                                                                    <br /> silakan pilih program studi jenjang sarjana (S1).
+                                                                    Bagi lulusan program studi jenjang S1 di FTIP Unpad,
+                                                                    <br /> silakan pilih program studi jenjang S1.
                                                                 </p>
                                                             </TooltipContent>
                                                         </Tooltip>

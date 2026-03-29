@@ -51,7 +51,7 @@ export default function AlumniClient({ alumni, error }: { alumni: any; error: st
                 cell: ({ row }) =>
                     row.original.profile?.department ? (
                         <Badge variant={row.original.profile?.department} size={"xs"}>
-                            {TDepartment[row.original.profile.department as keyof typeof TDepartment]}. - {row.original.profile?.entryYear}
+                            {TDepartment[row.original.profile.department as keyof typeof TDepartment]} - {row.original.profile?.entryYear}
                         </Badge>
                     ) : (
                         "-"

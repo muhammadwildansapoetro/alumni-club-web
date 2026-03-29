@@ -150,13 +150,13 @@ export default function ProfileClient({ user }: { user: User }) {
                                     <li key={index} className="flex items-start gap-4 py-4 first:pt-0 last:pb-0">
                                         <div className="min-w-0 flex-1">
                                             <p className="font-semibold">{exp.jobTitle}</p>
-                                            <p className="text-sm">
+                                            <p className="text-sm font-medium">
                                                 {exp.companyName} · {TEmploymentType[exp.employmentType] ?? exp.employmentType}
                                             </p>
-                                            <p className="text-sm">
+                                            <p className="text-muted-foreground text-sm">
                                                 {exp.startYear} – {exp.endYear ?? "Sekarang"}
                                             </p>
-                                            <p className="text-sm">
+                                            <p className="text-muted-foreground text-xs">
                                                 {TIndustryField[exp.industry] ?? exp.industry} · {TEmploymentLevel[exp.jobLevel] ?? exp.jobLevel}
                                             </p>
                                         </div>

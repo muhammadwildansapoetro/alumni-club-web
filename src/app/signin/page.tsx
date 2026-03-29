@@ -191,7 +191,7 @@ export default function LoginClient() {
                     </div>
 
                     <div className="mt-3 flex w-full items-center justify-center">
-                        <p className="text-sm text-gray-500">
+                        <p className="text-muted-foreground text-sm">
                             Belum memiliki akun? Silakan{" "}
                             <Link href="/register" className="text-primary font-bold hover:underline">
                                 Daftar

@@ -371,7 +371,7 @@ export default function PrivacyPolicyPage() {
                             </section>
 
                             {/* Footer note */}
-                            <div className="border-t border-gray-200 pt-6 text-center text-sm text-gray-500">
+                            <div className="border-t border-gray-200 pt-6 text-center text-sm text-muted-foreground">
                                 <p>Dokumen ini dibuat berdasarkan analisis teknis API Dasbor IKA FTIP Unpad versi Maret 2026.</p>
                             </div>
                         </div>

@@ -15,13 +15,13 @@ import {
 import { INDUSTRY_LABELS, IndustryField, JOB_TYPE_LABELS, JobType } from "@/types/job";
 
 export const departmentOptions = [
-    { value: "TEP", label: "Sarjana Teknik Pertanian (TEP)" },
-    { value: "TPN", label: "Sarjana Teknologi Pangan (TPN)" },
-    { value: "TIN", label: "Sarjana Teknologi Industri Pertanian (TIN)" },
-    { value: "TEKNOTAN", label: "Sarjana Teknologi Pertanian (Teknotan)" },
-    { value: "MTA", label: "Magister Teknologi Agroindustri (MTA)" },
-    { value: "MTIN", label: "Magister Teknologi Industri Pertanian (MTIN)" },
-    { value: "DTA", label: "Doktor Teknologi Agroindustri (DTA)" },
+    { value: "TEP", label: "S1 Teknik Pertanian (TEP)" },
+    { value: "TPN", label: "S1 Teknologi Pangan (TPN)" },
+    { value: "TIN", label: "S1 Teknologi Industri Pertanian (TIN)" },
+    { value: "TEKNOTAN", label: "S1 Teknologi Pertanian (Teknotan)" },
+    { value: "MTA", label: "S2 Teknologi Agroindustri (MTA)" },
+    { value: "MTIN", label: "S2 Teknologi Industri Pertanian (MTIN)" },
+    { value: "DTA", label: "S3 Teknologi Agroindustri (DTA)" },
 ];
 
 export const currentYear = new Date().getFullYear();
@@ -51,14 +51,6 @@ export const graduationYearOptions = Array.from({ length: currentYear - 1956 + 1
 export const degreeOptions = [
     { label: TDegree[EDegree.MAGISTER], value: EDegree.MAGISTER },
     { label: TDegree[EDegree.DOCTOR], value: EDegree.DOCTOR },
-];
-
-export const alumniStatusOptions = [
-    { label: "Bekerja", value: "WORKING" },
-    { label: "Melanjutkan Studi", value: "STUDYING" },
-    { label: "Bekerja & Studi", value: "WORKING_STUDYING" },
-    { label: "Wirausaha", value: "ENTREPRENEUR" },
-    { label: "Belum Bekerja", value: "NOT_WORKING" },
 ];
 
 export const industryOptions = Object.entries(TIndustryField).map(([key, label]) => ({

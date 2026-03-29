@@ -73,11 +73,7 @@ const Topbar = () => {
             {!isMobile && (
                 <div className="flex items-center gap-3">
                     <LogoTitle />
-                    <SearchInput
-                        placeholder="Cari nama alumni"
-                        onSearch={handleSearch}
-                        debounceMs={500}
-                    />
+                    <SearchInput placeholder="Cari nama alumni" onSearch={handleSearch} debounceMs={500} />
                 </div>
             )}
 
@@ -103,7 +99,7 @@ const Topbar = () => {
                                     </Badge>
                                 )}
                                 <Badge size="xs" variant={user?.profile?.department as keyof typeof TDepartment}>
-                                    {user?.profile?.department} - {user?.profile?.entryYear || "Alumni"}
+                                    {user?.profile?.department} - {user?.profile?.entryYear}
                                 </Badge>
                             </div>
                         </div>

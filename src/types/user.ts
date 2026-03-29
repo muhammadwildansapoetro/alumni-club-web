@@ -92,13 +92,13 @@ export enum EDepartment {
 }
 
 export const TDepartment = {
-    [EDepartment.TEP]: "Sarjana Teknik Pertanian (TEP)",
-    [EDepartment.TPN]: "Sarjana Teknologi Pangan (TPN)",
-    [EDepartment.TIN]: "Sarjana Teknologi Industri Pertanian (TIN)",
-    [EDepartment.TEKNOTAN]: "Sarjana Teknologi Pertanian (Teknotan)",
-    [EDepartment.MTA]: "Magister Teknologi Agroindustri (MTA)",
-    [EDepartment.MTIN]: "Magister Teknologi Industri Pertanian (MTIN)",
-    [EDepartment.DTA]: "Doktor Teknologi Agroindustri (DTA)",
+    [EDepartment.TEP]: "S1 Teknik Pertanian",
+    [EDepartment.TPN]: "S1 Teknologi Pangan",
+    [EDepartment.TIN]: "S1 Teknologi Industri Pertanian",
+    [EDepartment.TEKNOTAN]: "S1 Teknologi Pertanian (Teknotan)",
+    [EDepartment.MTA]: "S2 Teknologi Agroindustri",
+    [EDepartment.MTIN]: "S2 Teknologi Industri Pertanian",
+    [EDepartment.DTA]: "S3 Teknologi Agroindustri",
 };
 
 export enum EIndustry {
@@ -186,18 +186,20 @@ export const TIndustryField: Record<EIndustry, string> = {
 export enum EEmploymentType {
     FULL_TIME = "FULL_TIME",
     PART_TIME = "PART_TIME",
-    SELF_EMPLOYED = "SELF_EMPLOYED",
-    FREELANCE = "FREELANCE",
     CONTRACT = "CONTRACT",
+    FREELANCE = "FREELANCE",
+    SELF_EMPLOYED = "SELF_EMPLOYED",
+    ENTREPRENEUR = "ENTREPRENEUR",
     INTERNSHIP = "INTERNSHIP",
 }
 
 export const TEmploymentType = {
-    [EEmploymentType.FULL_TIME]: "Penuh Waktu",
+    [EEmploymentType.FULL_TIME]: "Purnawaktu",
     [EEmploymentType.PART_TIME]: "Paruh Waktu",
-    [EEmploymentType.SELF_EMPLOYED]: "Wirausaha",
-    [EEmploymentType.FREELANCE]: "Freelance",
     [EEmploymentType.CONTRACT]: "Kontrak",
+    [EEmploymentType.FREELANCE]: "Pekerja Lepas",
+    [EEmploymentType.SELF_EMPLOYED]: "Pekerja Mandiri",
+    [EEmploymentType.ENTREPRENEUR]: "Wirausaha",
     [EEmploymentType.INTERNSHIP]: "Magang",
 };
 

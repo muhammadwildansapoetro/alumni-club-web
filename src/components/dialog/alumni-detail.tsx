@@ -96,26 +96,22 @@ export default function AlumniDetailDialog() {
                             <div>
                                 <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Pengalaman Kerja</p>
                                 <div className="space-y-2">
-                                    {[...profile.workExperiences].sort((a, b) => (b.startYear ?? 0) - (a.startYear ?? 0)).map((exp, i) => (
-                                        <div key={i} className="space-y-0.5 rounded-md border px-3 py-2">
-                                            <p className="font-medium">{exp.jobTitle}</p>
-                                            <p className="text-muted-foreground text-xs">{exp.companyName}</p>
-                                            <div className="mt-1 flex flex-wrap gap-1">
-                                                <Badge variant="outline" size="xs">
-                                                    {TIndustryField[exp.industry]}
-                                                </Badge>
-                                                <Badge variant="outline" size="xs">
-                                                    {TEmploymentLevel[exp.jobLevel]}
-                                                </Badge>
-                                                <Badge variant="outline" size="xs">
-                                                    {TEmploymentType[exp.employmentType]}
-                                                </Badge>
+                                    {[...profile.workExperiences]
+                                        .sort((a, b) => (b.startYear ?? 0) - (a.startYear ?? 0))
+                                        .map((exp, i) => (
+                                            <div key={i} className="space-y-0.5 rounded-md border px-3 py-2">
+                                                <p className="font-semibold">{exp.jobTitle}</p>
+                                                <p className="text-sm font-medium">
+                                                    {exp.companyName} · {TEmploymentType[exp.employmentType]}
+                                                </p>
+                                                <p className="text-muted-foreground text-sm">
+                                                    {exp.startYear} – {exp.endYear ?? "Sekarang"}
+                                                </p>
+                                                <p className="text-muted-foreground text-xs">
+                                                    {TIndustryField[exp.industry]} · {TEmploymentLevel[exp.jobLevel]}
+                                                </p>
                                             </div>
-                                            <p className="text-muted-foreground text-xs">
-                                                {exp.startYear} – {exp.endYear ?? "Sekarang"}
-                                            </p>
-                                        </div>
-                                    ))}
+                                        ))}
                                 </div>
                             </div>
                         )}
@@ -127,7 +123,9 @@ export default function AlumniDetailDialog() {
                                     {profile.furtherEducations.map((edu, i) => (
                                         <div key={i} className="space-y-0.5 rounded-md border px-3 py-2">
                                             <p className="font-medium">{edu.universityName}</p>
-                                            <p className="text-muted-foreground text-xs">{TFieldOfStudy[edu.fieldOfStudy as keyof typeof TFieldOfStudy] ?? edu.fieldOfStudy}</p>
+                                            <p className="text-muted-foreground text-xs">
+                                                {TFieldOfStudy[edu.fieldOfStudy as keyof typeof TFieldOfStudy] ?? edu.fieldOfStudy}
+                                            </p>
                                             <Badge variant="outline" size="xs">
                                                 {TDegree[edu.degree]}
                                             </Badge>
