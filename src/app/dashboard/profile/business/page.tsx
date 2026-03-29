@@ -16,6 +16,10 @@ export default async function ProfileBusinessPage(props: { searchParams?: Promis
     if (searchParams["search"]) params.append("search", String(searchParams["search"]));
     if (searchParams["category"]) params.append("category", String(searchParams["category"]));
     if (searchParams["isActive"]) params.append("isActive", String(searchParams["isActive"]));
+    if (searchParams["industry"]) params.append("industry", String(searchParams["industry"]));
+    if (searchParams["countryId"]) params.append("countryId", String(searchParams["countryId"]));
+    if (searchParams["provinceId"]) params.append("provinceId", String(searchParams["provinceId"]));
+    if (searchParams["cityId"]) params.append("cityId", String(searchParams["cityId"]));
 
     let businesses = null;
     let error = null;

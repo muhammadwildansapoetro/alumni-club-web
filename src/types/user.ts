@@ -75,7 +75,6 @@ export interface ProfileClass {
     workExperiences: WorkExperience[] | null;
     linkedInUrl: string | null;
     instagramUrl: string | null;
-    status: EAlumniStatus | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -185,19 +184,15 @@ export enum EEmploymentType {
     FREELANCE = "FREELANCE",
     CONTRACT = "CONTRACT",
     INTERNSHIP = "INTERNSHIP",
-    SEASONAL = "SEASONAL",
-    APPRENTICESHIP = "APPRENTICESHIP",
 }
 
 export const TEmploymentType = {
-    [EEmploymentType.FULL_TIME]: "Full Time",
-    [EEmploymentType.PART_TIME]: "Part Time",
-    [EEmploymentType.SELF_EMPLOYED]: "Self Employed",
+    [EEmploymentType.FULL_TIME]: "Penuh Waktu",
+    [EEmploymentType.PART_TIME]: "Paruh Waktu",
+    [EEmploymentType.SELF_EMPLOYED]: "Wirausaha",
     [EEmploymentType.FREELANCE]: "Freelance",
-    [EEmploymentType.CONTRACT]: "Contract",
-    [EEmploymentType.INTERNSHIP]: "Internship",
-    [EEmploymentType.SEASONAL]: "Seasonal",
-    [EEmploymentType.APPRENTICESHIP]: "Apprenticeship",
+    [EEmploymentType.CONTRACT]: "Kontrak",
+    [EEmploymentType.INTERNSHIP]: "Magang",
 };
 
 export enum EmploymentLevel {
@@ -214,32 +209,16 @@ export enum EmploymentLevel {
 }
 
 export const TEmploymentLevel: Record<EmploymentLevel, string> = {
-    [EmploymentLevel.INTERN]: "Intern / Trainee",
-    [EmploymentLevel.STAFF]: "Staff / Associate",
+    [EmploymentLevel.INTERN]: "Magang",
+    [EmploymentLevel.STAFF]: "Staf",
     [EmploymentLevel.SUPERVISOR]: "Supervisor",
-    [EmploymentLevel.MANAGER]: "Manager",
+    [EmploymentLevel.MANAGER]: "Manajer",
     [EmploymentLevel.SENIOR_MANAGER]: "Senior Manager",
-    [EmploymentLevel.DIRECTOR]: "Director",
+    [EmploymentLevel.DIRECTOR]: "Direktur",
     [EmploymentLevel.VP]: "Vice President (VP)",
     [EmploymentLevel.C_LEVEL]: "C-Level",
-    [EmploymentLevel.FOUNDER]: "Founder / Co-Founder",
-    [EmploymentLevel.OTHER]: "Other",
-};
-
-export enum EAlumniStatus {
-    WORKING = "WORKING",
-    STUDYING = "STUDYING",
-    WORKING_STUDYING = "WORKING_STUDYING",
-    ENTREPRENEUR = "ENTREPRENEUR",
-    NOT_WORKING = "NOT_WORKING",
-}
-
-export const TAlumniStatus = {
-    [EAlumniStatus.WORKING]: "Bekerja",
-    [EAlumniStatus.STUDYING]: "Melanjutkan Studi",
-    [EAlumniStatus.WORKING_STUDYING]: "Bekerja & Melanjutkan Studi",
-    [EAlumniStatus.ENTREPRENEUR]: "Wirausaha",
-    [EAlumniStatus.NOT_WORKING]: "Belum Bekerja",
+    [EmploymentLevel.FOUNDER]: "Founder",
+    [EmploymentLevel.OTHER]: "Lainnya",
 };
 
 export enum EDegree {

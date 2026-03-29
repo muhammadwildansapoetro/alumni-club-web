@@ -1,5 +1,5 @@
 import { API } from "@/lib/axios";
-import { FurtherEducation, WorkExperience, EAlumniStatus } from "@/types/user";
+import { FurtherEducation, WorkExperience } from "@/types/user";
 
 export type UpdateProfilePayload = {
     profile: {
@@ -13,7 +13,7 @@ export type UpdateProfilePayload = {
         linkedInUrl?: string | null;
         instagramUrl?: string | null;
         graduationYear?: number;
-        status?: EAlumniStatus | null;
+        status?: string | null;
         furtherEducations?: FurtherEducation[] | null;
         workExperiences?: WorkExperience[] | null;
     };

@@ -8,7 +8,7 @@ export default async function BusinessPage(props: { searchParams?: Promise<{ [ke
     const searchParams = props.searchParams ? await props.searchParams : {};
     const params = new URLSearchParams();
 
-    const supportedParams = ["page", "limit", "search", "category", "location", "isActive"];
+    const supportedParams = ["page", "limit", "search", "category", "location", "isActive", "industry", "countryId", "provinceId", "cityId"];
     for (const key of supportedParams) {
         if (searchParams[key]) params.append(key, String(searchParams[key]));
     }

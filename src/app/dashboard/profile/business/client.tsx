@@ -12,10 +12,12 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { FilterIcon, GlobeIcon, Loader2Icon, MapPinIcon, PlusIcon, RefreshCcwIcon, SquarePenIcon, TagIcon, Trash2Icon } from "lucide-react";
 import SearchInput from "@/components/input/search-input";
 import ReactSelect from "@/components/ui/react-select";
-import { Input } from "@/components/ui/input";
+import AsyncReactSelect from "@/components/ui/async-select";
 import { Business } from "@/types/business";
 import { INDUSTRY_LABELS } from "@/types/job";
 import { deleteBusiness } from "@/services/business.client";
+import { fetchCountries, fetchProvinces, fetchCities } from "@/services/country.client";
+import { jobIndustryOptions } from "@/lib/option";
 import { useDialog } from "@/hooks/use-dialog";
 import { toast } from "sonner";
 
@@ -185,9 +187,17 @@ export default function ProfileBusinessClient({ businesses, error }: ProfileBusi
     const [popoverOpen, setPopoverOpen] = useState(false);
     const [filterCategory, setFilterCategory] = useState(searchParams.get("category") || "");
     const [filterIsActive, setFilterIsActive] = useState(searchParams.get("isActive") || "");
+    const [filterIndustry, setFilterIndustry] = useState(searchParams.get("industry") || "");
+    const [filterCountry, setFilterCountry] = useState<{ value: string; label: string } | null>(null);
+    const [filterProvince, setFilterProvince] = useState<{ value: string; label: string } | null>(null);
+    const [filterCity, setFilterCity] = useState<{ value: string; label: string } | null>(null);
     const activeCategory = searchParams.get("category") || "";
     const activeIsActive = searchParams.get("isActive") || "";
-    const activeFilterCount = [activeCategory, activeIsActive].filter(Boolean).length;
+    const activeIndustry = searchParams.get("industry") || "";
+    const activeCountryId = searchParams.get("countryId") || "";
+    const activeProvinceId = searchParams.get("provinceId") || "";
+    const activeCityId = searchParams.get("cityId") || "";
+    const activeFilterCount = [activeCategory, activeIsActive, activeIndustry, activeCountryId, activeProvinceId, activeCityId].filter(Boolean).length;
     const [deletingId, setDeletingId] = useState<string | null>(null);
 
     const handleDelete = useCallback(
@@ -206,15 +216,50 @@ export default function ProfileBusinessClient({ businesses, error }: ProfileBusi
         [router],
     );
 
-    const applyFilters = (category: string, isActive: string) => {
+    const applyFilters = () => {
         const params = new URLSearchParams(searchParams);
 
-        if (category) params.set("category", category);
+        if (filterCategory) params.set("category", filterCategory);
         else params.delete("category");
 
-        if (isActive) params.set("isActive", isActive);
+        if (filterIsActive) params.set("isActive", filterIsActive);
         else params.delete("isActive");
 
+        if (filterIndustry) params.set("industry", filterIndustry);
+        else params.delete("industry");
+
+        if (filterCountry) params.set("countryId", filterCountry.value);
+        else params.delete("countryId");
+
+        if (filterProvince) params.set("provinceId", filterProvince.value);
+        else params.delete("provinceId");
+
+        if (filterCity) params.set("cityId", filterCity.value);
+        else params.delete("cityId");
+
+        params.set("page", "1");
+
+        startTransition(() => {
+            router.push(`${pathname}?${params.toString()}`);
+            setPopoverOpen(false);
+        });
+    };
+
+    const resetFilters = () => {
+        setFilterCategory("");
+        setFilterIsActive("");
+        setFilterIndustry("");
+        setFilterCountry(null);
+        setFilterProvince(null);
+        setFilterCity(null);
+
+        const params = new URLSearchParams(searchParams);
+        params.delete("category");
+        params.delete("isActive");
+        params.delete("industry");
+        params.delete("countryId");
+        params.delete("provinceId");
+        params.delete("cityId");
         params.set("page", "1");
 
         startTransition(() => {
@@ -265,6 +310,7 @@ export default function ProfileBusinessClient({ businesses, error }: ProfileBusi
                                 if (open) {
                                     setFilterCategory(activeCategory);
                                     setFilterIsActive(activeIsActive);
+                                    setFilterIndustry(activeIndustry);
                                 }
                                 setPopoverOpen(open);
                             }}
@@ -287,11 +333,15 @@ export default function ProfileBusinessClient({ businesses, error }: ProfileBusi
                                     </div>
                                     <div className="grid gap-3 py-2">
                                         <div className="grid gap-2">
-                                            <span className="text-xs font-medium">Kategori</span>
-                                            <Input
-                                                placeholder="mis. Kuliner, Teknologi"
-                                                value={filterCategory}
-                                                onChange={(e) => setFilterCategory(e.target.value)}
+                                            <span className="text-xs font-medium">Industri</span>
+                                            <ReactSelect
+                                                name="industry"
+                                                instanceId="profile-filter-industry"
+                                                options={jobIndustryOptions}
+                                                placeholder="Pilih industri"
+                                                isClearable
+                                                value={jobIndustryOptions.find((opt) => opt.value === filterIndustry) ?? null}
+                                                onChange={(opt: any) => setFilterIndustry(opt?.value ?? "")}
                                             />
                                         </div>
                                         <div className="grid gap-2">
@@ -306,20 +356,64 @@ export default function ProfileBusinessClient({ businesses, error }: ProfileBusi
                                                 onChange={(opt: any) => setFilterIsActive(opt?.value ?? "")}
                                             />
                                         </div>
+                                        <div className="grid gap-2">
+                                            <span className="text-xs font-medium">Negara</span>
+                                            <AsyncReactSelect
+                                                name="countryId"
+                                                instanceId="profile-filter-country"
+                                                placeholder="Pilih negara"
+                                                isClearable
+                                                defaultOptions
+                                                value={filterCountry}
+                                                loadOptions={(inputValue) => fetchCountries(inputValue).then((opts) => opts)}
+                                                onChange={(opt: any) => {
+                                                    setFilterCountry(opt ?? null);
+                                                    setFilterProvince(null);
+                                                    setFilterCity(null);
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <span className="text-xs font-medium">Provinsi</span>
+                                            <AsyncReactSelect
+                                                key={filterCountry?.value ?? "no-country"}
+                                                name="provinceId"
+                                                instanceId="profile-filter-province"
+                                                placeholder="Pilih provinsi"
+                                                isClearable
+                                                defaultOptions
+                                                value={filterProvince}
+                                                loadOptions={(inputValue) => fetchProvinces(inputValue).then((r) => r.options)}
+                                                onChange={(opt: any) => {
+                                                    setFilterProvince(opt ?? null);
+                                                    setFilterCity(null);
+                                                }}
+                                            />
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <span className="text-xs font-medium">Kota</span>
+                                            <AsyncReactSelect
+                                                key={filterProvince?.value ?? "no-province"}
+                                                name="cityId"
+                                                instanceId="profile-filter-city"
+                                                placeholder="Pilih kota"
+                                                isClearable
+                                                defaultOptions
+                                                value={filterCity}
+                                                loadOptions={(inputValue) =>
+                                                    fetchCities(inputValue, filterProvince ? Number(filterProvince.value) : undefined).then(
+                                                        (r) => r.options,
+                                                    )
+                                                }
+                                                onChange={(opt: any) => setFilterCity(opt ?? null)}
+                                            />
+                                        </div>
                                     </div>
                                     <div className="flex justify-end gap-2">
-                                        <Button
-                                            variant="outline"
-                                            size="sm"
-                                            onClick={() => {
-                                                setFilterCategory("");
-                                                setFilterIsActive("");
-                                                applyFilters("", "");
-                                            }}
-                                        >
+                                        <Button variant="outline" size="sm" onClick={resetFilters}>
                                             <RefreshCcwIcon /> Reset
                                         </Button>
-                                        <Button size="sm" onClick={() => applyFilters(filterCategory, filterIsActive)}>
+                                        <Button size="sm" onClick={applyFilters}>
                                             <FilterIcon /> Terapkan
                                         </Button>
                                     </div>
