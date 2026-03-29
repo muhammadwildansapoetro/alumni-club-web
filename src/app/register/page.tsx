@@ -363,7 +363,28 @@ export default function RegisterClient() {
                                         control={form.control}
                                         render={({ field, fieldState }) => (
                                             <FormItem>
-                                                <FormLabel>Program Studi</FormLabel>
+                                                <FormLabel className="flex items-center gap-2">
+                                                    Program Studi
+                                                    <TooltipProvider delayDuration={150}>
+                                                        <Tooltip>
+                                                            <TooltipTrigger asChild>
+                                                                <button
+                                                                    type="button"
+                                                                    className="text-muted-foreground hover:text-foreground"
+                                                                    aria-label="Program studi info"
+                                                                >
+                                                                    <InfoIcon className="h-4 w-4" />
+                                                                </button>
+                                                            </TooltipTrigger>
+                                                            <TooltipContent side="right" className="max-w-sm border bg-white">
+                                                                <p className="text-muted-foreground text-sm">
+                                                                    Bagi lulusan sarjana (S1) di FTIP Unpad,
+                                                                    <br /> silakan pilih program studi jenjang sarjana (S1).
+                                                                </p>
+                                                            </TooltipContent>
+                                                        </Tooltip>
+                                                    </TooltipProvider>
+                                                </FormLabel>
                                                 <FormControl>
                                                     <ReactSelect
                                                         {...field}

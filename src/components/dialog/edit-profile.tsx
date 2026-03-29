@@ -41,7 +41,7 @@ const profilFormSchema = z
             .array(
                 z.object({
                     degree: z.enum(["MAGISTER", "DOCTOR"], {
-                        error: "Gelar wajib diisi",
+                        error: "Jenjang pendidikan wajib diisi",
                     }),
                     entryYear: z
                         .number()
@@ -54,7 +54,7 @@ const profilFormSchema = z
                         .nullable()
                         .optional(),
                     universityName: z.string().min(1, "Nama universitas wajib diisi").max(200),
-                    fieldOfStudy: z.string().min(1, "Bidang studi wajib diisi").max(200),
+                    fieldOfStudy: z.string().min(1, "Program studi wajib diisi").max(200),
                 }),
             )
             .nullable()

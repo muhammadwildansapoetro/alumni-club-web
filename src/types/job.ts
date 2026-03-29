@@ -54,7 +54,7 @@ export interface JobPoster {
     email: string;
     profile: {
         fullName: string;
-        department: "TEP" | "TPN" | "TIN" | "TEKNOTAN";
+        department: "TEP" | "TPN" | "TIN" | "TEKNOTAN" | "MTA" | "MTIN" | "DTA";
         entryYear: number;
     } | null;
 }
@@ -65,7 +65,7 @@ export interface JobPosterDetailed {
     email: string;
     profile: {
         fullName: string;
-        department: "TEP" | "TPN" | "TIN" | "TEKNOTAN";
+        department: "TEP" | "TPN" | "TIN" | "TEKNOTAN" | "MTA" | "MTIN" | "DTA";
         entryYear: number;
         cityId: number | null;
         cityName: string | null;

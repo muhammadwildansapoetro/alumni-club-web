@@ -21,8 +21,8 @@ const gradYearWithCurrent = [{ value: null as number | null, label: "Belum lulus
 const addFurtherEducationSchema = z
     .object({
         universityName: z.string().min(1, "Nama universitas wajib diisi").max(200),
-        fieldOfStudy: z.string().min(1, "Bidang studi wajib diisi").max(200),
-        degree: z.string().min(1, "Gelar wajib dipilih"),
+        fieldOfStudy: z.string().min(1, "Program studi wajib diisi").max(200),
+        degree: z.string().min(1, "Jenjang pendidikan wajib dipilih"),
         entryYear: z.number({ error: "Tahun masuk wajib diisi" }),
         graduationYear: z.number().nullable().optional(),
     })
@@ -112,7 +112,7 @@ function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManag
                         control={form.control}
                         name="universityName"
                         render={({ field }) => (
-                            <FormItem>
+                            <FormItem className="sm:col-span-2">
                                 <FormLabel>Nama Universitas</FormLabel>
                                 <FormControl>
                                     <Input placeholder="Masukkan nama universitas" {...field} />
@@ -122,40 +122,16 @@ function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManag
                         )}
                     />
                     <FormField
-                        control={form.control}
-                        name="fieldOfStudy"
-                        render={({ field, fieldState }) => (
-                            <FormItem>
-                                <FormLabel>Bidang Studi</FormLabel>
-                                <FormControl>
-                                    <ReactSelect
-                                        {...field}
-                                        options={fieldOfStudyOptions}
-                                        placeholder="Pilih bidang studi"
-                                        instanceId="field-of-study-select"
-                                        value={fieldOfStudyOptions.find((opt) => opt.value === field.value) ?? null}
-                                        onChange={(opt: any) => field.onChange(opt?.value ?? null)}
-                                        fieldState={fieldState}
-                                    />
-                                </FormControl>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
-                </div>
-
-                <div className="grid gap-4 sm:grid-cols-3">
-                    <FormField
                         name="degree"
                         control={form.control}
                         render={({ field, fieldState }) => (
                             <FormItem>
-                                <FormLabel>Gelar</FormLabel>
+                                <FormLabel>Jenjang Pendidikan</FormLabel>
                                 <FormControl>
                                     <ReactSelect
                                         {...field}
                                         options={degreeOptions}
-                                        placeholder="Pilih gelar"
+                                        placeholder="Pilih jenjang pendidikan"
                                         instanceId="degree-select"
                                         value={degreeOptions.find((opt) => opt.value === field.value) ?? null}
                                         onChange={(opt: any) => field.onChange(opt?.value ?? "")}
@@ -166,6 +142,28 @@ function FurtherEducationForm({ data, onSuccess }: { data: FurtherEducationManag
                             </FormItem>
                         )}
                     />
+                    <FormField
+                        control={form.control}
+                        name="fieldOfStudy"
+                        render={({ field, fieldState }) => (
+                            <FormItem>
+                                <FormLabel>Program Studi</FormLabel>
+                                <FormControl>
+                                    <ReactSelect
+                                        {...field}
+                                        options={fieldOfStudyOptions}
+                                        placeholder="Pilih program studi"
+                                        instanceId="field-of-study-select"
+                                        value={fieldOfStudyOptions.find((opt) => opt.value === field.value) ?? null}
+                                        onChange={(opt: any) => field.onChange(opt?.value ?? null)}
+                                        fieldState={fieldState}
+                                    />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+
                     <FormField
                         name="entryYear"
                         control={form.control}

@@ -85,7 +85,9 @@ export default function PrivacyPolicyPage() {
                                         Riwayat pekerjaan: industri, level jabatan, tipe pekerjaan, kisaran penghasilan, judul pekerjaan, nama
                                         perusahaan, tahun mulai/selesai (opsional)
                                     </li>
-                                    <li>Riwayat pendidikan lanjut: gelar, universitas, bidang studi, tahun masuk/kelulusan (opsional)</li>
+                                    <li>
+                                        Riwayat pendidikan lanjut: jenjang pendidikan, universitas, program studi, tahun masuk/kelulusan (opsional)
+                                    </li>
                                 </ul>
 
                                 <p className="mb-2 font-medium text-gray-800">Saat Memposting Lowongan Kerja:</p>

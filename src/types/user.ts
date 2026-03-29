@@ -2,7 +2,7 @@ export interface AlumniProfile {
     id: string;
     fullName: string | null;
     npm: string | null;
-    department: "TEP" | "TPN" | "TIN";
+    department: "TEP" | "TPN" | "TIN" | "TEKNOTAN" | "MTA" | "MTIN" | "DTA";
     entryYear: number;
     graduationYear: number | null;
     furtherEducations: FurtherEducation[] | null;
@@ -86,13 +86,19 @@ export enum EDepartment {
     TPN = "TPN",
     TIN = "TIN",
     TEKNOTAN = "TEKNOTAN",
+    MTA = "MTA",
+    MTIN = "MTIN",
+    DTA = "DTA",
 }
 
 export const TDepartment = {
-    [EDepartment.TEP]: "Teknik Pertanian",
-    [EDepartment.TPN]: "Teknologi Pangan",
-    [EDepartment.TIN]: "Teknologi Industri Pertanian",
-    [EDepartment.TEKNOTAN]: "Teknologi Pertanian",
+    [EDepartment.TEP]: "Sarjana Teknik Pertanian (TEP)",
+    [EDepartment.TPN]: "Sarjana Teknologi Pangan (TPN)",
+    [EDepartment.TIN]: "Sarjana Teknologi Industri Pertanian (TIN)",
+    [EDepartment.TEKNOTAN]: "Sarjana Teknologi Pertanian (Teknotan)",
+    [EDepartment.MTA]: "Magister Teknologi Agroindustri (MTA)",
+    [EDepartment.MTIN]: "Magister Teknologi Industri Pertanian (MTIN)",
+    [EDepartment.DTA]: "Doktor Teknologi Agroindustri (DTA)",
 };
 
 export enum EIndustry {
@@ -248,9 +254,10 @@ export const TIncomeRange = {
 };
 
 export enum EFieldOfStudy {
-    // Agricultural Technology
+    // Agricultural Technology (core departments)
+    MTA = "MTA",
+    MTIN = "MTIN",
     AGRICULTURAL_ENGINEERING = "AGRICULTURAL_ENGINEERING",
-    AGRICULTURAL_INDUSTRIAL_TECHNOLOGY = "AGRICULTURAL_INDUSTRIAL_TECHNOLOGY",
     AGRICULTURAL_PRODUCT_TECHNOLOGY = "AGRICULTURAL_PRODUCT_TECHNOLOGY",
     POST_HARVEST_TECHNOLOGY = "POST_HARVEST_TECHNOLOGY",
     FOOD_TECHNOLOGY = "FOOD_TECHNOLOGY",
@@ -325,8 +332,9 @@ export enum EFieldOfStudy {
 }
 
 export const TFieldOfStudy: Record<EFieldOfStudy, string> = {
+    [EFieldOfStudy.MTA]: "Teknologi Agroindustri",
+    [EFieldOfStudy.MTIN]: "Teknologi Industri Pertanian",
     [EFieldOfStudy.AGRICULTURAL_ENGINEERING]: "Teknik Pertanian",
-    [EFieldOfStudy.AGRICULTURAL_INDUSTRIAL_TECHNOLOGY]: "Teknologi Industri Pertanian",
     [EFieldOfStudy.AGRICULTURAL_PRODUCT_TECHNOLOGY]: "Teknologi Hasil Pertanian",
     [EFieldOfStudy.POST_HARVEST_TECHNOLOGY]: "Teknologi Pascapanen",
     [EFieldOfStudy.FOOD_TECHNOLOGY]: "Teknologi Pangan",
@@ -415,5 +423,20 @@ export const departmentBorderMap = {
         firstCard: "border-blue-500 border-t-8",
         card: "border-blue-500 border-t",
         header: "border-blue-500/50 border-b",
+    },
+    MTA: {
+        firstCard: "border-purple-500 border-t-8",
+        card: "border-purple-500 border-t",
+        header: "border-purple-500/50 border-b",
+    },
+    MTIN: {
+        firstCard: "border-teal-500 border-t-8",
+        card: "border-teal-500 border-t",
+        header: "border-teal-500/50 border-b",
+    },
+    DTA: {
+        firstCard: "border-yellow-500 border-t-8",
+        card: "border-yellow-500 border-t",
+        header: "border-yellow-500/50 border-b",
     },
 } as const;

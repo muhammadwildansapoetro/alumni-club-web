@@ -15,10 +15,13 @@ import {
 import { INDUSTRY_LABELS, IndustryField, JOB_TYPE_LABELS, JobType } from "@/types/job";
 
 export const departmentOptions = [
-    { value: "TEP", label: "Teknik Pertanian (TEP)" },
-    { value: "TPN", label: "Teknologi Pangan (TPN)" },
-    { value: "TIN", label: "Teknologi Industri Pertanian (TIN)" },
-    { value: "TEKNOTAN", label: "Teknologi Pertanian (Teknotan)" },
+    { value: "TEP", label: "Sarjana Teknik Pertanian (TEP)" },
+    { value: "TPN", label: "Sarjana Teknologi Pangan (TPN)" },
+    { value: "TIN", label: "Sarjana Teknologi Industri Pertanian (TIN)" },
+    { value: "TEKNOTAN", label: "Sarjana Teknologi Pertanian (Teknotan)" },
+    { value: "MTA", label: "Magister Teknologi Agroindustri (MTA)" },
+    { value: "MTIN", label: "Magister Teknologi Industri Pertanian (MTIN)" },
+    { value: "DTA", label: "Doktor Teknologi Agroindustri (DTA)" },
 ];
 
 export const currentYear = new Date().getFullYear();

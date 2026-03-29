@@ -6,7 +6,7 @@ export interface BusinessOwnerBrief {
     email: string;
     profile: {
         fullName: string;
-        department: "TEP" | "TPN" | "TIN";
+        department: "TEP" | "TPN" | "TIN" | "TEKNOTAN" | "MTA" | "MTIN" | "DTA";
         entryYear: number;
     } | null;
 }
@@ -22,7 +22,7 @@ export interface WorkExperience {
 export interface BusinessOwnerDetail extends BusinessOwnerBrief {
     profile: {
         fullName: string;
-        department: "TEP" | "TPN" | "TIN";
+        department: "TEP" | "TPN" | "TIN" | "TEKNOTAN" | "MTA" | "MTIN" | "DTA";
         entryYear: number;
         cityId: number | null;
         cityName: string | null;
