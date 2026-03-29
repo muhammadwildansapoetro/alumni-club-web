@@ -2,7 +2,7 @@
 
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "../ui/dialog";
 import { Badge } from "../ui/badge";
-import { AlumniUser, TDepartment, TIndustryField, TEmploymentLevel, TEmploymentType, TDegree } from "@/types/user";
+import { AlumniUser, TDepartment, TIndustryField, TEmploymentLevel, TEmploymentType, TDegree, TFieldOfStudy } from "@/types/user";
 import { useDialog } from "@/hooks/use-dialog";
 import { ExternalLinkIcon } from "lucide-react";
 import Image from "next/image";
@@ -96,7 +96,7 @@ export default function AlumniDetailDialog() {
                             <div>
                                 <p className="text-muted-foreground mb-1 text-xs font-medium tracking-wide">Pengalaman Kerja</p>
                                 <div className="space-y-2">
-                                    {profile.workExperiences.map((exp, i) => (
+                                    {[...profile.workExperiences].sort((a, b) => (b.startYear ?? 0) - (a.startYear ?? 0)).map((exp, i) => (
                                         <div key={i} className="space-y-0.5 rounded-md border px-3 py-2">
                                             <p className="font-medium">{exp.jobTitle}</p>
                                             <p className="text-muted-foreground text-xs">{exp.companyName}</p>
@@ -127,7 +127,7 @@ export default function AlumniDetailDialog() {
                                     {profile.furtherEducations.map((edu, i) => (
                                         <div key={i} className="space-y-0.5 rounded-md border px-3 py-2">
                                             <p className="font-medium">{edu.universityName}</p>
-                                            <p className="text-muted-foreground text-xs">{edu.fieldOfStudy}</p>
+                                            <p className="text-muted-foreground text-xs">{TFieldOfStudy[edu.fieldOfStudy as keyof typeof TFieldOfStudy] ?? edu.fieldOfStudy}</p>
                                             <Badge variant="outline" size="xs">
                                                 {TDegree[edu.degree]}
                                             </Badge>
