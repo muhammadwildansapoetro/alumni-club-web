@@ -43,7 +43,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
         <div className="flex items-center justify-center space-x-2">
             <Button variant="outline" size="sm" onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1} className="hidden sm:flex">
                 <ChevronLeftIcon className="h-4 w-4" />
-                Previous
+                Sebelumnya
             </Button>
 
             <Button variant="outline" size="icon" onClick={() => onPageChange(currentPage - 1)} disabled={currentPage === 1} className="sm:hidden">
@@ -76,7 +76,7 @@ export function Pagination({ currentPage, totalPages, onPageChange }: Pagination
                 disabled={currentPage === totalPages}
                 className="hidden sm:flex"
             >
-                Next
+                Berikutnya
                 <ChevronRightIcon className="h-4 w-4" />
             </Button>
 

@@ -66,6 +66,7 @@ export function GenericDataTable<TData, TValue>({
     const [rowSelection, setRowSelection] = React.useState({});
     const [globalFilter, setGlobalFilter] = React.useState("");
 
+    // eslint-disable-next-line react-hooks/incompatible-library
     const table = useReactTable({
         data,
         columns,
@@ -233,10 +234,10 @@ export function GenericDataTable<TData, TValue>({
                     </div>
                     <div className="flex items-center space-x-2">
                         <Button variant="outline" size="sm" onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-                            Previous
+                            Sebelumnya
                         </Button>
                         <Button variant="outline" size="sm" onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                            Next
+                            Berikutnya
                         </Button>
                     </div>
                 </div>
