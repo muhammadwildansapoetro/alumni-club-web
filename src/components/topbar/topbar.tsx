@@ -4,6 +4,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { abbreviation, cn } from "@/lib/utils";
 import { LogOut, SettingsIcon, UserIcon } from "lucide-react";
 import { useRouter as useNavigation } from "next/navigation";
+import { useEffect, useState } from "react";
 import { useMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/use-auth";
 import LogoTitle from "./logo-title";
@@ -20,6 +21,14 @@ const Topbar = () => {
     const isMobile = useMobile();
     const { user, logout } = useAuth();
     const abbr = abbreviation(user?.name || "");
+    const [scrolled, setScrolled] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 10);
+        window.addEventListener("scroll", handleScroll, { passive: true });
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
     const handleSearch = (value: string) => {
         const params = new URLSearchParams();
         if (value) params.set("search", value);
@@ -38,7 +47,8 @@ const Topbar = () => {
     return (
         <nav
             className={cn(
-                "fixed top-0 right-0 left-0 z-998 flex h-16 w-full items-center justify-between gap-3 border-b bg-white/90 shadow backdrop-blur-md",
+                "fixed top-0 right-0 left-0 z-998 flex h-16 w-full items-center justify-between gap-3 transition-all duration-300",
+                scrolled ? "border-b bg-white/80 shadow backdrop-blur-md" : "bg-transparent",
                 isMobile ? "px-3" : "lg:px-20 xl:px-24",
             )}
         >
