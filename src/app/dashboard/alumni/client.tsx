@@ -182,7 +182,7 @@ export default function AlumniClient({ alumni, error }: { alumni: any; error: st
             <div className="flex flex-col gap-4 sm:justify-between md:flex-row">
                 <h1 className="text-2xl font-bold tracking-tight">Daftar Alumni</h1>
 
-                <div className="flex w-sm flex-col gap-4 sm:flex-row sm:justify-end">
+                <div className="flex flex-col gap-4 sm:w-lg sm:flex-row sm:justify-end">
                     <SearchInput variant="dashboard" placeholder="Cari nama alumni" value={search} onChange={(value) => setSearch(value)} />
 
                     <Popover

@@ -4,7 +4,6 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import { abbreviation, cn } from "@/lib/utils";
 import { LogOut, SettingsIcon, UserIcon } from "lucide-react";
 import { useRouter as useNavigation } from "next/navigation";
-import { useEffect, useState } from "react";
 import { useMobile } from "@/hooks/use-mobile";
 import { useAuth } from "@/hooks/use-auth";
 import LogoTitle from "./logo-title";
@@ -21,9 +20,6 @@ const Topbar = () => {
     const isMobile = useMobile();
     const { user, logout } = useAuth();
     const abbr = abbreviation(user?.name || "");
-    const [scrollUp, setScrollUp] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
-
     const handleSearch = (value: string) => {
         const params = new URLSearchParams();
         if (value) params.set("search", value);
@@ -39,25 +35,10 @@ const Topbar = () => {
         }
     };
 
-    useEffect(() => {
-        const handleScroll = () => {
-            if (window.scrollY < lastScrollY) {
-                setScrollUp(true);
-            } else {
-                setScrollUp(false);
-            }
-            setLastScrollY(window.scrollY);
-        };
-
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, [lastScrollY]);
-
     return (
         <nav
             className={cn(
-                "fixed top-0 right-0 left-0 z-998 flex h-16 w-full items-center justify-between gap-3 border-b bg-white/90 shadow backdrop-blur-md transition-transform duration-300",
-                scrollUp ? "translate-y-0" : "-translate-y-full",
+                "fixed top-0 right-0 left-0 z-998 flex h-16 w-full items-center justify-between gap-3 border-b bg-white/90 shadow backdrop-blur-md",
                 isMobile ? "px-3" : "lg:px-20 xl:px-24",
             )}
         >
